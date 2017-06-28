@@ -4,16 +4,16 @@
 @author:XuMing
 """
 
+import re
+
 import jieba
 from jieba import posseg
-import numpy as np
-import re
 
 
 class DictClassifier:
     def __init__(self):
-        self.__root_path = "f_dict/"
-        jieba.load_userdict("f_dict/user.dict")  # 自定义分词词库
+        self.__root_path = "data/dict/"
+        jieba.load_userdict("data/dict/user.dict")  # 自定义分词词库
 
         # 情感词典
         self.__phrase_dict = self.__get_phrase_dict()
@@ -28,7 +28,6 @@ class DictClassifier:
         return self.analyse_sentence(sentence)
 
     def analysis_file(self, file_path_in, file_path_out, encoding='utf-8', print_show=False, start=0, end=-1):
-        open(file_path_out, 'w')
         results = []
         with open(file_path_in, 'r', encoding=encoding) as f:
             num_line = 0
@@ -75,6 +74,11 @@ class DictClassifier:
             return 1
         else:
             return 0
+
+    def __divide_sentence_to_clause(self, sentence):
+        clauses = self.__split_sentence(sentence)
+        clauses[-1] = clauses[-1][:-1]
+        return clauses
 
     def __analyse_clause(self, clauses, run_out_file_path, print_show):
         sub_clause = {"score": 0, "positive": [], "negative": [], "conjunction": [], "punctuation": [], "pattern": []}
@@ -320,3 +324,102 @@ class DictClassifier:
             return self.__emotional_word_analysis(word, self.__negative_dict[word],
                                                   [x for x, y in seg_result], index)
         return ""
+
+    def __output_analysis(self, comment_analysis, run_out_file_path=None):
+        output = "Score:" + str(comment_analysis["score"]) + "\n"
+        for i in range(len(comment_analysis) - 1):
+            output += "Sub-clause" + str(i) + ": "
+            clause = comment_analysis["su-clause" + str(i)]
+            if len(clause["conjunction"]) > 0:
+                output += "conjunction:"
+                for punctuation in clause["conjunction"]:
+                    output += punctuation["key"] + " "
+            if len(clause["positive"]) > 0:
+                output += "positive:"
+                for positive in clause["positive"]:
+                    if len(positive["denial"]) > 0:
+                        for denial in positive["denial"]:
+                            output += denial["key"] + str(denial["position"]) + "-"
+                    if len(positive['adverb']) > 0:
+                        for adverb in positive["adverb"]:
+                            output += adverb["key"] + str(adverb["position"]) + "-"
+                    output += positive["key"] + " "
+            if len(clause["negative"]) > 0:
+                output += "negative:"
+                for negative in clause["negative"]:
+                    if len(negative["denial"]) > 0:
+                        for denial in negative["denial"]:
+                            output += denial["key"] + str(denial["position"]) + "-"
+                    if len(negative["adverb"]) > 0:
+                        for adverb in negative["adverb"]:
+                            output += adverb["key"] + str(adverb["position"]) + "-"
+                    output += negative["key"] + " "
+            if len(clause["punctuation"]) > 0:
+                output += "punctuation:"
+                for pattern in clause["pattern"]:
+                    output += pattern["key"] + " "
+            output += "\n"
+        if run_out_file_path is not None:
+            self.__write_out_file(run_out_file_path, output)
+        else:
+            print(output)
+
+    @staticmethod
+    def __write_out_file(path, info, encoding="utf-8"):
+        with open(path, "a", encoding=encoding) as f:
+            f.write("%s" % info)
+
+    @staticmethod
+    def __split_sentence(sentence):
+        pattern = re.compile("[，,。.%、！!？?;；～~…….… ]+")
+        split_clauses = pattern.split(sentence.strip())
+        punctuations = pattern.findall(sentence.strip())
+        try:
+            split_clauses.remove("")
+        except ValueError:
+            pass
+        punctuations.append("")
+
+        clauses = ["".join(x) for x in zip(split_clauses, punctuations)]
+        return clauses
+
+    def __get_phrase_dict(self):
+        """
+        取短语词典
+        :return: 
+        """
+        sentiment_dict = []
+        pattern = re.compile(r"\s+")
+        with open(self.__root_path + "phrase_dict.txt", "r", encoding="utf-8") as f:
+            for line in f:
+                phrase = {}
+                result = pattern.split(line.strip())
+                if len(result) >= 2:
+                    phrase["key"] = result[0]
+                    phrase["value"] = float(result[1])
+                    for i, temp_split in enumerate(result):
+                        if i < 2:
+                            continue
+                        else:
+                            a, b = temp_split.split(":")
+                            phrase[a] = b
+                    sentiment_dict.append(phrase)
+
+        return sentiment_dict
+
+    @staticmethod
+    def __get_dict(path, encoding="utf-8"):
+        """
+        构建情感词典
+        :param path: 
+        :param encoding: 
+        :return: 
+        """
+        sentiment_dict = {}
+        pattern = re.compile(r"\s+")
+        with open(path, encoding=encoding) as f:
+            for line in f:
+                result = pattern.split(line.strip())
+                if len(result) == 2:
+                    sentiment_dict[result[0]] = float(result[1])
+        return sentiment_dict
