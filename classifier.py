@@ -64,12 +64,12 @@ class DictClassifier:
             # 将整句写到输出文件
             self.__write_out_file(run_out_file_path, "\n" + sentence + "\n")
             self.__output_analysis(comment_analysis, run_out_file_path)
-            self.__write_out_file(run_out_file_path, str(comment_analysis) + "\n\n\n\n")
+            self.__write_out_file(run_out_file_path, str(comment_analysis) + "\n\n")
 
         if print_show:
             print("\n" + sentence)
             self.__output_analysis(comment_analysis)
-            print(comment_analysis, end="\n\n\n")
+            print("comment_analysis: ", comment_analysis)
         if comment_analysis["score"] > 0:
             return 1
         else:
