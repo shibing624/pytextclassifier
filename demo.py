@@ -12,7 +12,7 @@ def demo_dict():
     test classifier based on sentiment dict
     :return: 
     """
-    from classifier import DictClassifier
+    from classifier.dictclassifier import DictClassifier
     dc = DictClassifier()
     # test single sentence1
     sentence1 = "土豆丝我觉得很好吃"
@@ -24,5 +24,7 @@ def demo_dict():
     result = dc.analyse_sentence(sentence1, "demo_result.out", True)
     print("result: ", result)
 
-
-demo_dict()
+def demo_knn():
+    pass
+# demo_dict()
+demo_knn()
