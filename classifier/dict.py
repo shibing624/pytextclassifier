@@ -69,7 +69,7 @@ class DictClassifier:
         if print_show:
             print("\n" + sentence)
             self.__output_analysis(comment_analysis)
-            print("comment_analysis: ", comment_analysis)
+            print(comment_analysis)
         if comment_analysis["score"] > 0:
             return 1
         else:

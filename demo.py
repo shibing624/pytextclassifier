@@ -74,12 +74,10 @@ def demo_waimai():
 
     test = Evaluator(type_, train_num, test_num, feature_num, max_iter, C, k, corpus)
 
-    test.test_knn()
     test.test_bayes()
-    test.test_maxent()
+    # test.test_maxent()
     test.test_svm()
 
-# demo_movie()
-# demo_dict()
-demo_waimai()
-
+demo_movie()
+demo_dict()
+# demo_waimai()

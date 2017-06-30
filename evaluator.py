@@ -49,9 +49,7 @@ class Evaluator:
     @staticmethod
     def get_accuracy(origin_labels, classify_labels, parameters):
         assert len(origin_labels) == len(classify_labels)
-
         contents = []
-
         contents.extend([("train num", parameters[0]), ("test num", parameters[1])])
         contents.append(("feature num", parameters[2]))
 
