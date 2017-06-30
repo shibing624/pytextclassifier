@@ -62,7 +62,7 @@ class KNNClassifier:
         return norm_vectors
 
     def __train(self, train_data, train_data_labels, best_words=None):
-        print("KNNClassifier is training...")
+        print("training KNNClassifier...")
         self.__train_data_labels = train_data_labels[:]
         self.__total_words = self.__get_total_words(train_data, best_words)
         self.__total_words_length = len(self.__total_words)
@@ -72,7 +72,7 @@ class KNNClassifier:
             self.train_num += 1
 
         self.__train_data_vectors = np.array(vectors)
-        print("KNNClassifier trains over.")
+        print("train KNNClassifier done.")
 
     def __get_sorted_distances(self, input_data):
         size = self.__train_data_vectors.shape

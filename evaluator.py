@@ -7,6 +7,7 @@
 """
 
 import datetime
+import time
 import os
 from statistic_test import ChiSquare
 
@@ -25,7 +26,8 @@ class Evaluator:
         # get the corpus
         self.train_data, self.train_labels = corpus.get_train_corpus(train_num)
         self.test_data, self.test_labels = corpus.get_test_corpus(test_num)
-
+        # out folder
+        self.out_folder_path = "data/out/"
         # feature extraction test
         statistic_test = ChiSquare(self.train_data, self.train_labels)
         self.best_words = statistic_test.get_best_words(feature_num)
@@ -37,32 +39,6 @@ class Evaluator:
     def set_precisions(self, precisions):
         self.precisions = precisions
 
-    def test_knn(self):
-        from classifier.knnclassifier import KNNClassifier
-        if isinstance(self.k, int):
-            k = "%s" % self.k
-        else:
-            k = "-".join([str(i) for i in self.k])
-        print("---" * 10)
-        print("KNNClassifier")
-        print("Train num: %s" % self.train_num)
-        print("Test num: %s" % self.test_num)
-        print("K = %s" % k)
-        knn = KNNClassifier(self.train_data, self.train_labels, k=self.k, best_words=self.best_words)
-        classify_labels = []
-        print("test KNNClassifier...")
-        for data in self.test_data:
-            classify_labels.append(knn.classify(data))
-        print("test KNNClassifier done.")
-
-        # Set file name with time string
-        file_path = "KNN_%s_train_%d_test_%d_f_%d_k_%s_%s.out" % \
-                    (self.type,
-                     self.train_num, self.test_num,
-                     self.feature_num, k,
-                     datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
-        self.write(file_path, classify_labels)
-
     def write(self, file_path, classify_labels, i=-1):
         result = self.get_accuracy(self.test_labels, classify_labels, self.parameters)
         if i > 0:
@@ -70,7 +46,8 @@ class Evaluator:
             self.precisions[i][1] = result[7][1] / 100
         self.write_content(file_path, result)
 
-    def get_accuracy(self, origin_labels, classify_labels, parameters):
+    @staticmethod
+    def get_accuracy(origin_labels, classify_labels, parameters):
         assert len(origin_labels) == len(classify_labels)
 
         contents = []
@@ -122,12 +99,11 @@ class Evaluator:
             os.remove(file_path)
         if isinstance(contents, list) and isinstance(contents[0], tuple):
             with open(file_path, "w")as f:
-                f.write("0  ")
                 for i, (head, content) in enumerate(contents):
-                    f.write(str(i) + "  " + str(head))
-                f.write("\n1  ")
+                    f.write(str(head) + ",")
+                f.write("\n")
                 for i, (head, content) in enumerate(contents):
-                    f.writelines(str(i) + "  " + str(content))
+                    f.writelines(str(content) + ",")
 
         elif isinstance(contents, list) and isinstance(contents[0], list) and \
                 isinstance(contents[0][0], tuple):
@@ -135,26 +111,93 @@ class Evaluator:
                 i = 0
                 # write the head
                 for j, (head, k) in enumerate(contents[0]):
-                    f.writelines(str(i) + "  " + str(j) + "  " + str(head))
+                    f.writelines(str(head) + ",")
                 # write the content
                 for temp_content in contents:
                     i += 1
                     for j, (k, content) in enumerate(temp_content):
-                        f.writelines(str(i) + "  " + str(j) + "  " + str(content))
+                        f.writelines(str(content) + ",")
         else:
             print("out put file error.")
 
+    def test_knn(self):
+        from classifier.knn import KNNClassifier
+        if isinstance(self.k, int):
+            k = "%s" % self.k
+        else:
+            k = "-".join([str(i) for i in self.k])
+        print("KNNClassifier")
+        print("---" * 40)
+        print("Train num: %s" % self.train_num)
+        print("Test num: %s" % self.test_num)
+        print("K = %s" % k)
+        knn = KNNClassifier(self.train_data, self.train_labels, k=self.k, best_words=self.best_words)
+        classify_labels = []
+        print("testing KNNClassifier...")
+        start = time.time()
+        print("time: %s " % datetime.datetime.now())
+        for data in self.test_data:
+            classify_labels.append(knn.classify(data))
+        print("test KNNClassifier done.")
+        print("time: %s ; cost time: %s s" % (datetime.datetime.now(), (time.time() - start)))
 
-from corpus import MovieCorpus
+        # Set file name with time string
+        file_path = "KNN_%s_train_%d_test_%d_f_%d_k_%s_%s.out" % \
+                    (self.type,
+                     self.train_num, self.test_num,
+                     self.feature_num, k,
+                     datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
+        self.write(self.out_folder_path + file_path, classify_labels)
 
-type = "movie"
-# total :2000
-train_num = 80
-test_num = 20
-feature_num = 500
-max_iter = 100
-C = 80
-k = [1, 3, 5, 7, 9]
-corpus = MovieCorpus()
-evalutor = Evaluator(type, train_num, test_num, feature_num, max_iter, C, k, corpus)
-evalutor.test_knn()
+    def test_bayes(self):
+        print("BayesClassifier")
+        print("---" * 40)
+        print("Train num: %s" % self.train_num)
+        print("Test num: %s" % self.test_num)
+        from classifier.bayes import BayesClassifier
+        bayes = BayesClassifier(self.train_data, self.train_labels, self.best_words)
+        classify_labels = []
+        print("testing BayesClassifier...")
+
+        for data in self.test_data:
+            classify_labels.append(bayes.classify(data))
+        print("test BayesClassifier done.")
+        file_path = "Bayes_%s_train_%d_test_%d_f_%d_%s.out" % \
+                    (self.type, self.train_num, self.test_num, self.feature_num,
+                     datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
+        self.write(self.out_folder_path + file_path, classify_labels, 0)
+
+    def test_maxent(self):
+        print("MaxEntClassifier")
+        print("---" * 40)
+        print("Train num: %s" % self.train_num)
+        print("Test num: %s" % self.test_num)
+        print("max iter: %s" % self.max_iter)
+        from classifier.maxent import MaxEntClassifier
+        maxent = MaxEntClassifier(self.max_iter)
+        maxent.train(self.train_data, self.train_labels, self.best_words)
+        classify_results = maxent.test(self.test_data)
+        file_path = "MaxEnt_%s_train_%d_test_%d_f_%d_maxiter_%d_%s.out" % \
+                    (self.type,
+                     self.train_num, self.test_num,
+                     self.feature_num, self.max_iter,
+                     datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
+        self.write(self.out_folder_path + file_path, classify_results, 1)
+
+    def test_svm(self):
+        print("SVMClassifier")
+        print("---" * 40)
+        print("Train num: %s" % self.train_num)
+        print("Test num: %s" % self.test_num)
+        print("C: %s" % self.C)
+        from classifier.svm import SVMClassifier
+        svm = SVMClassifier(self.train_data, self.train_labels, self.best_words, self.C)
+
+        classify_labels = svm.test(self.test_data)
+        file_path = "SVM_%s_train_%d_test_%d_f_%d_C_%d_%s.out" % \
+                    (self.type,
+                     self.train_num, self.test_num,
+                     self.feature_num, self.C,
+                     datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
+
+        self.write(self.out_folder_path + file_path, classify_labels, 2)

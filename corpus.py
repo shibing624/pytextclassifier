@@ -68,9 +68,13 @@ class Corpus:
 
 class WaimaiCorpus(Corpus):
     def __init__(self):
-        Corpus.__init__(self, "data/corpus/cn_waimai_corpus.txt")
+        Corpus.__init__(self, "data/corpus/ch_waimai_corpus.txt")
 
 
 class MovieCorpus(Corpus):
     def __init__(self):
         Corpus.__init__(self, "data/corpus/en_movie_corpus.txt")
+
+class HotelCorpus(Corpus):
+    def __init__(self):
+        Corpus.__init__(self,"data/corpus/ch_hotel_corpus.txt")
