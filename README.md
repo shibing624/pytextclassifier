@@ -1,5 +1,5 @@
 # classifier-in-action
-在情感分析领域中应用分类算法处理。python开发。
+情感极性分析领域，应用分类算法处理。python开发。
 
 ---
 
@@ -86,11 +86,10 @@
         准确率：最高（85%以上）
         优点：准确率高
         缺点：训练耗时
-	
 	```
 
 ## 鸣谢
   - SentimentPolarityAnalysis 项目 
 
 ## 许可证
-  许可证为Apache Licence 2.0
+  - Apache Licence 2.0
