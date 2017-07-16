@@ -90,3 +90,4 @@ ENV/
 *.pyc
 .idea
 .idea/
+*.iml
