@@ -73,7 +73,6 @@ def demo_waimai():
     corpus = WaimaiCorpus()
 
     test = Evaluator(type_, train_num, test_num, feature_num, max_iter, C, k, corpus)
-
     test.test_bayes()
     # test.test_maxent()
     test.test_svm()
