@@ -9,16 +9,23 @@ from neural_network.utils.io_util import read_lines
 import config
 
 
-def get_sentence(sentence_tag):
+def get_sentence(sentence_tag, word_sep=' ', pos_sep='/'):
+    """
+    文本拼接
+    :param sentence_tag:
+    :param word_sep:
+    :param pos_sep:
+    :return:
+    """
     words = []
-    for item in sentence_tag.split(' '):
-        index = item.rindex('/')
+    for item in sentence_tag.split(word_sep):
+        index = item.rindex(pos_sep)
         words.append(item[:index])
-    return ' '.join(words)
+    return word_sep.join(words)
 
 
-def get_sentence_without_pos(sentence_tag):
-    return sentence_tag.split(' ')
+def get_sentence_without_pos(sentence_tag, word_sep=' '):
+    return sentence_tag.split(word_sep)
 
 
 def extract_sentence(train_seg_path, test_seg_path, sentence_path):
@@ -28,7 +35,7 @@ def extract_sentence(train_seg_path, test_seg_path, sentence_path):
         for line in lines:
             index = line.index(',')
             word_tag = line[index + 1:]
-            f.write('%s\n' % get_sentence_without_pos(word_tag))
+            f.write('%s\n' % get_sentence(word_tag))
         return True
     return False
 
@@ -55,5 +62,5 @@ if __name__ == '__main__':
     train(config.train_seg_path,
           config.test_seg_path,
           config.sentence_path,
-          config.w2v_path,
-          out_bin_path=config.w2v_bin_path)
+          config.sentence_w2v_path,
+          out_bin_path=config.sentence_w2v_bin_path)
