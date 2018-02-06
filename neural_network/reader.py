@@ -57,4 +57,15 @@ def load_pkl_dict(pkl_dict_path):
 
 
 def init_data(lines, word_vocab, pos_vocab, lable_vocab):
-    return
+    """
+    load data
+    :param lines:
+    :param word_vocab:
+    :param pos_vocab:
+    :param lable_vocab:
+    :return:
+    """
+    data_count = len(lines)
+    sentences = np.zeros((data_count, config.max_len), dtype='int32')
+    pos = np.zeros((data_count, config.max_len), dtype='int32')
+
