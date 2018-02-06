@@ -6,6 +6,7 @@ from gensim.models import Word2Vec
 from gensim.models.word2vec import LineSentence
 from gensim.models.keyedvectors import KeyedVectors
 from neural_network.utils.io_util import read_lines
+from neural_network.utils.data_util import dump_pkl
 import config
 
 
@@ -53,14 +54,13 @@ def train(train_seg_path, test_seg_path, sentence_path, out_path, out_bin_path="
     word_dict = {}
     for word in model.vocab:
         word_dict[word] = model[word]
-    with open(out_path, 'wb') as f:
-        pickle.dump(word_dict, f)
-        print(f.name)
+    dump_pkl(word_dict, out_path)
+    print("save %s ok." % out_path)
 
 
 if __name__ == '__main__':
     train(config.train_seg_path,
           config.test_seg_path,
           config.sentence_path,
-          config.sentence_w2v_path,
-          out_bin_path=config.sentence_w2v_bin_path)
+          config.w2v_path,
+          out_bin_path=config.w2v_bin_path)

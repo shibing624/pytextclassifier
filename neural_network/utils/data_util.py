@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
 # Brief:
+import os
 from collections import defaultdict
 import numpy as np
+import pickle
 
 
 def build_dict(items, start=0, sort=True,
-               min_count=None, lower=False, overwrite=False):
+               min_count=None, lower=False):
     """
     构建字典
     :param items: list  [item1, item2, ... ]
@@ -73,3 +75,27 @@ def map_item2id(items, vocab, max_len, non_word=0, lower=False):
         item = items[i] if not lower else items[i].lower()
         arr[i] = vocab[item] if item in vocab else non_word
     return arr
+
+
+def load_pkl(pkl_path):
+    """
+    加载词典文件
+    :param pkl_path:
+    :return:
+    """
+    with open(pkl_path, 'rb') as f:
+        result = pickle.load(f)
+    return result
+
+
+def dump_pkl(vocab, pkl_path, overwrite=False):
+    """
+    存储文件
+    :param pkl_path:
+    :param overwrite:
+    :return:
+    """
+    if os.path.exists(pkl_path) and not overwrite:
+        return
+    with open(pkl_path, 'wb') as f:
+        pickle.dump(vocab, f, protocol=pickle.HIGHEST_PROTOCOL)

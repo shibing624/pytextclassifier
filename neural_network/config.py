@@ -6,16 +6,14 @@ import os
 ################## for text classification  ##################
 
 # path of training data
-train_path = "../data/corpus/training.csv"
+train_path = "../data/nn/train.csv"
 # path of train segment data, train_seg_path will be build from prepare_data.py segment
-train_seg_path = "../data/corpus/train_seg.txt"
-# part of train_seg_path
-test_seg_path = "../data/corpus/test_seg.txt"
+train_seg_path = "../data/nn/train_seg.txt"
+# test_seg_path is part of train_seg_path
+test_seg_path = "../data/nn/test_seg.txt"
 # path of train sentence, if this file does not exist,
 # it will be built from train_seg_path data by w2v_model.py train
-sentence_path = "../data/corpus/sentence.txt"
-sentence_w2v_bin_path = "../data/corpus/sentence_w2v.bin"
-sentence_w2v_path = "../data/corpus/sentence_w2v.pkl"
+sentence_path = "../data/nn/sentence.txt"
 
 # vocab
 word_vocab_path = "../data/nn/word_vocab.pkl"
@@ -26,9 +24,10 @@ label_vocab_path = "../data/nn/label_vocab.pkl"
 
 # embedding
 w2v_dim = 256
+w2v_bin_path = "../data/nn/w2v.bin"
 w2v_path = "../data/nn/w2v.pkl"
 w2v_train_path = "../data/nn/w2v_train.pkl"
-t2v_path = "../data/nn/pos2v.pkl"
+p2v_path = "../data/nn/p2v.pkl" # pos vector path
 pos_dim = 64
 
 # train param
