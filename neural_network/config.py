@@ -27,20 +27,27 @@ w2v_dim = 256
 w2v_bin_path = "../data/nn/w2v.bin"
 w2v_path = "../data/nn/w2v.pkl"
 w2v_train_path = "../data/nn/w2v_train.pkl"
-p2v_path = "../data/nn/p2v.pkl" # pos vector path
+p2v_path = "../data/nn/p2v.pkl"  # pos vector path
 pos_dim = 64
 
 # train param
 max_len = 300  # max len words of sentence
 num_workers = 4  # threads
 use_gpu = False  # to use gpu or not
-
-num_batches_to_log = 50
-num_batches_to_save_model = 400  # number of batches to output model
+batch_size = 64
+nb_labels = 11  # num batches labels
+nb_epoch = 30
+keep_prob = 0.5
+word_keep_prob = 0.9
+pos_keep_prob = 0.9
+kfold = 10
 
 # directory to save the trained model
-# create a new directory if the directoy does not exist
-model_save_dir = "output"
-
+# create a new directory if the dir does not exist
+model_save_dir = "../data/nn/output"
 if not os.path.exists(model_save_dir):
     os.mkdir(model_save_dir)
+
+model_save_temp_dir = "../data/nn/temp_output"
+if not os.path.exists(model_save_temp_dir):
+    os.mkdir(model_save_temp_dir)

@@ -26,8 +26,8 @@ class CNN(object):
         self._nb_filter = nb_filter
         self._strides = strides
         self._padding = padding
-        self._activation = activation
-        self._pooling = pooling
+        self._activation = get_activation(activation)
+        self.pooling = pooling
         self._name = name
 
         filter_length = self._filter_length
@@ -62,7 +62,7 @@ class CNN(object):
         linear_output = tf.nn.bias_add(conv_output, self.biases)
         act_output = (linear_output if self._activation is None
                       else self._activation(linear_output))
-        if self._pooling:
+        if self.pooling:
             # max pooling
             self._output = tf.reduce_max(tf.squeeze(act_output, [2]), 1)
         else:
@@ -81,5 +81,5 @@ class CNN(object):
         return self._nb_filter
 
     @property
-    def weights(self):
+    def get_weights(self):
         return self.weights

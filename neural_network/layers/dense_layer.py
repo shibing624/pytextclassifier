@@ -26,10 +26,12 @@ class SoftmaxDense(object):
                                       shape=[input_dim, output_dim]),
                     name='weights'
                 )
+            self._weights = weights
             tf.summary.histogram('weights', self._weights)
             # init bias
             if biases is None:
                 biases = tf.Variable(tf.constant(0.1, shape=[self._output_dim]), name='biases')
+            self._biases = biases
             tf.summary.histogram('biases', biases)
         self.call()
 
@@ -47,8 +49,7 @@ class SoftmaxDense(object):
         return loss
 
     def get_pred_y(self):
-        pred_y = tf.arg_max(input=self._output_dim, dimension=1)
-        return pred_y
+        return tf.argmax(input=self._output_dim, dimension=1)
 
     @property
     def input_data(self):

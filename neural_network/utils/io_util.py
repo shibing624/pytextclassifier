@@ -32,3 +32,20 @@ def get_file_list(path, postfix, file_list):
             if f_d.endswith(postfix):
                 file_list.append(f_d)
     return None
+
+
+def clear_directory(path):
+    """
+    clear the dir of path
+    :param path:
+    :return:
+    """
+    if not os.path.exists(path):
+        os.mkdir(path)
+    try:
+        cmd = 'rm %s/*' % path
+        os.popen(cmd)
+    except Exception as e:
+        print("error: %s" % e)
+        return False
+    return True

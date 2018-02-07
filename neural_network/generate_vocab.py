@@ -22,16 +22,16 @@ def get_sentence_arr(word_pos_vocab, word_vocab, pos_vocab, pos_sep='/'):
     :return: sentence_arr, np.array, 字符id序列
              pos_arr, np.array, 词性标记序列
     """
-    word_iteral, pos_iteral = [], []
+    word_literal, pos_literal = [], []
     for item in word_pos_vocab:
-        rindex = item.rindex(pos_sep)
-        word_iteral.append(item[:rindex])
-        pos_iteral.append(item[rindex + 1:])
+        r_index = item.rindex(pos_sep)
+        word_literal.append(item[:r_index])
+        pos_literal.append(item[r_index + 1:])
     # sentence list
-    sentence_arr = map_item2id(word_iteral, word_vocab, config.max_len, lower=True)
+    sentence_arr = map_item2id(word_literal, word_vocab, config.max_len, lower=True)
     # pos list
-    pos_arr = map_item2id(pos_iteral, pos_vocab, config.max_len, lower=False)
-    return sentence_arr, pos_arr, len(word_iteral)
+    pos_arr = map_item2id(pos_literal, pos_vocab, config.max_len, lower=False)
+    return sentence_arr, pos_arr, len(word_literal)
 
 
 def load_emb(w2v_train_path, t2v_path):
@@ -96,7 +96,8 @@ def load_train_data(word_vocab, pos_vocab, label_vocab):
     :param label_vocab:
     :return:
     """
-    return init_data(read_lines(config.train_path), word_vocab, pos_vocab, label_vocab)
+    return init_data(read_lines(config.train_seg_path),
+                     word_vocab, pos_vocab, label_vocab)
 
 
 def load_test_data(word_vocab, pos_vocab, label_vocab):
@@ -107,13 +108,13 @@ def load_test_data(word_vocab, pos_vocab, label_vocab):
     :param label_vocab:
     :return:
     """
-    sentences, pos, _ = init_data(read_lines(config.test_path), word_vocab, pos_vocab, label_vocab)
+    sentences, pos, _ = init_data(read_lines(config.test_seg_path),
+                                  word_vocab, pos_vocab, label_vocab)
     return sentences, pos
 
 
-def train():
-    start_time = time.time()
-    word_emb, pos_emb = load_emb(config.w2v_train_path, config.t2v_path)
+def generate():
+    word_emb, pos_emb = load_emb(config.w2v_train_path, config.p2v_path)
     word_vocab, pos_vocab, label_vocab = load_vocab(config.word_vocab_path,
                                                     config.pos_vocab_path,
                                                     config.label_vocab_path)
@@ -123,9 +124,9 @@ def train():
     print(labels.shape)
     print(word_emb.shape)
     print(pos_emb.shape)
-    end_time = time.time()
-    print("spend time %ds." % (end_time - start_time))
 
 
 if __name__ == '__main__':
-    train()
+    start_time = time.time()
+    generate()
+    print("spend time %ds." % (time.time() - start_time))
