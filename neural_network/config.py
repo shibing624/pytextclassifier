@@ -5,6 +5,12 @@ import os
 
 ################## for text classification  ##################
 
+# sample
+# train_path = "../data/nn/sample_training.csv"
+# train_seg_path = "../data/nn/sample_train_seg.txt"
+# test_seg_path = "../data/nn/sample_test_seg.txt"
+# sentence_path = "../data/nn/sample_sentence.txt"
+
 # path of training data
 train_path = "../data/nn/train.csv"
 # path of train segment data, train_seg_path will be build from prepare_data.py segment
@@ -32,15 +38,15 @@ pos_dim = 64
 
 # train param
 max_len = 300  # max len words of sentence
+min_count = 3
 num_workers = 4  # threads
-use_gpu = False  # to use gpu or not
 batch_size = 64
 nb_labels = 11  # num batches labels
-nb_epoch = 30
+nb_epoch = 10
 keep_prob = 0.5
 word_keep_prob = 0.9
 pos_keep_prob = 0.9
-kfold = 10
+kfold = 4 # 2 or more, default 10
 
 # directory to save the trained model
 # create a new directory if the dir does not exist

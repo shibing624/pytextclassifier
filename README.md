@@ -13,6 +13,7 @@
   * 支持向量机(SVM)
   * 最大熵(MaxEnt)
   * 情感词典
+  * 神经网络文本分类:neural_network下，顺序执行：w2v_model.py -> prepare_data.py -> train.py
 > * 评估
   * 准确率
   * 召回率

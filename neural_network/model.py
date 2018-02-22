@@ -7,7 +7,7 @@ import numpy as np
 import tensorflow as tf
 
 import config
-from evaluate import evaluate
+from evaluate import simple_evaluate
 from layers.cnn_layer import CNN
 from layers.dense_layer import SoftmaxDense
 from layers.emb_layer import Embedding
@@ -143,12 +143,13 @@ class Model(object):
             # evaluation
             p_train, r_train, f_train = self.eval(sentence_train, pos_train, label_train)
             p_dev, r_dev, f_dev = self.eval(sentence_dev, pos_dev, label_dev)
+            print("p_train:%f, p_dev:%f" % (p_train, p_dev))
             pred_labels = self.predict(sentence_test, pos_test)
             with open(config.model_save_temp_dir + '/epoch_%d.csv' % (step + 1), 'w', encoding='utf-8') as f:
                 for num, label in enumerate(pred_labels):
                     f.write('%d,%s\n' % (num + 1, self._label_vocab_rev[label]))
             self.nb_epoch_scores.append([p_dev, r_dev, f_dev])
-            print('\nloss=%f, train f=%f, dev f=%f' % (total_loss, f_train, f_dev))
+            print('\tloss=%f, train f=%f, dev f=%f' % (total_loss, f_train, f_dev))
 
     def predict(self, data_sentence, data_pos, batch_size=50):
         """
@@ -200,7 +201,7 @@ class Model(object):
             pred_temp = self.sess.run(self.pred_op, feed_dict=feed_dict)
             pred_labels += list(pred_temp)
         true_labels = data_label[:len(pred_labels)]
-        p, r, f = evaluate(pred_labels, true_labels)
+        p, r, f = simple_evaluate(true_labels, pred_labels)
         return p, r, f
 
     def clear_model(self):

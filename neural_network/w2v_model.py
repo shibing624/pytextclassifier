@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
 # Brief: 
-import pickle
 from gensim.models import Word2Vec
-from gensim.models.word2vec import LineSentence
 from gensim.models.keyedvectors import KeyedVectors
-from neural_network.utils.io_util import read_lines
-from neural_network.utils.data_util import dump_pkl
+from gensim.models.word2vec import LineSentence
+
 import config
+from neural_network.utils.data_util import dump_pkl
+from neural_network.utils.io_util import read_lines
 
 
 def get_sentence(sentence_tag, word_sep=' ', pos_sep='/'):
@@ -46,15 +46,22 @@ def train(train_seg_path, test_seg_path, sentence_path, out_path, out_bin_path="
         print("extract sentence error.")
         return False
     # train model
-    model = Word2Vec(sg=1, sentences=LineSentence(sentence_path),
-                     size=256, window=5, min_count=3, workers=4, iter=40)
-    model.wv.save_word2vec_format(out_bin_path, binary=True)
+    w2v = Word2Vec(sg=1, sentences=LineSentence(sentence_path),
+                   size=256, window=5, min_count=config.min_count,
+                   workers=config.num_workers, iter=40)
+    w2v.wv.save_word2vec_format(out_bin_path, binary=False)
+    print("save %s ok." % out_bin_path)
+    # test
+    sim1 = w2v.wv.most_similar(positive=['基金', '资金'], negative=['服务'])
+    print('基金 vs 资金 similarity word:', sim1)
+    sim2 = w2v.wv.similarity('基金', '资金')
+    print('基金 vs 资金 similarity score:', sim2)
     # save model
-    model = KeyedVectors.load_word2vec_format(out_bin_path, binary=True)
+    model = KeyedVectors.load_word2vec_format(out_bin_path, binary=False)
     word_dict = {}
     for word in model.vocab:
         word_dict[word] = model[word]
-    dump_pkl(word_dict, out_path)
+    dump_pkl(word_dict, out_path, overwrite=True)
     print("save %s ok." % out_path)
 
 

@@ -23,7 +23,7 @@ def build_dict(items, start=0, sort=True,
         # sort by count
         dic = defaultdict(int)
         for item in items:
-            item = item if not lower else item.lower
+            item = item if not lower else item.lower()
             dic[item] += 1
         # sort
         dic = sorted(dic.items(), key=lambda d: d[1], reverse=True)
@@ -88,7 +88,7 @@ def load_pkl(pkl_path):
     return result
 
 
-def dump_pkl(vocab, pkl_path, overwrite=False):
+def dump_pkl(vocab, pkl_path, overwrite=True):
     """
     存储文件
     :param pkl_path:
@@ -98,4 +98,5 @@ def dump_pkl(vocab, pkl_path, overwrite=False):
     if os.path.exists(pkl_path) and not overwrite:
         return
     with open(pkl_path, 'wb') as f:
-        pickle.dump(vocab, f, protocol=pickle.HIGHEST_PROTOCOL)
+        # pickle.dump(vocab, f, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(vocab, f, protocol=0)

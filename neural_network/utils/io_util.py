@@ -26,7 +26,7 @@ def get_file_list(path, postfix, file_list):
     temp_list = os.listdir(path)
     for f in temp_list:
         f_d = os.path.join(path, f)
-        if os.path.isdir(f_d):  # directory need recrusion
+        if os.path.isdir(f_d):  # directory need recursion
             get_file_list(f_d, postfix, file_list)
         else:
             if f_d.endswith(postfix):
@@ -44,6 +44,7 @@ def clear_directory(path):
         os.mkdir(path)
     try:
         cmd = 'rm %s/*' % path
+        print(cmd)
         os.popen(cmd)
     except Exception as e:
         print("error: %s" % e)

@@ -12,7 +12,7 @@ from utils.io_util import read_lines
 def read_model_data():
     labels = []
     for i in range(config.kfold):
-        lines = read_lines(config.model_save_dir + '/best_%d' % i)
+        lines = read_lines(config.model_save_dir + '/best_%d.csv' % i)
         temp = []
         for line in lines:
             parts = line.split(',')

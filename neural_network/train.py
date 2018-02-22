@@ -14,6 +14,7 @@ from utils.io_util import clear_directory
 
 
 def train():
+    # generate vocab and load dict
     word_emb, pos_emb = load_emb(config.w2v_train_path, config.p2v_path)
     word_vocab, pos_vocab, label_vocab = load_vocab(config.word_vocab_path,
                                                     config.pos_vocab_path,
@@ -34,8 +35,9 @@ def train():
 
     # clear
     clear_directory(config.model_save_dir)
+    clear_directory(config.model_save_temp_dir)
 
-    # 划分训练、开发、测试集
+    # 划分训练、开发、测试集，十折交叉验证
     kf = KFold(n_splits=config.kfold)
     train_indices, dev_indices = [], []
     for train_index, dev_index in kf.split(labels):
@@ -59,7 +61,7 @@ def train():
         [p_test, r_test, f_test], nb_epoch = model.get_best_score()
         print(p_test, r_test, f_test, nb_epoch)
         # save best result
-        cmd = 'cp %s/epoch_%d.csv %s/best_%d' % \
+        cmd = 'cp %s/epoch_%d.csv %s/best_%d.csv' % \
               (config.model_save_temp_dir, nb_epoch + 1, config.model_save_dir, num)
         print(cmd)
         os.popen(cmd)

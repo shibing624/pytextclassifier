@@ -25,8 +25,11 @@ def get_sentence_arr(word_pos_vocab, word_vocab, pos_vocab, pos_sep='/'):
     word_literal, pos_literal = [], []
     for item in word_pos_vocab:
         r_index = item.rindex(pos_sep)
-        word_literal.append(item[:r_index])
-        pos_literal.append(item[r_index + 1:])
+        w, p = item[:r_index], item[r_index + 1:]
+        if w == '' or p == '':
+            continue
+        word_literal.append(w)
+        pos_literal.append(p)
     # sentence list
     sentence_arr = map_item2id(word_literal, word_vocab, config.max_len, lower=True)
     # pos list
@@ -55,7 +58,7 @@ def load_vocab(word_vocab_path, pos_vocab_path, label_vocab_path):
     return load_pkl(word_vocab_path), load_pkl(pos_vocab_path), load_pkl(label_vocab_path)
 
 
-def init_data(lines, word_vocab, pos_vocab, label_vocab, word_sep=' '):
+def init_data(lines, word_vocab, pos_vocab, label_vocab, word_sep=' ', pos_sep='/'):
     """
     load data
     :param lines:
@@ -63,6 +66,7 @@ def init_data(lines, word_vocab, pos_vocab, label_vocab, word_sep=' '):
     :param pos_vocab:
     :param lable_vocab:
     :param word_sep:
+    :param pos_sep:
     :return:
     """
     data_count = len(lines)
@@ -76,6 +80,8 @@ def init_data(lines, word_vocab, pos_vocab, label_vocab, word_sep=' '):
     for i in range(data_count):
         index = lines[i].index(',')
         label = lines[i][:index]
+        if pos_sep in label:
+            label = label.split(pos_sep)[0]
         sentence = lines[i][index + 1:]
         word_pos_vocab = sentence.split(word_sep)
         sentence_arr, pos_arr, actual_len = get_sentence_arr(word_pos_vocab, word_vocab, pos_vocab)
@@ -113,7 +119,8 @@ def load_test_data(word_vocab, pos_vocab, label_vocab):
     return sentences, pos
 
 
-def generate():
+if __name__ == "__main__":
+    start_time = time.time()
     word_emb, pos_emb = load_emb(config.w2v_train_path, config.p2v_path)
     word_vocab, pos_vocab, label_vocab = load_vocab(config.word_vocab_path,
                                                     config.pos_vocab_path,
@@ -124,9 +131,4 @@ def generate():
     print(labels.shape)
     print(word_emb.shape)
     print(pos_emb.shape)
-
-
-if __name__ == '__main__':
-    start_time = time.time()
-    generate()
     print("spend time %ds." % (time.time() - start_time))
