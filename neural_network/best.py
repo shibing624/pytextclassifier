@@ -23,7 +23,7 @@ def read_model_data():
     return labels
 
 
-def infer():
+def best():
     dataes = read_model_data()
     data_count = len(dataes[0])
     label_type_count = config.nb_labels
@@ -47,5 +47,5 @@ def infer():
 
 if __name__ == '__main__':
     start_time = time.time()
-    infer()
+    best()
     print("spend time %ds." % (time.time() - start_time))

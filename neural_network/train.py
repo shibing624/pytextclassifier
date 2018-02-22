@@ -65,6 +65,8 @@ def train():
               (config.model_save_temp_dir, nb_epoch + 1, config.model_save_dir, num)
         print(cmd)
         os.popen(cmd)
+        # save model
+        model.save('%s/model_%d' % (config.model_save_dir, num))
 
         # clear model
         model.clear_model()

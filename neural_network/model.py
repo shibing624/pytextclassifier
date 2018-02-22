@@ -85,6 +85,7 @@ class Model(object):
         # init model
         init = tf.global_variables_initializer()
         self.sess.run(init)
+        self.saver = tf.train.Saver()
 
     def fit(self, sentence_train, pos_train, label_train,
             sentence_dev=None, pos_dev=None, label_dev=None,
@@ -150,6 +151,9 @@ class Model(object):
                     f.write('%d,%s\n' % (num + 1, self._label_vocab_rev[label]))
             self.nb_epoch_scores.append([p_dev, r_dev, f_dev])
             print('\tloss=%f, train f=%f, dev f=%f' % (total_loss, f_train, f_dev))
+
+    def save(self, model_path):
+        self.saver.save(self.sess, model_path)
 
     def predict(self, data_sentence, data_pos, batch_size=50):
         """

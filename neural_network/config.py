@@ -42,11 +42,11 @@ min_count = 3
 num_workers = 4  # threads
 batch_size = 64
 nb_labels = 11  # num batches labels
-nb_epoch = 10
+nb_epoch = 2
 keep_prob = 0.5
 word_keep_prob = 0.9
 pos_keep_prob = 0.9
-kfold = 4 # 2 or more, default 10
+kfold = 2 # 2 or more, default 10
 
 # directory to save the trained model
 # create a new directory if the dir does not exist
@@ -57,3 +57,6 @@ if not os.path.exists(model_save_dir):
 model_save_temp_dir = "../data/nn/temp_output"
 if not os.path.exists(model_save_temp_dir):
     os.mkdir(model_save_temp_dir)
+
+# infer
+infer_result_path = "../data/nn/output/infer_result.csv"
