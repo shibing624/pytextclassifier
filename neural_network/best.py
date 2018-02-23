@@ -39,7 +39,7 @@ def best():
         label = item.argmax() + 1
         final_labels.append(label)
 
-    with open(config.infer_result_path, 'w', encoding='utf-8') as f:
+    with open(config.best_result_path, 'w', encoding='utf-8') as f:
         for i, label in enumerate(final_labels):
             f.write('%d,%d\n' % (i + 1, label))
     print('result: %s' % f.name)

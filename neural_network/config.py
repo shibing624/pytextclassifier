@@ -13,7 +13,7 @@ import os
 
 # path of training data
 train_path = "../data/nn/train.csv"
-# path of train segment data, train_seg_path will be build from prepare_data.py segment
+# path of train segment data, train_seg_path will be build by segment
 train_seg_path = "../data/nn/train_seg.txt"
 # test_seg_path is part of train_seg_path
 test_seg_path = "../data/nn/test_seg.txt"
@@ -58,5 +58,5 @@ model_save_temp_dir = "../data/nn/temp_output"
 if not os.path.exists(model_save_temp_dir):
     os.mkdir(model_save_temp_dir)
 
-# infer
-infer_result_path = "../data/nn/output/infer_result.csv"
+# best
+best_result_path = "../data/nn/output/best_result.csv"
