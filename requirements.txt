@@ -2,3 +2,5 @@ numpy
 jieba
 pypinyin
 sklearn
+Tensorflow
+gensim
