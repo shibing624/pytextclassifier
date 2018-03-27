@@ -51,7 +51,7 @@ class Bayes:
                 self.d[c] = AddOneProb()
             for word in d[0]:
                 self.d[c].add(word, 1)
-        for i in self.d.keys():
+        for i in set(self.d.keys()):
             self.total += self.d[i].total
 
     def classify(self, x):
