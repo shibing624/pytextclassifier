@@ -1,12 +1,14 @@
-# classifier-in-action
-情感极性分析领域，应用分类算法处理。python开发。
+# text-classifier
+[![License Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/deepmipt/DeepPavlov/blob/master/LICENSE) ![](https://img.shields.io/badge/Language-Python-blue.svg) ![](https://img.shields.io/badge/Python-3.X-red.svg)
+
+中文文本分类器，可以应用于情感极性分析、文本风险分类等领域，支持多种分类算法处理。python开发。
 
 ---
 
 
-**classifier-in-action**是在情感分析领域中应用分类算法处理的python开源工具包，目标是提高情感极性分析的准确率，以达到在生成环境中使用。**classifier-in-action**具备算法清晰、性能高效、语料可自定义的特点。
+**text-classifier**是在情感分析领域中应用分类算法处理的python开源工具包，目标是提高情感极性分析的准确率，以达到在生成环境中使用。**classifier-in-action**具备算法清晰、性能高效、语料可自定义的特点。
 
-**classifier-in-action**提供下列功能：
+**text-classifier**提供下列功能：
 > * 分类器
   * 朴素贝叶斯(NB)
   * K最近邻(KNN)
@@ -25,14 +27,14 @@
 
 
 
-在提供丰富功能的同时，**classifier-in-action**内部模块坚持低耦合、模型坚持惰性加载、词典明文发布，使用方便。
+在提供丰富功能的同时，**text-classifier**内部模块坚持低耦合、模型坚持惰性加载、词典明文发布，使用方便。
 
 ------
 
 ## 调用方法
 
 
-所有Demo都位于[demo](https://github.com/shibing624/classifier-in-action/demo)下，比文档覆盖了更多细节，强烈建议运行一遍。
+所有Demo都位于[demo](https://github.com/shibing624/text-classifier/demo)下，比文档覆盖了更多细节，强烈建议运行一遍。
 
 #### 如何使用
 
