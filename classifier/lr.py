@@ -4,10 +4,12 @@
 import os
 from codecs import open
 
-from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.model_selection import train_test_split
 
-from util import load_pkl, dump_pkl
+from util import dump_pkl
+from util import load_pkl
 
 
 def data_reader(path):
@@ -16,8 +18,8 @@ def data_reader(path):
         for line in fp:
             parts = line.strip().split('\t')
             if parts and len(parts) > 1:
-                content_list.append(parts[0].strip())
-                label_list.append(parts[1].strip())
+                content_list.append(parts[1].strip())
+                label_list.append(parts[0].strip())
     return content_list, label_list
 
 
@@ -61,7 +63,7 @@ def gbdt(data_set, data_label):
     return model
 
 
-def eval(model, test_data, test_label, thresholds=0.5):
+def eval(model, test_data, test_label, thresholds=0.5, pr_figure_path=None):
     from sklearn.metrics import classification_report
     from sklearn.metrics import precision_recall_curve
     print('{0}, val mean acc:{1}'.format(model.__str__(), model.score(test_data, test_label)))
@@ -75,10 +77,10 @@ def eval(model, test_data, test_label, thresholds=0.5):
     label_pred = label_pred_prob > thresholds
     print(classification_report(test_label, label_pred, target_names=['approve', 'disapprove']))
     precision, recall, threshold = precision_recall_curve(test_label, label_pred_prob)
-    # plot_pr(thresholds, precision, recall, 'disapprove')
+    plot_pr(thresholds, precision, recall, label='disapprove', figure_path=pr_figure_path)
 
 
-def plot_pr(auc_score, precision, recall, label=None):
+def plot_pr(auc_score, precision, recall, label=None, figure_path=None):
     """绘制R/P曲线"""
     from matplotlib import pylab
     pylab.figure(num=None, figsize=(6, 5))
@@ -90,29 +92,26 @@ def plot_pr(auc_score, precision, recall, label=None):
     pylab.fill_between(recall, precision, alpha=0.5)
     pylab.grid(True, linestyle='-', color='0.75')
     pylab.plot(recall, precision, lw=1)
-    pylab.savefig('../data/risk/R_P.png')
+    pylab.savefig(figure_path)
 
 
 if __name__ == '__main__':
     # data
-    train_data_path = "../data/risk/train_seg.txt"  # 输入的文件
-    test_data_path = "../data/risk/test_seg.txt"  # 输入的文件
+    data_path = "../data/risk/data_seg.txt"  # 输入的文件
     space_path = "../data/risk/tfidf.dat"  # 输出的文件
-    train_set, train_label = data_reader(train_data_path)
-    test_set, test_label = data_reader(test_data_path)
+    pr_figure_path = "../data/risk/R_P.png"  # 保存P_R曲线图
 
+    data_content, data_lbl = data_reader(data_path)
     # data feature
-    data_tfidf = tfidf(train_set + test_set, space_path)
-    train_feature = data_tfidf[:len(train_label)]
-    test_feature = data_tfidf[len(train_label):]
+    data_tfidf = tfidf(data_content, space_path)
     # label
-    data_label = label_encoder(train_label + test_label)
-    train_label_encode = data_label[:len(train_label)]
-    test_label_encode = data_label[len(train_label):]
+    data_label = label_encoder(data_lbl)
+    X_train, X_test, y_train, y_test = train_test_split(
+        data_tfidf, data_label, test_size=0.01, random_state=42)
 
     # fit and eval
-    model = lr(train_feature, train_label_encode)
-    eval(model, test_feature, test_label_encode, 0.5)  # 快，准确率一般。val mean acc:0.912
+    model = lr(X_train, y_train)
+    eval(model, X_test, y_test, 0.65, pr_figure_path)  # 快，准确率一般。val mean acc:0.912
 
     # # fit and eval
     # model = randomForest(train_feature, train_label_encode)
