@@ -5,7 +5,9 @@ from math import log
 
 import jieba
 import xgboost as xgb
-N=4000
+
+N = 4000
+
 
 # 读取停词表
 def stop_words():
@@ -73,8 +75,7 @@ def process_file(train_path, test_path):
                 else:
                     tf[i][word] = 1
             i += 1
-        print
-        "处理完数据"
+        print("处理完数据")
 
     tf2 = []
     j = 0
@@ -165,21 +166,18 @@ def document_features(word_features, TF, data, num):
 
 A, tf, tf2, train_set, test_set, count, train_label = process_file('data/AI100/training.csv', 'data/AI100/testing.csv')
 B = calculate_B_from_A(A)
-print
-"开始选择特征词"
+print("开始选择特征词")
 word_features = feature_select_use_new_CHI(A, B, count)
-# print word_features
-# print len(word_features)
-# for word in word_features:
-#     print word
+print(word_features)
+print(len(word_features))
+for word in word_features:
+    print(word)
 
-print
-"开始计算文档的特征向量"
+print("开始计算文档的特征向量")
 documents_feature = [document_features(word_features, tf, data[0], i)
                      for i, data in enumerate(train_set)]
 
-print
-"测试集"
+print("测试集")
 test_documents_feature = [document_features(word_features, tf2, data[0], i)
                           for i, data in enumerate(test_set)]
 #
