@@ -6,7 +6,7 @@
 ---
 
 
-**text-classifier**是在情感分析领域中应用分类算法处理的python开源工具包，目标是提高情感极性分析的准确率，以达到在生成环境中使用。**classifier-in-action**具备算法清晰、性能高效、语料可自定义的特点。
+**text-classifier**是在情感分析领域中应用分类算法处理的python开源工具包，目标是提高情感极性分析的准确率，以达到在生成环境中使用。**text-classifier**具备算法清晰、性能高效、语料可自定义的特点。
 
 **text-classifier**提供下列功能：
 > * 分类器
@@ -34,7 +34,7 @@
 ## 调用方法
 
 
-所有Demo都位于[demo](https://github.com/shibing624/text-classifier/demo)下，比文档覆盖了更多细节，强烈建议运行一遍。
+所有Demo都位于[demo](https://github.com/shibing624/text-classifier/blob/master/demo.py)下，比文档覆盖了更多细节，强烈建议运行一遍。
 
 #### 如何使用
 
@@ -55,11 +55,11 @@
    - 多行业熟语料数据
 
 #### 算法
-  - [ ] K-Nearest Neighbours
-  - [ ] Naive bayes
-  - [ ] Maximum Entropy
-  - [ ] Support Vector Machine
-  - [ ] Dict
+  - [done] K-Nearest Neighbours
+  - [done] Naive bayes
+  - [done] Maximum Entropy
+  - [done] Support Vector Machine
+  - [done] Dict
 
 #### 性能评估
   - 效果比较
