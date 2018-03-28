@@ -3,34 +3,18 @@
 # Brief: 
 from math import log
 
-import jieba
 import xgboost as xgb
 
 N = 4000
 
 
-# 读取停词表
-def stop_words():
-    stop_words_file = open('stop_words_ch.txt', 'r')
-    stopwords_list = []
-    for line in stop_words_file.readlines():
-        stopwords_list.append(line.decode('gbk')[:-1])
-    return stopwords_list
-
-
-def jieba_fenci(raw, stopwords_list):
-    # 使用结巴分词把文件进行切分
-    word_list = list(jieba.cut(raw, cut_all=False))
-    for word in word_list:
-        if word in stopwords_list:
-            word_list.remove(word)
-    # word_set用于统计A[nClass]
-    word_list.remove('\r\n')
+def get_word_set(segment_text):
+    word_list = segment_text.split()
     word_set = set(word_list)
     return word_list, word_set
 
 
-def process_file(train_path, test_path):
+def process_file(train_path):
     '''
     本函数用于处理样本集中的所有文件。并返回处理结果所得到的变量
     :param floder_path: 样本集路径
@@ -41,60 +25,43 @@ def process_file(train_path, test_path):
             data_content:训练样本集。与测试样本集按7:3比例分开。三元组（文档的单词表，类别，文件编号）
             test_set:测试样本集。三元组（文档的单词表，类别，文件编号）
     '''
-    stopwords_list = stop_words()
     # 用于记录CHI公示中的A值
     A = {}
     tf = []
     i = 0
     # 存储训练集/测试集
-    count = [0] * 11
+    count = [0] * 2
     train_set = []
     train_label = []
-    test_set = []
-    with open(train_path, 'r') as f:
+    import os
+    if not os.path.exists(train_path):
+        print('file not exists.')
+        return
+    with open(train_path, 'r', encoding='utf-8') as f:
         for line in f:
             tf.append({})
-            label = int(line.split(',')[0]) - 1
+            parts = line.strip().split('\t')
+            label = 0 if parts[0].strip() == 'disapprove' else 1
             if label not in A:
                 A[label] = {}
             count[label] += 1
-            content = ""
-            for aa in line.split(',')[1:]:
-                content += aa
-            word_list, word_set = jieba_fenci(content, stopwords_list)
+            content = parts[1].strip()
+            word_list, word_set = get_word_set(content)
             train_set.append((word_list, label))
             train_label.append(label)
             for word in word_set:
-                if A[label].has_key(word):
+                if word in A[label]:
                     A[label][word] += 1
                 else:
                     A[label][word] = 1
             for word in word_list:
-                if tf[i].has_key(word):
+                if word in tf[i]:
                     tf[i][word] += 1
                 else:
                     tf[i][word] = 1
             i += 1
         print("处理完数据")
-
-    tf2 = []
-    j = 0
-    with open(test_path, 'r') as g:
-        for line in g:
-            tf2.append({})
-            label = int(line.split(',')[0]) - 1
-            content = ""
-            for aa in line.split(',')[1:]:
-                content += aa
-            word_list, word_set = jieba_fenci(content, stopwords_list)
-            test_set.append((word_list, label))
-            for word in word_list:
-                if tf2[j].has_key(word):
-                    tf2[j][word] += 1
-                else:
-                    tf2[j][word] = 1
-            j += 1
-    return A, tf, tf2, train_set, test_set, count, train_label
+    return A, tf, train_set, count, train_label
 
 
 def calculate_B_from_A(A):
@@ -108,7 +75,7 @@ def calculate_B_from_A(A):
         for word in A[key]:
             B[key][word] = 0
             for kk in A:
-                if kk != key and A[kk].has_key(word):
+                if kk != key and word in A[kk]:
                     B[key][word] += A[kk][word]
     return B
 
@@ -123,17 +90,17 @@ def feature_select_use_new_CHI(A, B, count):
     '''
     word_dict = []
     word_features = []
-    for i in range(0, 11):
+    for i in range(0, 2):
         CHI = {}
 
         M = N - count[i]
         for word in A[i]:
             # print word, A[i][word], B[i][word]
-            temp = (A[i][word] * (M - B[i][word]) - (count[i] - A[i][word]) * B[i][word]) ^ 2 / (
+            temp = (A[i][word] * (M - B[i][word]) - (count[i] - A[i][word]) * B[i][word]) ** 2 / ( \
                 (A[i][word] + B[i][word]) * (N - A[i][word] - B[i][word]))
             CHI[word] = log(N / (A[i][word] + B[i][word])) * temp
         # 每一类新闻中只选出150个CHI最大的单词作为特征
-        a = sorted(CHI.iteritems(), key=lambda t: t[1], reverse=True)[:300]
+        a = sorted(CHI.items(), key=lambda t: t[1], reverse=True)[:300]
         b = []
         for aa in a:
             b.append(aa[0])
@@ -164,7 +131,7 @@ def document_features(word_features, TF, data, num):
     return features
 
 
-A, tf, tf2, train_set, test_set, count, train_label = process_file('data/AI100/training.csv', 'data/AI100/testing.csv')
+A, tf, train_set, count, train_label = process_file('../data/risk/data_seg.txt')
 B = calculate_B_from_A(A)
 print("开始选择特征词")
 word_features = feature_select_use_new_CHI(A, B, count)
@@ -177,24 +144,20 @@ print("开始计算文档的特征向量")
 documents_feature = [document_features(word_features, tf, data[0], i)
                      for i, data in enumerate(train_set)]
 
-print("测试集")
-test_documents_feature = [document_features(word_features, tf2, data[0], i)
-                          for i, data in enumerate(test_set)]
-#
 # json.dump(documents_feature, open('tmp/documents_feature.txt', 'w'))
 # json.dump(test_documents_feature, open('tmp/test_documents_feature.txt', 'w'))
 #
 dtrain = xgb.DMatrix(documents_feature, label=train_label)
-dtest = xgb.DMatrix(test_documents_feature)  # label可以不要，此处需要是为了测试效果
+# dtest = xgb.DMatrix(test_documents_feature)  # label可以不要，此处需要是为了测试效果
 param = {'max_depth': 6, 'eta': 0.5, 'eval_metric': 'merror', 'silent': 1, 'objective': 'multi:softmax',
          'num_class': 11}  # 参数
 evallist = [(dtrain, 'train')]  # 这步可以不要，用于测试效果
-num_round = 500  # 循环次数
+num_round = 100  # 循环次数
 bst = xgb.train(param, dtrain, num_round, evallist)
-preds = bst.predict(dtest)
-with open('XGBOOST_CHI_OUTPUT.csv', 'w') as f:
-    for i, pre in enumerate(preds):
-        f.write(str(i + 1))
-        f.write(',')
-        f.write(str(int(pre) + 1))
-        f.write('\n')
+# preds = bst.predict(dtest)
+# with open('XGBOOST_CHI_OUTPUT.csv', 'w') as f:
+#     for i, pre in enumerate(preds):
+#         f.write(str(i + 1))
+#         f.write(',')
+#         f.write(str(int(pre) + 1))
+#         f.write('\n')

@@ -98,21 +98,24 @@ def plot_pr(auc_score, precision, recall, label=None, figure_path=None):
 if __name__ == '__main__':
     # data
     data_path = "../data/risk/data_seg.txt"  # 输入的文件
+    test_path = "../data/risk/test_seg.txt"  # 输入的文件
     space_path = "../data/risk/tfidf.dat"  # 输出的文件
     pr_figure_path = "../data/risk/R_P.png"  # 保存P_R曲线图
 
     data_content, data_lbl = data_reader(data_path)
+    test_content, test_lbl = data_reader(test_path)
     # data feature
-    data_tfidf = tfidf(data_content, space_path)
+    data_tfidf = tfidf(data_content + test_content, space_path)
     # label
-    data_label = label_encoder(data_lbl)
-    X_train, X_test, y_train, y_test = train_test_split(
-        data_tfidf, data_label, test_size=0.01, random_state=42)
-
+    data_label = label_encoder(data_lbl + test_lbl)
+    X_train, X_val, y_train, y_val = train_test_split(
+        data_tfidf, data_label, test_size=0.1, random_state=42)
+    X_test, y_test = data_tfidf[-len(test_lbl):], data_label[-len(test_lbl):]
     # fit and eval
     model = lr(X_train, y_train)
-    eval(model, X_test, y_test, 0.65, pr_figure_path)  # 快，准确率一般。val mean acc:0.912
+    # eval(model, X_val, y_val, 0.65, pr_figure_path)  # 快，准确率一般。val mean acc:0.912
 
+    eval(model, X_test, y_test, 0.95, pr_figure_path)
     # # fit and eval
     # model = randomForest(train_feature, train_label_encode)
     # eval(model, test_feature, test_label_encode)  # 耗时，准确率高， val mean acc:0.962
