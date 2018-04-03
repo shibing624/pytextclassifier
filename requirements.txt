@@ -1,6 +1,4 @@
 numpy
 jieba
-pypinyin
-sklearn
-Tensorflow
+tensorflow>=1.2.1
 gensim

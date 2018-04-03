@@ -38,14 +38,7 @@
 
 #### 如何使用
 
-  - Demo
 
-
-	```
-	from classifier.dict import DictClassifier
-    result = DictClassifier().analyse_sentence("土豆丝我觉得很好吃",print_show=True)
-    print(result)
-	```
 
 
 #### 特性
@@ -59,38 +52,10 @@
   - [done] Naive bayes
   - [done] Maximum Entropy
   - [done] Support Vector Machine
-  - [done] Dict
+  - [done] Neural Network
 
 
-#### 性能评估
-  - 效果比较
-	
-	```
-	词典(Dict):
-        准确率：准确率较高（80%以上），随着人工工作量的增加，准确率增加
-        优点：易于理解
-        缺点：人工工作量大
-    
-    kNN:
-        准确率：很低（60% - 70%）
-        优点：思想简单、算法简单
-        缺点：准确率低；耗内存；耗时间
-    
-    Bayes:
-        准确率：还可以（70% - 80%）
-        优点：简单，高效，运算速度快，扩展性好
-        缺点：准确率不高，达不到实用
-    
-    最大熵:
-        准确率：比较高（83%以上）
-        优点：准确率高
-        缺点：训练时间久
-    
-    SVM:
-        准确率：最高（85%以上）
-        优点：准确率高
-        缺点：训练耗时
-	```
+
 
 ## 鸣谢
   - SentimentPolarityAnalysis 项目 
