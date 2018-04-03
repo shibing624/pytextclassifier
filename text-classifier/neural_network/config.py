@@ -7,7 +7,7 @@ import os
 train_path = "../data/train_data/train.txt"
 test_path = "../data/test_data/test.txt"
 
-# --- preprocess ---
+# --- segment ---
 result_root = '../data/nn'
 if not os.path.exists(result_root):
     os.makedirs(result_root)
@@ -15,6 +15,8 @@ if not os.path.exists(result_root):
 train_seg_path = result_root + "/train_seg.txt"
 # test_seg_path is part of train_seg_path
 test_seg_path = result_root + "/test_seg.txt"
+
+# --- train_w2v_model ---
 # path of train sentence, if this file does not exist,
 # it will be built from train_seg_path data by train_w2v_model.py train
 sentence_path = result_root + "/sentence.txt"
@@ -25,7 +27,7 @@ sentence_w2v_path = result_root + "/sentence_w2v.pkl"
 # separate labels and text
 col_sep = ','
 
-# --- vocab ---
+# --- train ---
 word_vocab_path = result_root + "/word_vocab.pkl"
 pos_vocab_path = result_root + "/pos_vocab.pkl"
 label_vocab_path = result_root + "/label_vocab.pkl"
@@ -38,13 +40,12 @@ p2v_path = result_root + "/p2v.pkl"  # pos vector path
 w2v_dim = 256
 pos_dim = 64
 
-# train param
+# param
 max_len = 300  # max len words of sentence
-min_count = 0  # word will not be added to dictionary if it's frequency is less than min_count
+min_count = 5  # word will not be added to dictionary if it's frequency is less than min_count
 num_workers = 4  # threads
-batch_size = 64
-nb_labels = 11  # num batches labels
-nb_epoch = 10
+batch_size = 128
+nb_epoch = 2
 keep_prob = 0.5
 word_keep_prob = 0.9
 pos_keep_prob = 0.9

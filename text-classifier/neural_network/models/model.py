@@ -57,7 +57,7 @@ class Model(object):
         # dense layer
         dense_input_drop = tf.nn.dropout(conv_layer.output, self.keep_prob_ph)
         self.dense_layer = SoftmaxDense(input_data=dense_input_drop, input_dim=conv_layer.output_dim,
-                                        output_dim=config.nb_labels, name='output_layer')
+                                        output_dim=len(set(label_vocab.keys())), name='output_layer')
 
         self.loss = self.dense_layer.loss(self.label_ph) + \
                     0.001 * tf.nn.l2_loss(self.dense_layer.weights)
