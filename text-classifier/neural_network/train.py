@@ -40,11 +40,11 @@ def train():
 
     # Division of training, development, and test set
     word_train, word_dev, pos_train, pos_dev, label_train, label_dev = train_test_split(
-        words, pos, labels, test_size=0.1, random_state=42)
+        words, pos, labels, test_size=0.2, random_state=42)
 
-    # init models
+    # init model
     model = Model(config.max_len, word_emb, pos_emb, label_vocab=label_vocab)
-    # fit models
+    # fit model
     model.fit(word_train, pos_train, label_train,
               word_dev, pos_dev, label_dev,
               word_test, pos_test, labels_test,
@@ -52,10 +52,10 @@ def train():
               config.word_keep_prob, config.pos_keep_prob)
     [p_test, r_test, f_test], nb_epoch = model.get_best_score()
     print('P@test:%f, R@test:%f, F@test:%f, num_best_epoch:%d' % (p_test, r_test, f_test, nb_epoch + 1))
-    # save models
+    # save model
     model.save('%s/cnn_classification_model' % config.model_save_dir)
 
-    # clear models
+    # clear model
     model.clear_model()
 
 
