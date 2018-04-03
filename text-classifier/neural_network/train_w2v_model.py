@@ -45,6 +45,7 @@ def save_sentence(lines, sentence_path):
     with open(sentence_path, 'w', encoding='utf-8') as f:
         for line in lines:
             f.write('%s\n' % line.strip())
+    print('save sentence:%s' % sentence_path)
 
 
 def train(train_seg_path, test_seg_path, out_path, sentence_path=None, w2v_bin_path="w2v.bin"):
