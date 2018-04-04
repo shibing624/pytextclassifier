@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
 # Brief: 
-
+import os
 import time
 
 from sklearn.model_selection import train_test_split
@@ -32,7 +32,7 @@ def train():
 
     # 3.data reader
     words, pos, labels = train_reader(config.train_seg_path, word_vocab, pos_vocab, label_vocab)
-    word_test, pos_test = test_reader(config.test_seg_path,word_vocab, pos_vocab, label_vocab)
+    word_test, pos_test = test_reader(config.test_seg_path, word_vocab, pos_vocab, label_vocab)
     labels_test = None
 
     # clear
@@ -52,8 +52,15 @@ def train():
               config.word_keep_prob, config.pos_keep_prob)
     [p_test, r_test, f_test], nb_epoch = model.get_best_score()
     print('P@test:%f, R@test:%f, F@test:%f, num_best_epoch:%d' % (p_test, r_test, f_test, nb_epoch + 1))
-    # save model
-    model.save('%s/cnn_classification_model' % config.model_save_dir)
+    # save best pred label
+    cmd = 'cp %s/epoch_%d.csv %s/best.csv' % (config.model_save_temp_dir, nb_epoch + 1, config.model_save_dir)
+    print(cmd)
+    os.popen(cmd)
+    # save best model
+    cmd = 'cp %s/model_%d.* %s/' % (config.model_save_temp_dir, nb_epoch + 1, config.model_save_dir)
+    print(cmd)
+    os.popen(cmd)
+    # model.save('%s/cnn_classification_model' % config.model_save_dir)
 
     # clear model
     model.clear_model()

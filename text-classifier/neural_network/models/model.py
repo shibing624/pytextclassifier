@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
 # Brief: Document classification model
-
+import datetime
 import numpy as np
 import tensorflow as tf
 
@@ -82,8 +82,7 @@ class Model(object):
         self.sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
         # init model
-        init = tf.global_variables_initializer()
-        self.sess.run(init)
+        self.sess.run(tf.global_variables_initializer())
         self.saver = tf.train.Saver()
 
     def fit(self, sentence_train, pos_train, label_train,
@@ -96,8 +95,8 @@ class Model(object):
         """
         self.nb_epoch_scores = []  # save nb_epoch F1 score
         nb_train = int(label_train.shape[0] / batch_size) + 1
-        for step in range(nb_epoch):
-            print('Epoch %d / %d:' % (step + 1, nb_epoch))
+        for epoch in range(nb_epoch):
+            print('Epoch %d / %d:' % (epoch + 1, nb_epoch))
             # shuffle
             np.random.seed(seed)
             np.random.shuffle(sentence_train)
@@ -121,19 +120,25 @@ class Model(object):
                     self.pos_keep_prob_ph: pos_keep_prob,
                 }
                 _, loss_value = self.sess.run([self.train_op, self.loss], feed_dict=feed_dict)
+                time_str = datetime.datetime.now().isoformat()
+                print("%s  step: %d / %d, loss: %f" % (time_str, i + 1, nb_train, loss_value))
                 total_loss += loss_value
             total_loss /= float(nb_train)
 
             # evaluation
             p_train, r_train, f_train = self.eval(sentence_train, pos_train, label_train)
             p_dev, r_dev, f_dev = self.eval(sentence_dev, pos_dev, label_dev)
-            print("p_train:%f, p_dev:%f" % (p_train, p_dev))
+            print("P@train:%f, P@dev:%f" % (p_train, p_dev))
+            self.nb_epoch_scores.append([p_dev, r_dev, f_dev])
+            print('\tloss=%f, F@train:%f, F@dev:%f' % (total_loss, f_train, f_dev))
+
             pred_labels = self.predict(sentence_test, pos_test)
-            with open(config.model_save_dir + '/epoch_%d.csv' % (step + 1), 'w', encoding='utf-8') as f:
+            # save pred labels
+            with open(config.model_save_temp_dir + '/epoch_%d.csv' % (epoch + 1), 'w', encoding='utf-8') as f:
                 for num, label in enumerate(pred_labels):
                     f.write('%d,%s\n' % (num + 1, self._label_vocab_rev[label]))
-            self.nb_epoch_scores.append([p_dev, r_dev, f_dev])
-            print('\tloss=%f, train f=%f, dev f=%f' % (total_loss, f_train, f_dev))
+            # save model
+            self.save('%s/model_%d' % (config.model_save_temp_dir, epoch + 1))
 
     def save(self, model_path):
         self.saver.save(self.sess, model_path)
@@ -158,8 +163,8 @@ class Model(object):
                 self.word_keep_prob_ph: 1.0,
                 self.pos_keep_prob_ph: 1.0,
             }
-            pred_temp = self.sess.run(self.pred_op, feed_dict=feed_dict)
-            pred_labels += list(pred_temp)
+            pred_value = self.sess.run(self.pred_op, feed_dict=feed_dict)
+            pred_labels += list(pred_value)
         return pred_labels
 
     def eval(self, data_sentence, data_pos, data_label, batch_size=64):

@@ -43,9 +43,8 @@ pos_dim = 64
 # param
 max_len = 300  # max len words of sentence
 min_count = 5  # word will not be added to dictionary if it's frequency is less than min_count
-num_workers = 4  # threads
 batch_size = 128
-nb_epoch = 2
+nb_epoch = 10
 keep_prob = 0.5
 word_keep_prob = 0.9
 pos_keep_prob = 0.9
@@ -53,7 +52,11 @@ pos_keep_prob = 0.9
 # directory to save the trained model
 # create a new directory if the dir does not exist
 model_save_dir = "../data/nn/output_model"
+model_save_temp_dir = "../data/nn/temp_output_model"
+
 if not os.path.exists(model_save_dir):
     os.makedirs(model_save_dir)
+if not os.path.exists(model_save_temp_dir):
+    os.mkdir(model_save_temp_dir)
 
 best_result_path = model_save_dir + "/best_result.csv"
