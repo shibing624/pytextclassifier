@@ -7,9 +7,9 @@ Text classifier. It can be applied to the fields of sentiment polarity analysis,
 -----
 
 
-**text-classifier**s a python Open Source Toolkit for Chinese text categorization. The goal is to implement text categorization algorithm, so as to achieve the use in the generative environment.**text-classifier**has the characteristics of clear algorithm, high performance and customizable corpus.
+**text-classifier** s a python Open Source Toolkit for Chinese text categorization. The goal is to implement text categorization algorithm, so as to achieve the use in the generative environment. **text-classifier** has the characteristics of clear algorithm, high performance and customizable corpus.
 
-**text-classifier**provides the following functions：
+**text-classifier** provides the following functions：
 > * Classifier
   * LogisticRegression
   * MultinomialNB
@@ -26,12 +26,13 @@ Text classifier. It can be applied to the fields of sentiment polarity analysis,
 > * Test
   * Chi-square test
 
-While providing rich functions, **text-classifier**internal modules adhere to low coupling, model adherence to inert loading, dictionary publication, and easy to use.
+While providing rich functions, **text-classifier** internal modules adhere to low coupling, model adherence to inert loading, dictionary publication, and easy to use.
 
 ------
 
 ## Usage
-* classic text classifier:
+* classic text classifier
+
 run [train.py](https://github.com/shibing624/text-classifier/blob/master/text-classifier/classic/train.py): 
 ```
 cd classic
@@ -39,13 +40,15 @@ python train.py
 ```
 
 
-* neural network text classifier:
+* neural network text classifier
+
 run [train.py](https://github.com/shibing624/text-classifier/blob/master/text-classifier/neural_network/train.py): 
 ```
 cd neural_network
 python segment.py
 python train_w2v_model.py
 python train.py
+python infer.py
 ```
     
 
