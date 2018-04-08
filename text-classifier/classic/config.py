@@ -13,7 +13,7 @@ pred_save_path = "../data/classic/pred.txt"
 
 
 # one of "logistic_regression or random_forest or gbdt or bayes or decision_tree or svm or knn"
-model_type = "bayes"
+model_type = "logistic_regression"
 model_save_dir = "../data/classic"
 
 if not os.path.exists(model_save_dir):

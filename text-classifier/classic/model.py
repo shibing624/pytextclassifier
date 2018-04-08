@@ -7,7 +7,7 @@ from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import MultinomialNB
 from xgboost import XGBClassifier
 
 
@@ -23,7 +23,7 @@ def get_model(model_type):
     elif model_type == "knn":
         model = KNeighborsClassifier
     elif model_type == "bayes":
-        model = GaussianNB
+        model = MultinomialNB
     elif model_type == "xgboost":
         model = XGBClassifier # 快，准确率高。
     elif model_type == "svm":

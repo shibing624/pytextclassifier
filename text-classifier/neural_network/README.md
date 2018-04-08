@@ -19,10 +19,10 @@ CNN model for Text classification with tensorflow.
    - TextCNN
 
 ### Algorithm
-  - [done] Neural Network（Got a first in [A100 competition](http://competition.ai100.com.cn/html/game_det.html?id=24&tab=1)）
+  - [done] Neural Network（Got a first in [AI100 competition](http://www.sohu.com/a/145430472_697750)）
 
 ### Model
-[](model.png)
+![](model.png)
 
 ## Thanks
   - [DocumentClassification](https://github.com/liu-nlper/DocumentClassification)
