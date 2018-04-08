@@ -31,9 +31,23 @@ While providing rich functions, **text-classifier**internal modules adhere to lo
 ------
 
 ## Usage
+* classic text classifier:
+run [train.py](https://github.com/shibing624/text-classifier/blob/master/text-classifier/classic/train.py): 
+```
+cd classic
+python train.py
+```
 
-所有Demo都位于[demo](https://github.com/shibing624/text-classifier/blob/master/demo.py)下，比文档覆盖了更多细节，强烈建议运行一遍。
 
+* neural network text classifier:
+run [train.py](https://github.com/shibing624/text-classifier/blob/master/text-classifier/neural_network/train.py): 
+```
+cd neural_network
+python segment.py
+python train_w2v_model.py
+python train.py
+```
+    
 
 ## Algorithm
   - [done] LogisticRegression
