@@ -8,13 +8,13 @@ from sklearn.model_selection import train_test_split
 
 import config
 from models.model import Model
-from reader import build_pos_embedding
-from reader import build_vocab
-from reader import build_word_embedding
-from reader import load_emb
-from reader import load_vocab
-from reader import test_reader
-from reader import train_reader
+from neural_network.reader import build_pos_embedding
+from neural_network.reader import build_vocab
+from neural_network.reader import build_word_embedding
+from neural_network.reader import load_emb
+from neural_network.reader import load_vocab
+from neural_network.reader import test_reader
+from neural_network.reader import train_reader
 from utils.io_utils import clear_directory
 
 

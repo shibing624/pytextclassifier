@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow as tf
 
 import config
-from evaluate import simple_evaluate
+from neural_network.evaluate import simple_evaluate
 from layers.cnn_layer import CNN
 from layers.dense_layer import SoftmaxDense
 from layers.emb_layer import Embedding

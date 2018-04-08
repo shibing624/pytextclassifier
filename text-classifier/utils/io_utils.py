@@ -3,16 +3,7 @@
 # Brief:
 
 import os
-
-
-def read_lines(path):
-    lines = []
-    with open(path, mode='r', encoding='utf-8') as f:
-        for line in f:
-            line = line.rstrip()
-            if line:
-                lines.append(line)
-    return lines
+import pickle
 
 
 def get_file_list(path, postfix, file_list):
@@ -50,3 +41,29 @@ def clear_directory(path):
         print("error: %s" % e)
         return False
     return True
+
+
+def load_pkl(pkl_path):
+    """
+    加载词典文件
+    :param pkl_path:
+    :return:
+    """
+    with open(pkl_path, 'rb') as f:
+        result = pickle.load(f)
+    return result
+
+
+def dump_pkl(vocab, pkl_path, overwrite=False):
+    """
+    存储文件
+    :param pkl_path:
+    :param overwrite:
+    :return:
+    """
+    if os.path.exists(pkl_path) and not overwrite:
+        return
+    with open(pkl_path, 'wb') as f:
+        # pickle.dump(vocab, f, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(vocab, f, protocol=0)
+        print("save %s ok." % pkl_path)

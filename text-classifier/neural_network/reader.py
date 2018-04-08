@@ -8,10 +8,10 @@ import numpy as np
 
 import config
 from utils.data_utils import build_dict
-from utils.data_utils import dump_pkl
-from utils.data_utils import load_pkl
+from utils.io_utils import dump_pkl
+from utils.io_utils import load_pkl
 from utils.data_utils import map_item2id
-from utils.io_utils import read_lines
+from utils.data_utils import read_lines
 
 
 def _load_data(path, col_sep=',', word_sep=' ', pos_sep='/'):

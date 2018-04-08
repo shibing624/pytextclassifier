@@ -6,7 +6,7 @@
 ---
 
 
-**text-classifier**是在情感分析领域中应用分类算法处理的python开源工具包，目标是提高情感极性分析的准确率，以达到在生成环境中使用。**text-classifier**具备算法清晰、性能高效、语料可自定义的特点。
+**text-classifier**是中文文本分类的python开源工具包，目标是践行文本分类算法，以达到在生成环境中使用。**text-classifier**具备算法清晰、性能高效、语料可自定义的特点。
 
 **text-classifier**提供下列功能：
 > * 分类器

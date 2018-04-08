@@ -6,9 +6,9 @@ import time
 
 import config
 from models.model import Model
-from reader import load_emb
-from reader import load_vocab
-from reader import test_reader
+from neural_network.reader import load_emb
+from neural_network.reader import load_vocab
+from neural_network.reader import test_reader
 from utils.tensor_utils import get_ckpt_path
 
 

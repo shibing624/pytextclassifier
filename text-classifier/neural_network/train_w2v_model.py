@@ -6,8 +6,8 @@ from gensim.models.keyedvectors import KeyedVectors
 from gensim.models.word2vec import LineSentence
 
 import config
-from utils.data_utils import dump_pkl
-from utils.io_utils import read_lines
+from utils.io_utils import dump_pkl
+from utils.data_utils import read_lines
 
 
 def get_sentence(sentence_tag, word_sep=' ', pos_sep='/'):
