@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
 # Brief: 
-import config
 from sklearn.model_selection import train_test_split
 
+import config
 from evaluate import eval
 from feature import label_encoder
 from feature import tfidf
-from reader import data_reader
 from model import get_model
+from reader import data_reader
 
 
 def train(model_type, data_path=None, feature_space_path=None, pr_figure_path=None, pred_save_path=None):

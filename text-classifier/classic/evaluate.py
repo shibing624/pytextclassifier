@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
 # Brief:
+from matplotlib import pylab
 from sklearn.metrics import classification_report
 from sklearn.metrics import precision_recall_curve
-from matplotlib import pylab
 
 
 def eval(model, test_data, test_label, thresholds=0.5, pr_figure_path=None, pred_save_path=None):
