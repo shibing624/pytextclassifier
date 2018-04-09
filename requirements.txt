@@ -3,3 +3,4 @@ jieba
 tensorflow>=1.2.1
 gensim
 scikit-learn
+matplotlib
