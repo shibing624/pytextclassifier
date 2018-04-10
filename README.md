@@ -37,6 +37,7 @@ run [train.py](https://github.com/shibing624/text-classifier/blob/master/text-cl
 ```
 cd classic
 python train.py
+python infer.py
 ```
 
 
