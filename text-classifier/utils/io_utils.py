@@ -61,9 +61,10 @@ def dump_pkl(vocab, pkl_path, overwrite=False):
     :param overwrite:
     :return:
     """
-    if os.path.exists(pkl_path) and not overwrite:
+    if pkl_path and os.path.exists(pkl_path) and not overwrite:
         return
-    with open(pkl_path, 'wb') as f:
-        # pickle.dump(vocab, f, protocol=pickle.HIGHEST_PROTOCOL)
-        pickle.dump(vocab, f, protocol=0)
-        print("save %s ok." % pkl_path)
+    if pkl_path:
+        with open(pkl_path, 'wb') as f:
+            # pickle.dump(vocab, f, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(vocab, f, protocol=0)
+            print("save %s ok." % pkl_path)

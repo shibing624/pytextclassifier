@@ -10,10 +10,12 @@ def data_reader(path, col_sep=','):
     lbl_col = 0
     lines = read_lines(path)
     for line in lines:
-        line_split = line.split(col_sep)
+        line_split = line.split(col_sep, 1)
         if line_split and len(line_split) > 1:
             content = line_split[word_col].strip()
             label = line_split[lbl_col].strip()
             contents.append(content)
             labels.append(label)
+        else:
+            contents.append(line)
     return contents, labels

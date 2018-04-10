@@ -1,42 +1,26 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
 # Brief:
-import os
 
 from sklearn import preprocessing
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_selection import SelectKBest, chi2
 
-from utils.io_utils import load_pkl, dump_pkl
+from utils.io_utils import dump_pkl
 
 
-def bagOfWords(files_data):
-    """
-    Converts a list of strings (which are loaded from files) to a BOW representation of it
-    parameter 'files_data' is a list of strings
-    returns a `scipy.sparse.coo_matrix`
-    """
-    count_vector = CountVectorizer()
-    return count_vector.fit_transform(files_data)
-
-
-def tfidf(data_set, space_path, overwrite=False):
+def tfidf(data_set, vectorizer_path=None):
     """
     Get TFIDF value
     :param data_set:
-    :param space_path:
+    :param vectorizer_path:
     :return:
     """
-    if os.path.exists(space_path) and not overwrite:
-        tfidf_space = load_pkl(space_path)
-    else:
-        bow = bagOfWords(data_set)
-        transformer = TfidfTransformer()
-        tfidf_space = transformer.fit_transform(bow)
-        dump_pkl(tfidf_space, space_path)
-    print('tfidf shape:', tfidf_space.shape)
-    return tfidf_space
+    vectorizer = TfidfVectorizer()
+    data_feature = vectorizer.fit_transform(data_set)
+    dump_pkl(vectorizer, vectorizer_path)
+    print('data_feature shape:', data_feature.shape)
+    return data_feature
 
 
 def label_encoder(labels):
