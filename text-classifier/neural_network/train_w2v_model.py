@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
 # Brief: 
+import sys
+
+import config
 from gensim.models import Word2Vec
 from gensim.models.keyedvectors import KeyedVectors
 from gensim.models.word2vec import LineSentence
 
-import config
+sys.path.append('..')
 from utils.io_utils import dump_pkl
 from utils.data_utils import read_lines
 

@@ -7,6 +7,8 @@ import time
 import numpy as np
 
 import config
+import sys
+sys.path.append('..')
 from utils.data_utils import build_dict
 from utils.io_utils import dump_pkl
 from utils.io_utils import load_pkl

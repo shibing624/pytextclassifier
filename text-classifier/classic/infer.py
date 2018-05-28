@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
-# Brief: 
+# Brief:
+import sys
 import config
 from reader import data_reader
+
+sys.path.append('..')
 from utils.io_utils import load_pkl
 
 
 def infer(model_save_path, test_data_path, thresholds=0.5,
-          pred_save_path=None, vectorizer_path=None, col_sep=','):
+          pred_save_path=None, vectorizer_path=None, col_sep=',',
+          num_classes=2,model_type='svm'):
     # load model
     model = load_pkl(model_save_path)
     # load data content
@@ -15,7 +19,7 @@ def infer(model_save_path, test_data_path, thresholds=0.5,
     # data feature
     tfidf_vectorizer = load_pkl(vectorizer_path)
     data_feature = tfidf_vectorizer.transform(data_content)
-    if config.num_classes == 2 and config.model_type != 'svm':
+    if num_classes == 2 and model_type != 'svm':
         # binary classification
         label_pred_probas = model.predict_proba(data_feature)[:, 1]
         label_pred = label_pred_probas > thresholds
@@ -39,4 +43,6 @@ if __name__ == "__main__":
           config.pred_thresholds,
           config.pred_save_path,
           config.vectorizer_path,
-          config.col_sep)
+          config.col_sep,
+          config.num_classes,
+          config.model_type)

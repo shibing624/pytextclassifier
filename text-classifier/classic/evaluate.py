@@ -4,12 +4,12 @@
 from matplotlib import pylab
 from sklearn.metrics import classification_report
 from sklearn.metrics import precision_recall_curve
-import config
 
 
-def eval(model, test_data, test_label, thresholds=0.5, pr_figure_path=None, pred_save_path=None):
+def eval(model, test_data, test_label, thresholds=0.5, num_classes=2,
+         model_type='svm', pr_figure_path=None, pred_save_path=None):
     print('{0}, val mean acc:{1}'.format(model.__str__(), model.score(test_data, test_label)))
-    if config.num_classes == 2 and config.model_type != 'svm':
+    if num_classes == 2 and model_type != 'svm':
         # binary classification
         label_pred_probas = model.predict_proba(test_data)[:, 1]
         label_pred = label_pred_probas > thresholds

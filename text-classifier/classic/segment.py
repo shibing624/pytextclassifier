@@ -6,8 +6,6 @@ from time import time
 
 import jieba.posseg
 
-from .config import train_path, train_seg_path
-
 
 def segment(in_file, out_file, col_sep='\t', word_sep=' '):
     """
@@ -36,5 +34,7 @@ def segment(in_file, out_file, col_sep='\t', word_sep=' '):
 
 if __name__ == '__main__':
     start_time = time()
-    segment(train_path, train_seg_path, col_sep=',')
+    input_path = "../data/test_data/test.txt"
+    output_path = "../data/test_data/test_seg.txt"
+    segment(input_path, output_path, col_sep=',')
     print("spend time:", time() - start_time)
