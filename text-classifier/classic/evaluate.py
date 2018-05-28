@@ -9,7 +9,7 @@ import config
 
 def eval(model, test_data, test_label, thresholds=0.5, pr_figure_path=None, pred_save_path=None):
     print('{0}, val mean acc:{1}'.format(model.__str__(), model.score(test_data, test_label)))
-    if (len(set(test_label))) == 2 and config.model_type != 'svm':
+    if config.num_classes == 2 and config.model_type != 'svm':
         # binary classification
         label_pred_probas = model.predict_proba(test_data)[:, 1]
         label_pred = label_pred_probas > thresholds

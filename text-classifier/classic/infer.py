@@ -15,10 +15,12 @@ def infer(model_save_path, test_data_path, thresholds=0.5,
     # data feature
     tfidf_vectorizer = load_pkl(vectorizer_path)
     data_feature = tfidf_vectorizer.transform(data_content)
-    # binary classification
-    label_pred_probas = model.predict_proba(data_feature)[:, 1]
-    label_pred = label_pred_probas > thresholds
-    # label_pred = model.predict(data_feature)  # same
+    if config.num_classes == 2 and config.model_type != 'svm':
+        # binary classification
+        label_pred_probas = model.predict_proba(data_feature)[:, 1]
+        label_pred = label_pred_probas > thresholds
+    else:
+        label_pred = model.predict(data_feature)  # same
     save(label_pred, pred_save_path)
     print("finish prediction.")
 

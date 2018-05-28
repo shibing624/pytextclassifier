@@ -14,6 +14,7 @@ col_sep = '\t'  # separate label and content of train data
 
 pred_save_path = "../data/classic/food_pred.txt"  # infer data result
 pred_thresholds = 0.5
+num_classes = 2  # num of data label classes
 
 # one of "logistic_regression or random_forest or gbdt or bayes or decision_tree or svm or knn"
 model_type = "svm"
