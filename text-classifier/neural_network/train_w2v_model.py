@@ -23,8 +23,9 @@ def get_sentence(sentence_tag, word_sep=' ', pos_sep='/'):
     """
     words = []
     for item in sentence_tag.split(word_sep):
-        index = item.rindex(pos_sep)
-        words.append(item[:index])
+        if pos_sep in item:
+            index = item.rindex(pos_sep)
+            words.append(item[:index])
     return word_sep.join(words)
 
 
@@ -37,10 +38,11 @@ def extract_sentence(train_seg_path, test_seg_path, col_sep=','):
     lines = read_lines(train_seg_path)
     lines += read_lines(test_seg_path)
     for line in lines:
-        index = line.index(col_sep)
-        word_tag = line[index + 1:]
-        sentence = ''.join(get_sentence(word_tag))
-        ret.append(sentence)
+        if col_sep in line:
+            index = line.index(col_sep)
+            word_tag = line[index + 1:]
+            sentence = ''.join(get_sentence(word_tag))
+            ret.append(sentence)
     return ret
 
 
@@ -52,17 +54,16 @@ def save_sentence(lines, sentence_path):
 
 
 def train(train_seg_path, test_seg_path, out_path, sentence_path=None, w2v_bin_path="w2v.bin"):
-    sentences = extract_sentence(train_seg_path, test_seg_path)
+    sentences = extract_sentence(train_seg_path, test_seg_path, col_sep='\t')
     save_sentence(sentences, sentence_path)
     # train model
     w2v = Word2Vec(sg=1, sentences=LineSentence(sentence_path),
-                   size=256, window=5, min_count=config.min_count,
-                   workers=config.num_workers, iter=40)
+                   size=256, window=5, min_count=config.min_count, iter=40)
     w2v.wv.save_word2vec_format(w2v_bin_path, binary=True)
     print("save %s ok." % w2v_bin_path)
     # test
-    sim = w2v.wv.similarity('公司', '市场')
-    print('公司 vs 市场 similarity score:', sim)
+    sim = w2v.wv.similarity('中国', '经济')
+    print('中国 vs 经济 similarity score:', sim)
     # save model
     model = KeyedVectors.load_word2vec_format(w2v_bin_path, binary=True)
     word_dict = {}

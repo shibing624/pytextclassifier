@@ -32,12 +32,13 @@ def _load_data(path, col_sep=',', word_sep=' ', pos_sep='/'):
         word_pos_list = sentence.split(word_sep)
         word, pos = [], []
         for item in word_pos_list:
-            r_index = item.rindex(pos_sep)
-            w, p = item[:r_index], item[r_index + 1:]
-            if w == '' or p == '':
-                continue
-            word.append(w)
-            pos.append(p)
+            if pos_sep in item:
+                r_index = item.rindex(pos_sep)
+                w, p = item[:r_index], item[r_index + 1:]
+                if w == '' or p == '':
+                    continue
+                word.append(w)
+                pos.append(p)
         word_lst.extend(word)
         pos_lst.extend(pos)
     return word_lst, pos_lst, label_lst
@@ -125,12 +126,13 @@ def _get_word_arr(word_pos_vocab, word_vocab, pos_vocab, pos_sep='/'):
     """
     word_literal, pos_literal = [], []
     for item in word_pos_vocab:
-        r_index = item.rindex(pos_sep)
-        w, p = item[:r_index], item[r_index + 1:]
-        if w == '' or p == '':
-            continue
-        word_literal.append(w)
-        pos_literal.append(p)
+        if pos_sep in item:
+            r_index = item.rindex(pos_sep)
+            w, p = item[:r_index], item[r_index + 1:]
+            if w == '' or p == '':
+                continue
+            word_literal.append(w)
+            pos_literal.append(p)
     # word list
     word_arr = map_item2id(word_literal, word_vocab, config.max_len, lower=True)
     # pos list
