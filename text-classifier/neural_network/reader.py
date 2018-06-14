@@ -22,6 +22,8 @@ def _load_data(path, col_sep=',', word_sep=' ', pos_sep='/'):
     pos_lst = []
     label_lst = []
     for line in lines:
+        if col_sep not in line:
+            continue
         index = line.index(col_sep)
         label = line[:index]
         if pos_sep in label:
