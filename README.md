@@ -31,37 +31,27 @@ While providing rich functions, **text-classifier** internal modules adhere to l
 ------
 
 ## Usage
-* classic text classifier
+* text classifier
 
 run [train.py](https://github.com/shibing624/text-classifier/blob/master/text-classifier/classic/train.py): 
 ```
-cd classic
 python train.py
 python infer.py
 ```
 
-
-* neural network text classifier
-
-run [train.py](https://github.com/shibing624/text-classifier/blob/master/text-classifier/neural_network/train.py): 
-```
-cd neural_network
-python segment.py
-python train_w2v_model.py
-python train.py
-python infer.py
-```
-    
 
 ## Algorithm
   - [done] LogisticRegression
-  - [done] K-Nearest Neighbours
-  - [done] Naive bayes
-  - [done] Support Vector Machine
   - [done] Random Forest
   - [done] Decision Tree
+  - [done] K-Nearest Neighbours
+  - [done] Naive bayes
   - [done] Xgboost
-  - [done] [Neural Network](https://github.com/shibing624/text-classifier/tree/master/text-classifier/neural_network)
+  - [done] Support Vector Machine(SVM)
+  - [done] MLP
+  - [done] Ensemble
+  - [done] Stack
+  - [done] CNN
 
 
 ## Thanks
