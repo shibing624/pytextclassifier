@@ -2,16 +2,14 @@
 # Author: XuMing <xuming624@qq.com>
 # Brief: Document classification model
 import datetime
+
 import numpy as np
 import tensorflow as tf
 
-import config
-from evaluate import simple_evaluate
 from layers.cnn_layer import CNN
 from layers.dense_layer import SoftmaxDense
 from layers.emb_layer import Embedding
-import sys
-sys.path.append('..')
+from models.evaluate import simple_evaluate
 from utils.tensor_utils import zero_nil_slot
 
 
@@ -91,7 +89,8 @@ class Model(object):
             sentence_dev=None, pos_dev=None, label_dev=None,
             sentence_test=None, pos_test=None, label_test=None,
             batch_size=64, nb_epoch=40, keep_prob=1.0,
-            word_keep_prob=1.0, pos_keep_prob=1.0, seed=137):
+            word_keep_prob=1.0, pos_keep_prob=1.0, model_save_temp_dir=None,
+            seed=42):
         """
         Fit model
         """
@@ -136,11 +135,11 @@ class Model(object):
 
             pred_labels = self.predict(sentence_test, pos_test)
             # save pred labels
-            with open(config.model_save_temp_dir + '/epoch_%d.csv' % (epoch + 1), 'w', encoding='utf-8') as f:
+            with open(model_save_temp_dir + '/epoch_%d.csv' % (epoch + 1), 'w', encoding='utf-8') as f:
                 for num, label in enumerate(pred_labels):
                     f.write('%d,%s\n' % (num + 1, self._label_vocab_rev[label]))
             # save model
-            self.save('%s/model_%d' % (config.model_save_temp_dir, epoch + 1))
+            self.save('%s/model_%d' % (model_save_temp_dir, epoch + 1))
 
     def save(self, model_path):
         self.saver.save(self.sess, model_path)

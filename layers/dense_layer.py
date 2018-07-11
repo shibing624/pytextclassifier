@@ -48,7 +48,7 @@ class SoftmaxDense(object):
         return loss
 
     def get_pred_y(self):
-        return tf.arg_max(input=self._output, dimension=1)
+        return tf.argmax(input=self._output, axis=1)
 
     @property
     def input_data(self):

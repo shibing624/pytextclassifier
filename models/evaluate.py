@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
-# Brief: evaluate model precision and recall rate
+# Brief:
 import numpy as np
+from matplotlib import pylab
 from sklearn import metrics
+from sklearn.metrics import classification_report
+from sklearn.metrics import precision_recall_curve
 
 
 def evaluate(y_true, y_pred):
@@ -60,17 +63,44 @@ def simple_evaluate(right_labels, pred_labels, ignore_label=None):
     rec = len(np.where(rec_pro_labels == rec_right_labels)[0]) / float(len(rec_right_labels))
     f = 0. if (pre + rec) == 0. \
         else (pre * rec * 2.) / (pre + rec)
+    print('P:', pre, '\tR:', rec, '\tF:', f)
+    print(classification_report(right_labels, pred_labels))
     return pre, rec, f
 
 
-def demo():
-    # pred_labels = [1, 2, 1, 1, 1, 3, 1, 2, 2, 2]
-    # true_labels = [1, 2, 3, 1, 2, 3, 1, 2, 3, 1]
-    pred_labels = [1, 0, 1, 1, 1, 1, 0, 1, 1, 1]
-    true_labels = [0, 1, 1, 1, 1, 1, 0, 1, 1, 1]
-    p, r, f = simple_evaluate(true_labels, pred_labels)
-    print("p: %f,r:%f,f:%f" % (p, r, f))
+def eval(model, test_data, test_label, thresholds=0.5, num_classes=2,
+         model_type='svm', pr_figure_path=None, pred_save_path=None):
+    print('{0}, val mean acc:{1}'.format(model.__str__(), model.score(test_data, test_label)))
+    if num_classes == 2 and model_type != 'svm':
+        # binary classification
+        label_pred_probas = model.predict_proba(test_data)[:, 1]
+        label_pred = label_pred_probas > thresholds
+        precision, recall, threshold = precision_recall_curve(test_label, label_pred)
+        plot_pr(thresholds, precision, recall, figure_path=pr_figure_path)
+    else:
+        # multi
+        label_pred = model.predict(test_data)
+    print(classification_report(test_label, label_pred))
+    save(label_pred, pred_save_path)
+    return label_pred
 
 
-if __name__ == "__main__":
-    demo()
+def plot_pr(auc_score, precision, recall, label=None, figure_path=None):
+    """绘制R/P曲线"""
+    pylab.figure(num=None, figsize=(6, 5))
+    pylab.xlim([0.0, 1.0])
+    pylab.ylim([0.0, 1.0])
+    pylab.xlabel('Recall')
+    pylab.ylabel('Precision')
+    pylab.title('P/R (AUC=%0.2f) / %s' % (auc_score, label))
+    pylab.fill_between(recall, precision, alpha=0.5)
+    pylab.grid(True, linestyle='-', color='0.75')
+    pylab.plot(recall, precision, lw=1)
+    pylab.savefig(figure_path)
+
+
+def save(label_pred, pred_save_path=None):
+    if pred_save_path:
+        with open(pred_save_path, 'w', encoding='utf-8') as f:
+            for i in label_pred:
+                f.write(str(i) + '\n')

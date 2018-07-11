@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
 # Brief: 
-import sys
 
-import config
 from gensim.models import Word2Vec
 from gensim.models.keyedvectors import KeyedVectors
 from gensim.models.word2vec import LineSentence
 
-sys.path.append('..')
-from utils.io_utils import dump_pkl
-from utils.data_utils import read_lines
+from utils.data_utils import read_lines, dump_pkl
 
 
 def get_sentence(sentence_tag, word_sep=' ', pos_sep='/'):
@@ -33,7 +29,7 @@ def get_sentence_without_pos(sentence_tag, word_sep=' '):
     return sentence_tag.split(word_sep)
 
 
-def extract_sentence(train_seg_path, test_seg_path, col_sep=','):
+def extract_sentence(train_seg_path, test_seg_path, col_sep='\t'):
     ret = []
     lines = read_lines(train_seg_path)
     lines += read_lines(test_seg_path)
@@ -53,28 +49,22 @@ def save_sentence(lines, sentence_path):
     print('save sentence:%s' % sentence_path)
 
 
-def train(train_seg_path, test_seg_path, out_path, sentence_path=None, w2v_bin_path="w2v.bin"):
+def build(train_seg_path, test_seg_path, out_path=None, sentence_path='',
+          w2v_bin_path="w2v.bin", min_count=1):
     sentences = extract_sentence(train_seg_path, test_seg_path, col_sep='\t')
     save_sentence(sentences, sentence_path)
+    print('train w2v model...')
     # train model
     w2v = Word2Vec(sg=1, sentences=LineSentence(sentence_path),
-                   size=256, window=5, min_count=config.min_count, iter=40)
+                   size=256, window=5, min_count=min_count, iter=40)
     w2v.wv.save_word2vec_format(w2v_bin_path, binary=True)
     print("save %s ok." % w2v_bin_path)
-    # test
-    sim = w2v.wv.similarity('中国', '经济')
-    print('中国 vs 经济 similarity score:', sim)
-    # save model
+    # # test
+    sim = w2v.wv.similarity('日', '月')
+    print('日 vs 月 similarity score:', sim)
+    # load model
     model = KeyedVectors.load_word2vec_format(w2v_bin_path, binary=True)
     word_dict = {}
     for word in model.vocab:
         word_dict[word] = model[word]
     dump_pkl(word_dict, out_path, overwrite=True)
-
-
-if __name__ == '__main__':
-    train(config.train_seg_path,
-          config.test_seg_path,
-          config.sentence_w2v_path,
-          config.sentence_path,
-          config.sentence_w2v_bin_path)
