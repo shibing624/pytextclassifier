@@ -32,8 +32,8 @@ While providing rich functions, **text-classifier** internal modules adhere to l
 
 ## Usage
 * text classifier
-
-run [train.py](https://github.com/shibing624/text-classifier/blob/master/text-classifier/classic/train.py): 
+1. update config.py
+2. run segment.py -> train.py -> infer.py: 
 ```
 python train.py
 python infer.py
