@@ -5,11 +5,7 @@
 Text classifier. It can be applied to the fields of sentiment polarity analysis, text risk classification and so on, and it supports multiple classification algorithms.
 
 -----
-## demo 
 
-http://www.borntowin.cn/sentiment_classify.html
-
-------
 
 **text-classifier** s a python Open Source Toolkit for Chinese text categorization. The goal is to implement text categorization algorithm, so as to achieve the use in the generative environment. **text-classifier** has the characteristics of clear algorithm, high performance and customizable corpus.
 
@@ -31,6 +27,11 @@ http://www.borntowin.cn/sentiment_classify.html
   * Chi-square test
 
 While providing rich functions, **text-classifier** internal modules adhere to low coupling, model adherence to inert loading, dictionary publication, and easy to use.
+
+------
+## demo 
+
+http://www.borntowin.cn/sentiment_classify.html
 
 ------
 
