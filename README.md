@@ -29,6 +29,11 @@ Text classifier. It can be applied to the fields of sentiment polarity analysis,
 While providing rich functions, **text-classifier** internal modules adhere to low coupling, model adherence to inert loading, dictionary publication, and easy to use.
 
 ------
+## demo 
+
+http://www.borntowin.cn/sentiment_classify.html
+
+------
 
 ## Usage
 * text classifier
