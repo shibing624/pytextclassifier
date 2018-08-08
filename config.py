@@ -11,7 +11,7 @@ sentence_symbol_path = 'data/sentence_symbol.txt'
 stop_words_path = 'data/stop_words.txt'
 
 # one of "logistic_regression, random_forest, bayes, decision_tree, svm, knn, xgboost, xgboost_lr, mlp, ensemble, stack, cnn"
-model_type = "cnn"
+model_type = "logistic_regression"
 # one of "tfidf_char, tfidf_word, language, tfidf_char_language", ignore when model_type="cnn"
 feature_type = 'tfidf_char'
 output_dir = "output"

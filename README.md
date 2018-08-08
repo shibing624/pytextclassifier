@@ -32,7 +32,7 @@ While providing rich functions, **text-classifier** internal modules adhere to l
 
 ## Usage
 * text classifier
-1. update config.py
+1. modify config.py
 2. run segment.py -> train.py -> infer.py: 
 ```
 python train.py
