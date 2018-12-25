@@ -6,6 +6,7 @@ import config
 import jieba
 import jieba.posseg
 
+
 class Bigram_Tokenizer():
     def __init__(self):
         self.n = 0
