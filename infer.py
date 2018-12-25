@@ -15,7 +15,7 @@ from models.xgboost_lr_model import XGBLR
 label_revserv_dict = {v: k for k, v in config.label_dict.items()}
 
 
-def save(label_pred, test_ids=[], pred_save_path=None):
+def save(label_pred, test_ids=None, pred_save_path=None):
     if pred_save_path:
         with open(pred_save_path, 'w', encoding='utf-8') as f:
             for i in range(len(label_pred)):
@@ -46,7 +46,7 @@ def infer_classic(model_save_path, test_data_path, thresholds=0.5,
         label_pred = label_pred_probas > thresholds
     else:
         label_pred = model.predict(data_feature)
-    save(label_pred, test_ids, pred_save_path)
+    save(label_pred, None, pred_save_path)
     print("finish prediction.")
 
 

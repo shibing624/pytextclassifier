@@ -4,32 +4,16 @@
 # data
 import os
 
-label_dict = {"": 0,
-              "减肥": 1,
-              "丰胸": 2,
-              "补肾壮阳": 3,
-              "女性保健": 4,
-              "增高": 5,
-              "祛斑美容": 6,
-              "改善消化": 7,
-              "生发育发": 8,
-              "辅助降三高": 9,
-              "增强免疫力": 10,
-              "增加骨密度": 11,
-              "眼科治疗": 12,
-              "改善睡眠": 13,
-              "护肝": 14,
-              "皮肤性病治疗": 15,
-              "风湿骨科治疗": 16,
-              "耳鼻喉科治疗": 17,
-              "狐臭口臭治疗": 18,
-              "泌尿内科治疗": 19,
+label_dict = {"0": 0,
+              "1": 1,
+              "2": 2,
+              "3": 3,
               }
 
 is_pos = False
-train_path = "data/bjp.train.txt"
+train_path = "data/train_sample.txt"
 test_path = "data/test_sample.txt"
-train_seg_path = "data/bjp.train.seg.txt"  # segment of train file
+train_seg_path = "data/train_seg_sample.txt"  # segment of train file
 test_seg_path = "data/test_seg_sample.txt"  # segment of test file
 
 sentence_symbol_path = 'data/sentence_symbol.txt'
