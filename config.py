@@ -25,6 +25,7 @@ label_dict = {"": 0,
               "狐臭口臭治疗": 18,
               "泌尿内科治疗": 19,
               }
+
 is_pos = False
 train_path = "data/bjp.train.txt"
 test_path = "data/test_sample.txt"

@@ -12,10 +12,7 @@ from utils.tensor_utils import get_ckpt_path
 from models.feature import Feature
 from models.xgboost_lr_model import XGBLR
 
-label_revserv_dict = {0: '人类作者',
-                      1: '机器作者',
-                      2: '机器翻译',
-                      3: '自动摘要'}
+label_revserv_dict = {v: k for k, v in config.label_dict.items()}
 
 
 def save(label_pred, test_ids=[], pred_save_path=None):
@@ -111,7 +108,7 @@ if __name__ == "__main__":
                          config.xgblr_lr_model_path,
                          config.feature_encoder_path,
                          config.col_sep,
-                         config.pred_save_path,
+                         pred_save_path=config.pred_save_path,
                          feature_type=config.feature_type)
     else:
         infer_classic(config.model_save_path,
@@ -121,6 +118,5 @@ if __name__ == "__main__":
                       config.vectorizer_path,
                       config.col_sep,
                       config.num_classes,
-                      config.model_type,
                       config.feature_type)
     print("spend time %ds." % (time.time() - start_time))
