@@ -2,15 +2,9 @@
 # Author: XuMing <xuming624@qq.com>
 # Brief: 
 from time import time
-
+import config
 import jieba
 import jieba.posseg
-
-label_dict = {'人类作者': 0,
-              '机器作者': 1,
-              '机器翻译': 2,
-              '自动摘要': 3}
-
 
 class Bigram_Tokenizer():
     def __init__(self):
@@ -33,13 +27,14 @@ class Bigram_Tokenizer():
 
 
 def seg_data(in_file, out_file, pos=False):
-    with open(in_file, 'r') as f1, open(out_file, 'w', encoding='utf-8') as f2:
+    with open(in_file, 'r', encoding='utf-8') as f1, open(out_file, 'w', encoding='utf-8') as f2:
         count = 0
         for line in f1:
-            line = line.strip()
+            line = line.rstrip()
             parts = line.split('\t')
-            label = parts[0]
-            data = parts[1]
+            label_str = parts[0].strip()
+            label = config.label_dict[label_str]
+            data = ' '.join(parts[1:])
             seg_line = ''
             if pos:
                 words = jieba.posseg.cut(data)
@@ -59,7 +54,7 @@ def seg_data(in_file, out_file, pos=False):
 
 if __name__ == '__main__':
     start_time = time()
-    train_file = './data/train.txt'
-    save_train_seg_file = './data/train_seg.txt'
-    seg_data(train_file, save_train_seg_file, pos=True)
+    train_file = config.train_path
+    save_train_seg_file = config.train_seg_path
+    seg_data(train_file, save_train_seg_file, pos=config.is_pos)
     print("spend time:", time() - start_time)
