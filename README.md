@@ -31,7 +31,7 @@ While providing rich functions, **text-classifier** internal modules adhere to l
 ------
 ## demo 
 
-http://www.borntowin.cn/nlp/sentiment_classify.html
+http://www.borntowin.cn/product/sentiment_classify
 
 ------
 
