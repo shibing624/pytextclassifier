@@ -4,10 +4,10 @@
 # data
 import os
 
-label_dict = {"0": 0,
-              "1": 1,
-              "2": 2,
-              "3": 3,
+label_dict = {"人工标题": 0,
+              "机器标题": 1,
+              "人工摘要": 2,
+              "机器摘要": 3,
               }
 
 is_pos = False

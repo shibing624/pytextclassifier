@@ -61,7 +61,8 @@ class Feature(object):
         print('\nIFIDF词频矩阵:')
         print('data_feature shape:', data_feature.shape)
         print(data_feature.toarray())
-        dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
+        if not self.is_infer:
+            dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
         return data_feature
 
     def tfidf_word_feature(self, data_set):
@@ -89,7 +90,8 @@ class Feature(object):
         print('\nIFIDF词频矩阵:')
         print('data_feature shape:', data_feature.shape)
         print(data_feature.toarray())
-        dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
+        if not self.is_infer:
+            dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
         return data_feature
 
     def language_feature(self, data_set, word_sep=' '):
