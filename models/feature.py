@@ -9,7 +9,8 @@ from sklearn import preprocessing
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_selection import SelectKBest, chi2
 
-from utils.data_utils import dump_pkl, load_pkl, get_word_segment_data, get_char_segment_data, load_list
+from models.reader import build_dict
+from utils.data_utils import dump_pkl, load_pkl, get_word_segment_data, get_char_segment_data, load_list, write_vocab
 
 
 class Feature(object):
@@ -17,19 +18,26 @@ class Feature(object):
     get feature from raw text
     """
 
-    def __init__(self, data=None, feature_type='tfidf_char', feature_vec_path=None, is_infer=False):
+    def __init__(self, data=None,
+                 feature_type='tfidf_char',
+                 feature_vec_path=None,
+                 is_infer=False,
+                 min_count=1,
+                 word_vocab_path=''):
         self.data_set = data
         self.feature_type = feature_type
         self.feature_vec_path = feature_vec_path
         self.sentence_symbol = load_list(path='data/sentence_symbol.txt')
         self.stop_words = load_list(path='data/stop_words.txt')
         self.is_infer = is_infer
+        self.min_count = min_count
+        self.word_vocab_path = word_vocab_path
 
     def get_feature(self):
         if self.feature_type == 'tfidf_char':
             data_feature = self.tfidf_char_feature(self.data_set)
         elif self.feature_type == 'tfidf_word':
-            data_feature = self.tfidf_word_feature(self.data_set)
+            data_feature = self.tfidf_word_feature(self.data_set, self.min_count, self.word_vocab_path)
         elif self.feature_type == 'language':
             data_feature = self.language_feature(self.data_set)
         elif self.feature_type == 'tfidf_char_language':
@@ -65,18 +73,28 @@ class Feature(object):
             dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
         return data_feature
 
-    def tfidf_word_feature(self, data_set):
+    def tfidf_word_feature(self, data_set, min_count=1, word_vocab_path=''):
         """
         Get TFIDF ngram feature by word
         :param data_set:
         :return:
         """
         data_set = get_word_segment_data(data_set)
+        word_lst = []
+        for i in data_set:
+            word_lst.extend(i.split())
+
+        # word vocab
+        word_vocab = build_dict(word_lst, start=0,
+                                min_count=min_count, sort=True, lower=True)
+        write_vocab(word_vocab, word_vocab_path)
+
         if self.is_infer:
             self.vectorizer = load_pkl(self.feature_vec_path)
             data_feature = self.vectorizer.transform(data_set)
         else:
-            self.vectorizer = TfidfVectorizer(analyzer='word', ngram_range=(1, 2), sublinear_tf=True)
+            self.vectorizer = TfidfVectorizer(analyzer='word', ngram_range=(1, 2), max_df=0.8,
+                                              vocabulary=word_vocab, sublinear_tf=True)
             data_feature = self.vectorizer.fit_transform(data_set)
         vocab = self.vectorizer.vocabulary_
         print('Vocab size:', len(vocab))

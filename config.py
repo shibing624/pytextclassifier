@@ -22,7 +22,7 @@ stop_words_path = 'data/stop_words.txt'
 # one of "logistic_regression, random_forest, bayes, decision_tree, svm, knn, xgboost, xgboost_lr, mlp, ensemble, stack, cnn"
 model_type = "logistic_regression"
 # one of "tfidf_char, tfidf_word, language, tfidf_char_language", ignore when model_type="cnn"
-feature_type = 'tfidf_char'
+feature_type = 'tfidf_word'
 output_dir = "output"
 
 pr_figure_path = output_dir + "/R_P.png"  # precision recall figure
@@ -63,7 +63,7 @@ pos_dim = 64
 
 # param
 max_len = 400  # max len words of sentence
-min_count = 10  # word will not be added to dictionary if it's frequency is less than min_count
+min_count = 5  # word will not be added to dictionary if it's frequency is less than min_count
 batch_size = 128
 nb_epoch = 5
 keep_prob = 0.5

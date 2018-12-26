@@ -9,7 +9,7 @@ from utils.data_utils import build_dict, load_pkl, dump_pkl
 from utils.data_utils import map_item2id, read_lines, write_vocab, load_vocab
 
 
-def _load_data(path, col_sep='\t', word_sep=' ', pos_sep='/'):
+def load_data(path, col_sep='\t', word_sep=' ', pos_sep='/'):
     lines = read_lines(path, col_sep)
     word_lst = []
     pos_lst = []
@@ -39,7 +39,7 @@ def _load_data(path, col_sep='\t', word_sep=' ', pos_sep='/'):
 
 def build_vocab(train_path, word_vocab_path, pos_vocab_path, label_vocab_path,
                 col_sep='\t', min_count=5, word_vocab_start=2, pos_vocab_start=1):
-    word_lst, pos_lst, label_lst = _load_data(train_path, col_sep=col_sep)
+    word_lst, pos_lst, label_lst = load_data(train_path, col_sep=col_sep)
     # word vocab
     word_vocab = build_dict(word_lst, start=word_vocab_start,
                             min_count=min_count, sort=True, lower=True)

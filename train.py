@@ -6,6 +6,7 @@ import os
 from sklearn.model_selection import train_test_split
 
 import config
+from models.build_w2v import build
 from models.classic_model import get_model
 from models.cnn_model import Model
 from models.evaluate import eval, simple_evaluate
@@ -19,16 +20,15 @@ from models.reader import train_reader
 from models.xgboost_lr_model import XGBLR
 from utils.data_utils import dump_pkl
 from utils.io_utils import clear_directory
-from models.build_w2v import build
 
 
 def train_classic(model_type, data_path=None, pr_figure_path=None,
                   model_save_path=None, vectorizer_path=None, col_sep=',',
-                  thresholds=0.5, num_classes=2, feature_type='tfidf_char'):
+                  thresholds=0.5, num_classes=2, feature_type='tfidf_char', min_count=1, word_vocab_path=''):
     data_content, data_lbl = data_reader(data_path, col_sep)
     # init feature
     feature = Feature(data=data_content, feature_type=feature_type,
-                      feature_vec_path=vectorizer_path)
+                      feature_vec_path=vectorizer_path, min_count=min_count, word_vocab_path=word_vocab_path)
     # get data feature
     data_feature = feature.get_feature()
     # label
@@ -157,4 +157,6 @@ if __name__ == '__main__':
                       config.col_sep,
                       config.pred_thresholds,
                       config.num_classes,
-                      config.feature_type)
+                      config.feature_type,
+                      config.min_count,
+                      config.word_vocab_path)
