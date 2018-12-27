@@ -42,8 +42,7 @@ def train_classic(model_type, data_path=None, pr_figure_path=None,
     # save model
     dump_pkl(model, model_save_path, overwrite=True)
     # evaluate
-    eval(model, X_val, y_val, thresholds=thresholds, num_classes=num_classes,
-         model_type=model_type, pr_figure_path=pr_figure_path)
+    eval(model, X_val, y_val, thresholds=thresholds, num_classes=num_classes, pr_figure_path=pr_figure_path)
 
 
 def train_cnn(train_seg_path='', test_seg_path='', word_vocab_path='',

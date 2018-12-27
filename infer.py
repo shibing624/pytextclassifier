@@ -11,6 +11,7 @@ from utils.data_utils import load_vocab, load_pkl
 from utils.tensor_utils import get_ckpt_path
 from models.feature import Feature
 from models.xgboost_lr_model import XGBLR
+from sklearn.metrics import classification_report
 
 label_revserv_dict = {v: k for k, v in config.label_dict.items()}
 
@@ -54,6 +55,10 @@ def infer_classic(model_save_path, test_data_path, thresholds=0.5,
     else:
         label_pred = model.predict(data_feature)
     save(label_pred, test_ids=None, pred_save_path=pred_save_path, data_set=data_set)
+    if test_ids:
+        # evaluate
+        test_ids = [int(i) for i in test_ids]
+        print(classification_report(test_ids, label_pred))
     print("finish prediction.")
 
 
