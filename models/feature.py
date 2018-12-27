@@ -80,19 +80,19 @@ class Feature(object):
         :return:
         """
         data_set = get_word_segment_data(data_set)
-        word_lst = []
-        for i in data_set:
-            word_lst.extend(i.split())
-
-        # word vocab
-        word_vocab = build_dict(word_lst, start=0,
-                                min_count=min_count, sort=True, lower=True)
-        write_vocab(word_vocab, word_vocab_path)
-
         if self.is_infer:
             self.vectorizer = load_pkl(self.feature_vec_path)
             data_feature = self.vectorizer.transform(data_set)
         else:
+            word_lst = []
+            for i in data_set:
+                word_lst.extend(i.split())
+
+            # word vocab
+            word_vocab = build_dict(word_lst, start=0,
+                                    min_count=min_count, sort=True, lower=True)
+            write_vocab(word_vocab, word_vocab_path)
+
             self.vectorizer = TfidfVectorizer(analyzer='word', ngram_range=(1, 2), max_df=0.8,
                                               vocabulary=word_vocab, sublinear_tf=True)
             data_feature = self.vectorizer.fit_transform(data_set)
