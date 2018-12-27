@@ -32,6 +32,8 @@ def load_data(path, col_sep='\t', word_sep=' ', pos_sep='/'):
                     continue
                 word.append(w)
                 pos.append(p)
+            else:
+                word.append(item.strip())
         word_lst.extend(word)
         pos_lst.extend(pos)
     return word_lst, pos_lst, label_lst

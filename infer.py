@@ -97,7 +97,11 @@ def infer_xgboost_lr(test_data_path,
     model = XGBLR(xgblr_xgb_model_path, xgblr_lr_model_path, feature_encoder_path)
     # predict
     label_pred = model.predict(data_feature)
-    save(label_pred, test_ids, pred_save_path)
+    save(label_pred, test_ids=None, pred_save_path=pred_save_path, data_set=data_set)
+    if test_ids:
+        # evaluate
+        test_ids = [int(i) for i in test_ids]
+        print(classification_report(test_ids, label_pred))
     print("finish prediction.")
 
 

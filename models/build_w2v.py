@@ -22,6 +22,8 @@ def get_sentence(sentence_tag, word_sep=' ', pos_sep='/'):
         if pos_sep in item:
             index = item.rindex(pos_sep)
             words.append(item[:index])
+        else:
+            words.append(item.strip())
     return word_sep.join(words)
 
 
