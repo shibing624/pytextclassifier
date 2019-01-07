@@ -4,24 +4,25 @@
 # data
 import os
 
-label_dict = {"人工标题": 0,
-              "机器标题": 1,
-              "人工摘要": 2,
-              "机器摘要": 3,
+label_dict = {"财经": 1,
+              "IT": 2,
+              "健康": 3,
               }
-
-is_pos = False
-train_path = "data/train_sample.txt"
-test_path = "data/test_sample.txt"
+enable_pos = False
+enable_convert_2_id = False
+is_debug = False
+train_path = "data/train.txt"
+test_path = "data/test.txt"
 train_seg_path = "data/train_seg_sample.txt"  # segment of train file
 test_seg_path = "data/test_seg_sample.txt"  # segment of test file
 
 sentence_symbol_path = 'data/sentence_symbol.txt'
 stop_words_path = 'data/stop_words.txt'
 
-# one of "logistic_regression, random_forest, bayes, decision_tree, svm, knn, xgboost, xgboost_lr, mlp, ensemble, stack, cnn"
-model_type = "logistic_regression"
-# one of "tfidf_char, tfidf_word, language, tfidf_char_language", ignore when model_type="cnn"
+# one of "logistic_regression, random_forest, bayes, decision_tree, svm, knn, xgboost, xgboost_lr,
+# mlp, ensemble, stack, cnn"
+model_type = "xgboost_lr"
+# one of "tfidf_char, tfidf_word, tf_word, language, tfidf_char_language", ignore when model_type="cnn"
 feature_type = 'tfidf_word'
 output_dir = "output"
 
@@ -35,7 +36,7 @@ xgblr_lr_model_path = output_dir + "/xgblr_lr.pkl"
 feature_encoder_path = output_dir + "/xgblr_encoder.pkl"
 
 pred_save_path = output_dir + "/pred_result.txt"  # infer data result
-col_sep = '\t'  # separate label and content of train data
+col_sep = ','  # separate label and content of train data
 pred_thresholds = 0.5
 num_classes = len(label_dict)  # num of data label classes
 
@@ -62,17 +63,17 @@ w2v_dim = 256
 pos_dim = 64
 
 # param
-max_len = 400  # max len words of sentence
-min_count = 5  # word will not be added to dictionary if it's frequency is less than min_count
+max_len = 300  # max len words of sentence
+min_count = 1  # word will not be added to dictionary if it's frequency is less than min_count
 batch_size = 128
-nb_epoch = 5
+nb_epoch = 2
 keep_prob = 0.5
 word_keep_prob = 0.9
 pos_keep_prob = 0.9
 
 # directory to save the trained model
 # create a new directory if the dir does not exist
-model_save_temp_dir = output_dir + "/save_model"
+model_save_temp_dir = output_dir + "/cnn_temp_model"
 best_result_path = output_dir + "/best_result.csv"
 
 if not os.path.exists(output_dir):

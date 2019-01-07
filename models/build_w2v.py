@@ -61,9 +61,9 @@ def build(train_seg_path, test_seg_path, out_path=None, sentence_path='',
                    size=256, window=5, min_count=min_count, iter=40)
     w2v.wv.save_word2vec_format(w2v_bin_path, binary=True)
     print("save %s ok." % w2v_bin_path)
-    # # test
-    sim = w2v.wv.similarity('日', '月')
-    print('日 vs 月 similarity score:', sim)
+    # test
+    sim = w2v.wv.similarity('大', '小')
+    print('大 vs 小 similarity score:', sim)
     # load model
     model = KeyedVectors.load_word2vec_format(w2v_bin_path, binary=True)
     word_dict = {}

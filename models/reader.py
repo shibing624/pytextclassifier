@@ -19,7 +19,7 @@ def load_data(path, col_sep='\t', word_sep=' ', pos_sep='/'):
         label = line[:index]
         if pos_sep in label:
             label = label.split(pos_sep)[0]
-        label_lst.extend(label)
+        label_lst.append(label)
         sentence = line[index + 1:]
         # word and pos
         word_pos_list = sentence.split(word_sep)
@@ -118,6 +118,8 @@ def _get_word_arr(word_pos_vocab, word_vocab, pos_vocab,
                 continue
             word_literal.append(w)
             pos_literal.append(p)
+        else:
+            word_literal.append(item)
     # word list
     word_arr = map_item2id(word_literal, word_vocab, max_len, lower=True)
     # pos list
@@ -187,7 +189,7 @@ def test_reader(path, word_vocab, pos_vocab, label_vocab, col_sep='\t'):
     return sentences, pos
 
 
-def data_reader(path, col_sep=','):
+def data_reader(path, col_sep='\t'):
     contents, labels = [], []
     word_col = 1
     lbl_col = 0

@@ -11,6 +11,7 @@ from models.classic_model import get_model
 from models.cnn_model import Model
 from models.evaluate import eval, simple_evaluate
 from models.feature import Feature
+from models.reader import build_dict
 from models.reader import build_pos_embedding
 from models.reader import build_vocab
 from models.reader import build_word_embedding
@@ -18,21 +19,37 @@ from models.reader import data_reader
 from models.reader import test_reader
 from models.reader import train_reader
 from models.xgboost_lr_model import XGBLR
-from utils.data_utils import dump_pkl
+from utils.data_utils import dump_pkl, write_vocab, load_pkl
 from utils.io_utils import clear_directory
 
 
-def train_classic(model_type, data_path=None, pr_figure_path=None,
-                  model_save_path=None, vectorizer_path=None, col_sep=',',
-                  thresholds=0.5, num_classes=2, feature_type='tfidf_char', min_count=1, word_vocab_path=''):
+def train_classic(model_type,
+                  data_path='',
+                  pr_figure_path='',
+                  model_save_path='',
+                  vectorizer_path='',
+                  col_sep='\t',
+                  thresholds=0.5,
+                  num_classes=2,
+                  feature_type='tfidf_word',
+                  min_count=1,
+                  word_vocab_path=''):
     data_content, data_lbl = data_reader(data_path, col_sep)
+    word_lst = []
+    for i in data_content:
+        word_lst.extend(i.split())
+
+    # word vocab
+    word_vocab = build_dict(word_lst, start=0,
+                            min_count=min_count, sort=True, lower=True)
+    write_vocab(word_vocab, word_vocab_path)
     # init feature
     feature = Feature(data=data_content, feature_type=feature_type,
-                      feature_vec_path=vectorizer_path, min_count=min_count, word_vocab_path=word_vocab_path)
+                      feature_vec_path=vectorizer_path, min_count=min_count, word_vocab=word_vocab)
     # get data feature
     data_feature = feature.get_feature()
     # label
-    data_label = feature.label_encoder(data_lbl)
+    data_label = [int(i) for i in data_lbl]
 
     X_train, X_val, y_train, y_val = train_test_split(
         data_feature, data_label, test_size=0.1, random_state=0)
@@ -41,6 +58,20 @@ def train_classic(model_type, data_path=None, pr_figure_path=None,
     model.fit(X_train, y_train)
     # save model
     dump_pkl(model, model_save_path, overwrite=True)
+
+    if model_type == "logistic_regression" and config.is_debug:
+        # print each category top features
+        weights = model.coef_
+        vectorizer = load_pkl(vectorizer_path)
+        print("20 top features of each category:")
+        features = dict()
+        for idx, weight in enumerate(weights):
+            feature_sorted = sorted(zip(vectorizer.get_feature_names(), weight), key=lambda k: k[1], reverse=True)
+            print("category_" + str(idx) + ":")
+            print(feature_sorted[:20])
+            feature_dict = {k[0]: k[1] for k in feature_sorted}
+            features[idx] = feature_dict
+        dump_pkl(features, 'output/features.pkl', overwrite=True)
     # evaluate
     eval(model, X_val, y_val, thresholds=thresholds, num_classes=num_classes, pr_figure_path=pr_figure_path)
 
@@ -95,6 +126,7 @@ def train_cnn(train_seg_path='', test_seg_path='', word_vocab_path='',
               word_test, pos_test, labels_test,
               batch_size, nb_epoch, keep_prob,
               word_keep_prob, pos_keep_prob, model_save_temp_dir)
+
     # chose best model
     [p_test, r_test, f_test], nb_epoch = model.get_best_score()
     print('P@test:%f, R@test:%f, F@test:%f, num_best_epoch:%d' % (p_test, r_test, f_test, nb_epoch + 1))
@@ -115,7 +147,7 @@ def train_xgboost_lr(data_path,
     # get data feature
     data_feature = feature.get_feature()
     # label
-    data_label = feature.label_encoder(data_lbl)
+    data_label = [int(i) for i in data_lbl]
     X_train, X_val, y_train, y_val = train_test_split(
         data_feature, data_label, test_size=0.1, random_state=0)
     model = XGBLR(xgblr_xgb_model_path, xgblr_lr_model_path, feature_encoder_path)
@@ -134,6 +166,7 @@ if __name__ == '__main__':
                   sentence_path=config.sentence_path,
                   w2v_path=config.w2v_path,
                   p2v_path=config.p2v_path,
+                  max_len=config.max_len,
                   min_count=config.min_count,
                   model_save_temp_dir=config.model_save_temp_dir,
                   output_dir=config.output_dir,

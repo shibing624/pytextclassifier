@@ -144,7 +144,7 @@ class Model(object):
     def save(self, model_path):
         self.saver.save(self.sess, model_path)
 
-    def predict(self, data_sentence, data_pos, batch_size=50):
+    def predict(self, data_sentence, data_pos, batch_size=64):
         """
         Predict data result
         :param data_sentence:

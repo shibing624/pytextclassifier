@@ -27,17 +27,20 @@ class Bigram_Tokenizer():
         return tokens
 
 
-def seg_data(in_file, out_file, pos=False):
+def seg_data(in_file, out_file, enable_pos=False, enable_convert_2_id=False):
     with open(in_file, 'r', encoding='utf-8') as f1, open(out_file, 'w', encoding='utf-8') as f2:
         count = 0
         for line in f1:
             line = line.rstrip()
             parts = line.split('\t')
             label_str = parts[0].strip()
-            label = config.label_dict[label_str]
+            if enable_convert_2_id:
+                label = config.label_dict[label_str]
+            else:
+                label = label_str
             data = ' '.join(parts[1:])
             seg_line = ''
-            if pos:
+            if enable_pos:
                 words = jieba.posseg.cut(data)
                 for word, pos in words:
                     seg_line += word + '/' + pos + ' '
@@ -55,7 +58,12 @@ def seg_data(in_file, out_file, pos=False):
 
 if __name__ == '__main__':
     start_time = time()
-    train_file = config.train_path
-    save_train_seg_file = config.train_seg_path
-    seg_data(train_file, save_train_seg_file, pos=config.is_pos)
+    seg_data(config.train_path,
+             config.train_seg_path,
+             enable_pos=config.enable_pos,
+             enable_convert_2_id=config.enable_convert_2_id)
+    seg_data(config.test_path,
+             config.test_seg_path,
+             enable_pos=config.enable_pos,
+             enable_convert_2_id=config.enable_convert_2_id)
     print("spend time:", time() - start_time)

@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
 # Brief:
+
+from mlxtend.classifier import EnsembleVoteClassifier, StackingClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
-from sklearn.neural_network import MLPClassifier
-from mlxtend.classifier import EnsembleVoteClassifier, StackingClassifier
 
 
 def get_model(model_type):
@@ -18,11 +19,11 @@ def get_model(model_type):
     elif model_type == "random_forest":
         model = RandomForestClassifier(n_estimators=300)  # 速度还行，准确率一般。val mean acc:0.93125
     elif model_type == "decision_tree":
-        model = DecisionTreeClassifier() # 速度快，准确率低。val mean acc:0.62
+        model = DecisionTreeClassifier()  # 速度快，准确率低。val mean acc:0.62
     elif model_type == "knn":
         model = KNeighborsClassifier()  # 速度一般，准确率低。val mean acc:0.675
     elif model_type == "bayes":
-        model = MultinomialNB() # 速度快，准确率低。val mean acc:0.62
+        model = MultinomialNB()  # 速度快，准确率低。val mean acc:0.62
     elif model_type == "xgboost":
         model = XGBClassifier()  # 速度慢，准确率高。val mean acc:0.95
     elif model_type == "svm":
@@ -42,8 +43,7 @@ def get_model(model_type):
         clf3 = MLPClassifier(random_state=0)
         lr = LogisticRegression()
         model = StackingClassifier(classifiers=[clf1, clf2, clf3],
-                                  use_probas=True,
-                                  average_probas=False,
-                                  meta_classifier=lr)
-
+                                   use_probas=True,
+                                   average_probas=False,
+                                   meta_classifier=lr)
     return model

@@ -6,11 +6,10 @@ import collections
 import numpy as np
 from scipy import sparse
 from sklearn import preprocessing
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.feature_selection import SelectKBest, chi2
 
-from models.reader import build_dict
-from utils.data_utils import dump_pkl, load_pkl, get_word_segment_data, get_char_segment_data, load_list, write_vocab
+from utils.data_utils import dump_pkl, load_pkl, get_word_segment_data, get_char_segment_data, load_list
 
 
 class Feature(object):
@@ -23,7 +22,7 @@ class Feature(object):
                  feature_vec_path=None,
                  is_infer=False,
                  min_count=1,
-                 word_vocab_path=''):
+                 word_vocab=None):
         self.data_set = data
         self.feature_type = feature_type
         self.feature_vec_path = feature_vec_path
@@ -31,13 +30,15 @@ class Feature(object):
         self.stop_words = load_list(path='data/stop_words.txt')
         self.is_infer = is_infer
         self.min_count = min_count
-        self.word_vocab_path = word_vocab_path
+        self.word_vocab = word_vocab
 
     def get_feature(self):
         if self.feature_type == 'tfidf_char':
             data_feature = self.tfidf_char_feature(self.data_set)
         elif self.feature_type == 'tfidf_word':
-            data_feature = self.tfidf_word_feature(self.data_set, self.min_count, self.word_vocab_path)
+            data_feature = self.tfidf_word_feature(self.data_set)
+        elif self.feature_type == 'tf_word':
+            data_feature = self.tf_word_feature(self.data_set)
         elif self.feature_type == 'language':
             data_feature = self.language_feature(self.data_set)
         elif self.feature_type == 'tfidf_char_language':
@@ -73,7 +74,7 @@ class Feature(object):
             dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
         return data_feature
 
-    def tfidf_word_feature(self, data_set, min_count=1, word_vocab_path=''):
+    def tfidf_word_feature(self, data_set):
         """
         Get TFIDF ngram feature by word
         :param data_set:
@@ -84,17 +85,8 @@ class Feature(object):
             self.vectorizer = load_pkl(self.feature_vec_path)
             data_feature = self.vectorizer.transform(data_set)
         else:
-            word_lst = []
-            for i in data_set:
-                word_lst.extend(i.split())
-
-            # word vocab
-            word_vocab = build_dict(word_lst, start=0,
-                                    min_count=min_count, sort=True, lower=True)
-            write_vocab(word_vocab, word_vocab_path)
-
             self.vectorizer = TfidfVectorizer(analyzer='word', ngram_range=(1, 2), max_df=0.8,
-                                              vocabulary=word_vocab, sublinear_tf=True)
+                                              vocabulary=self.word_vocab, sublinear_tf=True)
             data_feature = self.vectorizer.fit_transform(data_set)
         vocab = self.vectorizer.vocabulary_
         print('Vocab size:', len(vocab))
@@ -108,11 +100,46 @@ class Feature(object):
         print('\nIFIDF词频矩阵:')
         print('data_feature shape:', data_feature.shape)
         print(data_feature.toarray())
+        # if not self.is_infer:
+        dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
+        return data_feature
+
+    def tf_word_feature(self, data_set):
+        """
+        Get TF feature by word
+        :param data_set:
+        :return:
+        """
+        data_set = get_word_segment_data(data_set)
+        if self.is_infer:
+            self.vectorizer = load_pkl(self.feature_vec_path)
+            data_feature = self.vectorizer.transform(data_set)
+        else:
+            self.vectorizer = CountVectorizer(analyzer='word',
+                                              encoding='utf-8',
+                                              lowercase=True,
+                                              max_df=1.0,
+                                              vocabulary=self.word_vocab)
+            data_feature = self.vectorizer.fit_transform(data_set)
+        vocab = self.vectorizer.vocabulary_
+        print('Vocab size:', len(vocab))
+        print('Vocab list:')
+        count = 0
+        for k, v in self.vectorizer.vocabulary_.items():
+            if count < 10:
+                print(k, v)
+                count += 1
+        feature_names = self.vectorizer.get_feature_names()
+        print('feature_names:\n', feature_names[:100])
+
+        print('\nIFIDF词频矩阵:')
+        print('data_feature shape:', data_feature.shape)
+        print(data_feature.toarray())
         if not self.is_infer:
             dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
         return data_feature
 
-    def language_feature(self, data_set, word_sep=' '):
+    def language_feature(self, data_set, word_sep=' ', pos_sep='/'):
         """
         Get Linguistics feature
         词性表：
@@ -133,8 +160,10 @@ class Feature(object):
         features = []
         self.word_counts_top_n = self.get_word_counts_top_n(self.data_set, n=30)
         for line in data_set:
+            if pos_sep not in line:
+                continue
             word_pos_list = line.split(word_sep)
-            feature = self._get_text_feature(word_pos_list)
+            feature = self._get_text_feature(word_pos_list, pos_sep)
             for pos in ['n', 'v', 'a', 'm', 'r', 'q', 'd', 'p', 'c', 'x']:
                 pos_feature, pos_top = self._get_word_feature_by_pos(word_pos_list,
                                                                      pos=pos, most_common_num=10)
@@ -179,7 +208,7 @@ class Feature(object):
         n_top = collections.Counter(n_set).most_common(most_common_num)
         return [n_len, n_ratio], n_top
 
-    def _get_text_feature(self, word_pos_list):
+    def _get_text_feature(self, word_pos_list, pos_sep='/'):
         features = []
         # 1.词总数
         num_word = len(word_pos_list)
@@ -187,13 +216,13 @@ class Feature(object):
         features.append(num_word)
 
         # 2.字总数
-        num_char = sum(len(w.split('/')[0]) for w in word_pos_list)
+        num_char = sum(len(w.split(pos_sep)[0]) for w in word_pos_list)
         features.append(num_char)
         average_word_len = float(num_char / num_word)
         # 3.单词平均长度
         features.append(average_word_len)
 
-        word_list = [w.split('/')[0] for w in word_pos_list]
+        word_list = [w.split(pos_sep)[0] for w in word_pos_list]
         sentence_list_long = [w for w in word_list if w in self.sentence_symbol[:6]]  # 长句
         sentence_list_short = [w for w in word_list if w in self.sentence_symbol]  # 短句
         num_sentence_long = len(sentence_list_long)
@@ -214,7 +243,7 @@ class Feature(object):
             features.append(num_word_counts)
             features.append(float(num_word_counts / num_word))
 
-        word_no_pos_len_list = [len(w.split('/')[0]) for w in word_pos_list]
+        word_no_pos_len_list = [len(w.split(pos_sep)[0]) for w in word_pos_list]
         # 利用collections库中的Counter模块，可以很轻松地得到一个由单词和词频组成的字典。
         len_counts = collections.Counter(word_no_pos_len_list)
         # 9.一到四字词个数，及占比
