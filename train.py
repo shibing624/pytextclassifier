@@ -87,7 +87,8 @@ def train_cnn(train_seg_path='', test_seg_path='', word_vocab_path='',
               nb_epoch=5,
               keep_prob=0.5,
               word_keep_prob=0.9,
-              pos_keep_prob=0.9):
+              pos_keep_prob=0.9,
+              col_sep='\t'):
     # build w2v
     if not os.path.exists(sentence_w2v_path):
         build(train_seg_path,
@@ -95,11 +96,14 @@ def train_cnn(train_seg_path='', test_seg_path='', word_vocab_path='',
               out_path=sentence_w2v_path,
               sentence_path=sentence_path,
               w2v_bin_path=sentence_w2v_bin_path,
-              min_count=min_count)
+              min_count=min_count,
+              col_sep=col_sep)
 
     # 1.build vocab for train data
     word_vocab, pos_vocab, label_vocab = build_vocab(train_seg_path, word_vocab_path,
-                                                     pos_vocab_path, label_vocab_path, min_count=min_count)
+                                                     pos_vocab_path, label_vocab_path,
+                                                     min_count=min_count,
+                                                     col_sep=col_sep)
     # 2.embedding
     word_emb = build_word_embedding(w2v_path, overwrite=True, sentence_w2v_path=sentence_w2v_path,
                                     word_vocab_path=word_vocab_path, word_vocab_start=word_vocab_start,
@@ -107,8 +111,8 @@ def train_cnn(train_seg_path='', test_seg_path='', word_vocab_path='',
     pos_emb = build_pos_embedding(p2v_path, overwrite=True, pos_vocab_path=pos_vocab_path,
                                   pos_vocab_start=pos_vocab_start, pos_dim=pos_dim)
     # 3.data reader
-    words, pos, labels = train_reader(train_seg_path, word_vocab, pos_vocab, label_vocab)
-    word_test, pos_test = test_reader(test_seg_path, word_vocab, pos_vocab, label_vocab)
+    words, pos, labels = train_reader(train_seg_path, word_vocab, pos_vocab, label_vocab, col_sep=col_sep)
+    word_test, pos_test = test_reader(test_seg_path, word_vocab, pos_vocab, label_vocab, col_sep=col_sep)
     labels_test = None
 
     # clear
@@ -171,7 +175,8 @@ if __name__ == '__main__':
                   model_save_temp_dir=config.model_save_temp_dir,
                   output_dir=config.output_dir,
                   batch_size=config.batch_size,
-                  nb_epoch=config.nb_epoch)
+                  nb_epoch=config.nb_epoch,
+                  col_sep=config.col_sep)
     elif config.model_type == 'xgboost_lr':
         train_xgboost_lr(config.train_seg_path,
                          config.vectorizer_path,

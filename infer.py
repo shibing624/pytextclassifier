@@ -30,8 +30,8 @@ def save(label_pred, test_ids=None, pred_save_path=None, data_set=None):
                         f.write(str(test_ids[i]) + '\t' + label_revserv_dict[label_pred[i]] + '\n')
                 else:
                     if data_set:
-                        f.write(str(label_pred[i]) + '\t' + label_revserv_dict[label_pred[i]] + '\t' + \
-                                data_set[i] + '\n')
+                        f.write(str(label_pred[i]) + '\t' + label_revserv_dict[label_pred[i]] + '\t' + data_set[i] +
+                                '\n')
                     else:
                         f.write(str(label_pred[i]) + '\t' + label_revserv_dict[label_pred[i]] + '\n')
         print("pred_save_path:", pred_save_path)
@@ -90,12 +90,12 @@ def infer_classic(model_save_path,
 
 def infer_cnn(data_path, model_path,
               word_vocab_path, pos_vocab_path, label_vocab_path,
-              word_emb_path, pos_emb_path, pred_save_path=None):
+              word_emb_path, pos_emb_path, pred_save_path=None, col_sep='\t'):
     # init dict
     word_vocab, pos_vocab, label_vocab = load_vocab(word_vocab_path), load_vocab(pos_vocab_path), load_vocab(
         label_vocab_path)
     word_emb, pos_emb = load_pkl(word_emb_path), load_pkl(pos_emb_path)
-    word_test, pos_test = test_reader(data_path, word_vocab, pos_vocab, label_vocab)
+    word_test, pos_test = test_reader(data_path, word_vocab, pos_vocab, label_vocab, col_sep=col_sep)
     # init model
     model = Model(config.max_len, word_emb, pos_emb, label_vocab=label_vocab)
     ckpt_path = get_ckpt_path(model_path)
@@ -107,8 +107,10 @@ def infer_cnn(data_path, model_path,
     else:
         print("Can't find the checkpoint.going to stop")
         return
-    label_pred = model.predict(word_test, pos_test)
-    data_set, data_label = data_reader(data_path)
+    label_p = model.predict(word_test, pos_test)
+    # trans to original label
+    label_pred = [int(model.label_vocab_rev[label]) for label in label_p]
+    data_set, data_label = data_reader(data_path, col_sep)
     save(label_pred, test_ids=None, pred_save_path=pred_save_path, data_set=data_set)
 
     if data_label:
@@ -149,7 +151,8 @@ if __name__ == "__main__":
                   config.label_vocab_path,
                   config.w2v_path,
                   config.p2v_path,
-                  config.pred_save_path)
+                  config.pred_save_path,
+                  col_sep=config.col_sep)
     elif config.model_type == 'xgboost_lr':
         infer_xgboost_lr(config.test_seg_path,
                          config.vectorizer_path,

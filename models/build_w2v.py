@@ -52,8 +52,8 @@ def save_sentence(lines, sentence_path):
 
 
 def build(train_seg_path, test_seg_path, out_path=None, sentence_path='',
-          w2v_bin_path="w2v.bin", min_count=1):
-    sentences = extract_sentence(train_seg_path, test_seg_path, col_sep='\t')
+          w2v_bin_path="w2v.bin", min_count=1, col_sep='\t'):
+    sentences = extract_sentence(train_seg_path, test_seg_path, col_sep=col_sep)
     save_sentence(sentences, sentence_path)
     print('train w2v model...')
     # train model
@@ -62,8 +62,8 @@ def build(train_seg_path, test_seg_path, out_path=None, sentence_path='',
     w2v.wv.save_word2vec_format(w2v_bin_path, binary=True)
     print("save %s ok." % w2v_bin_path)
     # test
-    sim = w2v.wv.similarity('大', '小')
-    print('大 vs 小 similarity score:', sim)
+    # sim = w2v.wv.similarity('大', '小')
+    # print('大 vs 小 similarity score:', sim)
     # load model
     model = KeyedVectors.load_word2vec_format(w2v_bin_path, binary=True)
     word_dict = {}

@@ -10,7 +10,7 @@ label_dict = {"财经": 1,
               }
 enable_pos = False
 enable_convert_2_id = False
-is_debug = False
+is_debug = True
 train_path = "data/train.txt"
 test_path = "data/test.txt"
 train_seg_path = "data/train_seg_sample.txt"  # segment of train file
@@ -21,7 +21,7 @@ stop_words_path = 'data/stop_words.txt'
 
 # one of "logistic_regression, random_forest, bayes, decision_tree, svm, knn, xgboost, xgboost_lr,
 # mlp, ensemble, stack, cnn"
-model_type = "xgboost_lr"
+model_type = "cnn"
 # one of "tfidf_char, tfidf_word, tf_word, language, tfidf_char_language", ignore when model_type="cnn"
 feature_type = 'tfidf_word'
 output_dir = "output"

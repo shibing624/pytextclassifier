@@ -23,10 +23,10 @@ class Model(object):
         :param label_vocab:
         """
         self._label_vocab = label_vocab
-        self._label_vocab_rev = dict()
+        self.label_vocab_rev = dict()
         for key in self._label_vocab:
             value = self._label_vocab[key]
-            self._label_vocab_rev[value] = key
+            self.label_vocab_rev[value] = key
 
         # input placeholders
         self.input_sentence_ph = tf.placeholder(
@@ -137,7 +137,7 @@ class Model(object):
             # save pred labels
             with open(model_save_temp_dir + '/epoch_%d.csv' % (epoch + 1), 'w', encoding='utf-8') as f:
                 for num, label in enumerate(pred_labels):
-                    f.write('%d,%s\n' % (num + 1, self._label_vocab_rev[label]))
+                    f.write('%d,%s\n' % (num + 1, self.label_vocab_rev[label]))
             # save model
             self.save('%s/model_%d' % (model_save_temp_dir, epoch + 1))
 

@@ -191,17 +191,16 @@ def test_reader(path, word_vocab, pos_vocab, label_vocab, col_sep='\t'):
 
 def data_reader(path, col_sep='\t'):
     contents, labels = [], []
-    word_col = 1
-    lbl_col = 0
     with open(path, mode='r', encoding='utf-8') as f:
         for line in f:
             line = line.strip()
-            if not line: continue
-            line_split = line.split(col_sep, 1)
-            if line_split and len(line_split) > 1:
-                # train data
-                content = line_split[word_col].strip()
-                label = line_split[lbl_col].strip()
-                contents.append(content)
-                labels.append(label)
+            if col_sep in line:
+                index = line.index(col_sep)
+                label = line[:index].strip()
+                content = line[index + 1:].strip()
+            else:
+                content = line
+                label = '0'
+            contents.append(content)
+            labels.append(label)
     return contents, labels
