@@ -140,8 +140,10 @@ def train_deep_model(model_type='cnn',
     # init feature
     # han model need [doc sentence dim] feature(shape 3); others is [sentence dim] feature(shape 2)
     if model_type == 'han':
+        print('Hierarchical Attention Network model feature_type must be: doc_vectorize')
         feature_type = 'doc_vectorize'
     else:
+        print('feature_type: vectorize')
         feature_type = 'vectorize'
     feature = Feature(data=data_content, feature_type=feature_type, word_vocab=word_vocab, max_len=max_len)
     # get data feature
