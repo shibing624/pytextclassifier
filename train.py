@@ -1,39 +1,31 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
 # Brief:
-import os
 
+from keras.callbacks import ModelCheckpoint
+from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 
 import config
-from models.build_w2v import build
 from models.classic_model import get_model
-from models.cnn_model import Model
-from models.evaluate import eval, simple_evaluate
+from models.deep_model import fasttext_model, cnn_model, rnn_model, han_model
+from models.evaluate import eval, simple_evaluate, plt_history
 from models.feature import Feature
-from models.reader import build_dict
-from models.reader import build_pos_embedding
-from models.reader import build_vocab
-from models.reader import build_word_embedding
 from models.reader import data_reader
-from models.reader import test_reader
-from models.reader import train_reader
 from models.xgboost_lr_model import XGBLR
-from utils.data_utils import dump_pkl, write_vocab, load_pkl
-from utils.io_utils import clear_directory
+from utils.data_utils import dump_pkl, write_vocab, load_pkl, build_dict
+import numpy as np
 
 
-def train_classic(model_type,
+def train_classic(model_type='logistic_regression',
                   data_path='',
-                  pr_figure_path='',
                   model_save_path='',
                   vectorizer_path='',
                   col_sep='\t',
-                  thresholds=0.5,
-                  num_classes=2,
                   feature_type='tfidf_word',
                   min_count=1,
-                  word_vocab_path=''):
+                  word_vocab_path='',
+                  pr_figure_path=''):
     data_content, data_lbl = data_reader(data_path, col_sep)
     word_lst = []
     for i in data_content:
@@ -44,13 +36,17 @@ def train_classic(model_type,
                             min_count=min_count, sort=True, lower=True)
     write_vocab(word_vocab, word_vocab_path)
     # init feature
+    if feature_type in ['doc_vectorize', 'vectorize']:
+        print('feature type error. use tfidf_word replace.')
+        feature_type = 'tfidf_word'
     feature = Feature(data=data_content, feature_type=feature_type,
                       feature_vec_path=vectorizer_path, min_count=min_count, word_vocab=word_vocab)
     # get data feature
     data_feature = feature.get_feature()
     # label
     data_label = [int(i) for i in data_lbl]
-
+    num_classes = len(set(data_label))
+    print('num_classes:', num_classes)
     X_train, X_val, y_train, y_val = train_test_split(
         data_feature, data_label, test_size=0.1, random_state=0)
     model = get_model(model_type)
@@ -71,82 +67,23 @@ def train_classic(model_type,
             print(feature_sorted[:20])
             feature_dict = {k[0]: k[1] for k in feature_sorted}
             features[idx] = feature_dict
-        dump_pkl(features, 'output/features.pkl', overwrite=True)
+        dump_pkl(features, 'output/lr_features.pkl', overwrite=True)
     # evaluate
-    eval(model, X_val, y_val, thresholds=thresholds, num_classes=num_classes, pr_figure_path=pr_figure_path)
+    eval(model, X_val, y_val, thresholds=0.5, num_classes=num_classes, pr_figure_path=pr_figure_path)
 
 
-def train_cnn(train_seg_path='', test_seg_path='', word_vocab_path='',
-              pos_vocab_path='', label_vocab_path='', sentence_w2v_path='',
-              sentence_w2v_bin_path='', sentence_path='', w2v_path='', p2v_path='',
-              word_vocab_start=2, pos_vocab_start=1,
-              w2v_dim=256, pos_dim=64, max_len=300, min_count=5,
-              model_save_temp_dir='',
-              output_dir='',
-              batch_size=128,
-              nb_epoch=5,
-              keep_prob=0.5,
-              word_keep_prob=0.9,
-              pos_keep_prob=0.9,
-              col_sep='\t'):
-    # build w2v
-    if not os.path.exists(sentence_w2v_path):
-        build(train_seg_path,
-              test_seg_path,
-              out_path=sentence_w2v_path,
-              sentence_path=sentence_path,
-              w2v_bin_path=sentence_w2v_bin_path,
-              min_count=min_count,
-              col_sep=col_sep)
-
-    # 1.build vocab for train data
-    word_vocab, pos_vocab, label_vocab = build_vocab(train_seg_path, word_vocab_path,
-                                                     pos_vocab_path, label_vocab_path,
-                                                     min_count=min_count,
-                                                     col_sep=col_sep)
-    # 2.embedding
-    word_emb = build_word_embedding(w2v_path, overwrite=True, sentence_w2v_path=sentence_w2v_path,
-                                    word_vocab_path=word_vocab_path, word_vocab_start=word_vocab_start,
-                                    w2v_dim=w2v_dim)
-    pos_emb = build_pos_embedding(p2v_path, overwrite=True, pos_vocab_path=pos_vocab_path,
-                                  pos_vocab_start=pos_vocab_start, pos_dim=pos_dim)
-    # 3.data reader
-    words, pos, labels = train_reader(train_seg_path, word_vocab, pos_vocab, label_vocab, col_sep=col_sep)
-    word_test, pos_test = test_reader(test_seg_path, word_vocab, pos_vocab, label_vocab, col_sep=col_sep)
-    labels_test = None
-
-    # clear
-    clear_directory(model_save_temp_dir)
-
-    # division of training, development, and test set
-    word_train, word_dev, pos_train, pos_dev, label_train, label_dev = train_test_split(
-        words, pos, labels, test_size=0.1, random_state=0)
-
-    # init model
-    model = Model(max_len, word_emb, pos_emb, label_vocab=label_vocab)
-    # fit model
-    model.fit(word_train, pos_train, label_train,
-              word_dev, pos_dev, label_dev,
-              word_test, pos_test, labels_test,
-              batch_size, nb_epoch, keep_prob,
-              word_keep_prob, pos_keep_prob, model_save_temp_dir)
-
-    # chose best model
-    [p_test, r_test, f_test], nb_epoch = model.get_best_score()
-    print('P@test:%f, R@test:%f, F@test:%f, num_best_epoch:%d' % (p_test, r_test, f_test, nb_epoch + 1))
-    # save best pred label
-    cmd = 'cp %s/epoch_%d.csv %s/best.csv' % (model_save_temp_dir, nb_epoch + 1, output_dir)
-    print(cmd)
-    os.popen(cmd)
-    # clear model
-    model.clear_model()
-
-
-def train_xgboost_lr(data_path,
-                     vectorizer_path=None, xgblr_xgb_model_path=None, xgblr_lr_model_path=None,
-                     feature_encoder_path=None, feature_type='tfidf_char', col_sep='\t'):
+def train_xgboost_lr(data_path='',
+                     vectorizer_path=None,
+                     xgblr_xgb_model_path=None,
+                     xgblr_lr_model_path=None,
+                     feature_encoder_path=None,
+                     feature_type='tfidf_char',
+                     col_sep='\t'):
     data_content, data_lbl = data_reader(data_path, col_sep)
     # init feature
+    if feature_type in ['doc_vectorize', 'vectorize']:
+        print('feature type error. use tfidf_word replace.')
+        feature_type = 'tfidf_word'
     feature = Feature(data=data_content, feature_type=feature_type, feature_vec_path=vectorizer_path)
     # get data feature
     data_feature = feature.get_feature()
@@ -162,21 +99,104 @@ def train_xgboost_lr(data_path,
     simple_evaluate(y_val, label_pred)
 
 
+def train_deep_model(model_type='cnn',
+                     data_path='',
+                     model_save_path='',
+                     word_vocab_path='',
+                     label_vocab_path='',
+                     min_count=1,
+                     max_len=300,
+                     batch_size=128,
+                     nb_epoch=10,
+                     embedding_dim=128,
+                     hidden_dim=128,
+                     col_sep='\t',
+                     num_filters=512,
+                     filter_sizes='3,4,5',
+                     dropout=0.5):
+    # data reader
+    data_content, data_lbl = data_reader(data_path, col_sep)
+    word_lst = []
+    for i in data_content:
+        word_lst.extend(i.split())
+
+    # word vocab
+    word_vocab = build_dict(word_lst, start=0,
+                            min_count=min_count, sort=True, lower=True)
+    write_vocab(word_vocab, word_vocab_path)
+
+    # label
+    label_vocab = build_dict(data_lbl, start=0,
+                             min_count=0, sort=True, lower=False)
+    write_vocab(label_vocab, label_vocab_path)
+
+    data_label = [label_vocab[i] for i in data_lbl]
+    # category
+    num_classes = len(set(data_label))
+    print('num_classes:', num_classes)
+    data_label = to_categorical(np.asarray(data_label), num_classes=num_classes)
+    print('Shape of Label Tensor:', data_label.shape)
+
+    # init feature
+    # han model need [doc sentence dim] feature(shape 3); others is [sentence dim] feature(shape 2)
+    if model_type == 'han':
+        feature_type = 'doc_vectorize'
+    else:
+        feature_type = 'vectorize'
+    feature = Feature(data=data_content, feature_type=feature_type, word_vocab=word_vocab, max_len=max_len)
+    # get data feature
+    data_feature = feature.get_feature()
+
+    X_train, X_val, y_train, y_val = train_test_split(
+        data_feature, data_label, test_size=0.1, random_state=0)
+    if model_type == 'fasttext':
+        model = fasttext_model(max_len=max_len,
+                               vocabulary_size=len(word_vocab),
+                               embedding_dim=embedding_dim,
+                               num_classes=num_classes)
+    elif model_type == 'cnn':
+        model = cnn_model(max_len,
+                          vocabulary_size=len(word_vocab),
+                          embedding_dim=embedding_dim,
+                          num_filters=num_filters,
+                          filter_sizes=filter_sizes,
+                          num_classses=num_classes,
+                          dropout=dropout)
+    elif model_type == 'rnn':
+        model = rnn_model(max_len=max_len,
+                          vocabulary_size=len(word_vocab),
+                          embedding_dim=embedding_dim,
+                          hidden_dim=hidden_dim,
+                          num_classes=num_classes)
+    else:
+        model = han_model(max_len=max_len,
+                          vocabulary_size=len(word_vocab),
+                          embedding_dim=embedding_dim,
+                          hidden_dim=hidden_dim,
+                          num_classes=num_classes)
+    cp = ModelCheckpoint(model_save_path, monitor='val_acc', verbose=1, save_best_only=True)
+    # fit and save model
+    history = model.fit(X_train, y_train, batch_size=batch_size, epochs=nb_epoch,
+                        validation_data=(X_val, y_val), callbacks=[cp])
+    print('save model:', model_save_path)
+    plt_history(history, model_name=model_type)
+
+
 if __name__ == '__main__':
-    if config.model_type == 'cnn':
-        train_cnn(config.train_seg_path, config.test_seg_path, config.word_vocab_path,
-                  config.pos_vocab_path, config.label_vocab_path, config.sentence_w2v_path,
-                  config.sentence_w2v_bin_path,
-                  sentence_path=config.sentence_path,
-                  w2v_path=config.w2v_path,
-                  p2v_path=config.p2v_path,
-                  max_len=config.max_len,
-                  min_count=config.min_count,
-                  model_save_temp_dir=config.model_save_temp_dir,
-                  output_dir=config.output_dir,
-                  batch_size=config.batch_size,
-                  nb_epoch=config.nb_epoch,
-                  col_sep=config.col_sep)
+    if config.model_type in ['fasttext', 'cnn', 'rnn', 'han']:
+        train_deep_model(model_type=config.model_type,
+                         data_path=config.train_seg_path,
+                         model_save_path=config.model_save_path,
+                         word_vocab_path=config.word_vocab_path,
+                         label_vocab_path=config.label_vocab_path,
+                         min_count=config.min_count,
+                         max_len=config.max_len,
+                         batch_size=config.batch_size,
+                         nb_epoch=config.nb_epoch,
+                         embedding_dim=config.embedding_dim,
+                         hidden_dim=config.hidden_dim,
+                         col_sep=config.col_sep,
+                         dropout=config.dropout)
     elif config.model_type == 'xgboost_lr':
         train_xgboost_lr(config.train_seg_path,
                          config.vectorizer_path,
@@ -186,14 +206,12 @@ if __name__ == '__main__':
                          config.feature_type,
                          config.col_sep)
     else:
-        train_classic(config.model_type,
-                      config.train_seg_path,
-                      config.pr_figure_path,
-                      config.model_save_path,
-                      config.vectorizer_path,
-                      config.col_sep,
-                      config.pred_thresholds,
-                      config.num_classes,
-                      config.feature_type,
-                      config.min_count,
-                      config.word_vocab_path)
+        train_classic(model_type=config.model_type,
+                      data_path=config.train_seg_path,
+                      model_save_path=config.model_save_path,
+                      vectorizer_path=config.vectorizer_path,
+                      col_sep=config.col_sep,
+                      feature_type=config.feature_type,
+                      min_count=config.min_count,
+                      word_vocab_path=config.word_vocab_path,
+                      pr_figure_path=config.pr_figure_path)

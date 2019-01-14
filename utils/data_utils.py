@@ -17,7 +17,7 @@ def build_dict(items, start=0, sort=True,
     :param sort: 是否按频率排序，否则按items排序
     :param min_count: 词典最小频次
     :param lower: 是否小写
-    :return: dict
+    :return: dict: {word: index}
     """
     result = dict()
     if sort:

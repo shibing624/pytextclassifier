@@ -2,7 +2,8 @@
 # Author: XuMing <xuming624@qq.com>
 # Brief:
 import collections
-
+from keras.preprocessing.sequence import pad_sequences
+from keras.preprocessing.text import Tokenizer, text_to_word_sequence
 import numpy as np
 from scipy import sparse
 from sklearn import preprocessing
@@ -22,7 +23,8 @@ class Feature(object):
                  feature_vec_path=None,
                  is_infer=False,
                  min_count=1,
-                 word_vocab=None):
+                 word_vocab=None,
+                 max_len=400):
         self.data_set = data
         self.feature_type = feature_type
         self.feature_vec_path = feature_vec_path
@@ -31,6 +33,7 @@ class Feature(object):
         self.is_infer = is_infer
         self.min_count = min_count
         self.word_vocab = word_vocab
+        self.max_len = max_len
 
     def get_feature(self):
         if self.feature_type == 'tfidf_char':
@@ -43,6 +46,40 @@ class Feature(object):
             data_feature = self.language_feature(self.data_set)
         elif self.feature_type == 'tfidf_char_language':
             data_feature = self.tfidf_char_language(self.data_set)
+        elif self.feature_type == 'vectorize':
+            data_feature = self.vectorize(self.data_set)
+        elif self.feature_type == 'doc_vectorize':
+            data_feature = self.doc_vectorize(self.data_set)
+        return data_feature
+
+    def vectorize(self, data_set):
+        tokenizer = Tokenizer()
+        tokenizer.fit_on_texts(data_set)
+        sequences = tokenizer.texts_to_sequences(data_set)
+
+        word_index = tokenizer.word_index
+        print('Number of Unique Tokens', len(word_index))
+        data_feature = pad_sequences(sequences, maxlen=self.max_len)
+        print('Shape of Data Tensor:', data_feature.shape)
+        return data_feature
+
+    def doc_vectorize(self, data_set, max_sentences=16):
+        tokenizer = Tokenizer()
+        tokenizer.fit_on_texts(data_set)
+        data_feature = np.zeros((len(data_set), max_sentences, self.max_len), dtype='int32')
+        for i, sentences in enumerate(data_set):
+            for j, sent in enumerate(sentences):
+                if j < max_sentences:
+                    words = text_to_word_sequence(sent)
+                    k = 0
+                    for w in words:
+                        if k < self.max_len:
+                            if w in tokenizer.word_index:
+                                data_feature[i, j, k] = tokenizer.word_index[w]
+                            k += 1
+        word_index = tokenizer.word_index
+        print('Number of Unique Tokens', len(word_index))
+        print('Shape of Data Tensor:', data_feature.shape)
         return data_feature
 
     def tfidf_char_feature(self, data_set):

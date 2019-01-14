@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
 # Brief:
+
+
 def trim_pos(line):
     data = ''
     try:
@@ -12,16 +14,16 @@ def trim_pos(line):
         print('err', e, line)
     return data
 
+if __name__ == "__main__":
+    seg_data = []
+    with open('training_new_seg.txt', 'r', encoding='utf-8') as f:
+        for line in f:
+            seg_data.append(trim_pos(line))
 
-seg_data = []
-with open('training_new_seg.txt', 'r', encoding='utf-8') as f:
-    for line in f:
-        seg_data.append(trim_pos(line))
+    with open('testing_seg.txt', 'r', encoding='utf-8') as f:
+        for line in f:
+            seg_data.append(trim_pos(line))
 
-with open('testing_seg.txt', 'r', encoding='utf-8') as f:
-    for line in f:
-        seg_data.append(trim_pos(line))
-
-with open('all_segmented.txt', 'w', encoding='utf-8') as f:
-    for line in seg_data:
-        f.write(line + '\n')
+    with open('all_segmented.txt', 'w', encoding='utf-8') as f:
+        for line in seg_data:
+            f.write(line + '\n')
