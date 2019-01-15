@@ -46,4 +46,6 @@ def get_model(model_type):
                                    use_probas=True,
                                    average_probas=False,
                                    meta_classifier=lr)
+    else:
+        model = LogisticRegression()
     return model

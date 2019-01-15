@@ -2,9 +2,11 @@
 # Author: XuMing <xuming624@qq.com>
 # Brief:
 import collections
+import re
+
+import numpy as np
 from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing.text import Tokenizer, text_to_word_sequence
-import numpy as np
 from scipy import sparse
 from sklearn import preprocessing
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
@@ -36,9 +38,7 @@ class Feature(object):
         self.max_len = max_len
 
     def get_feature(self):
-        if self.feature_type == 'tfidf_char':
-            data_feature = self.tfidf_char_feature(self.data_set)
-        elif self.feature_type == 'tfidf_word':
+        if self.feature_type == 'tfidf_word':
             data_feature = self.tfidf_word_feature(self.data_set)
         elif self.feature_type == 'tf_word':
             data_feature = self.tf_word_feature(self.data_set)
@@ -50,6 +50,9 @@ class Feature(object):
             data_feature = self.vectorize(self.data_set)
         elif self.feature_type == 'doc_vectorize':
             data_feature = self.doc_vectorize(self.data_set)
+        else:
+            # tfidf_char
+            data_feature = self.tfidf_char_feature(self.data_set)
         return data_feature
 
     def vectorize(self, data_set):
@@ -67,9 +70,12 @@ class Feature(object):
         tokenizer = Tokenizer()
         tokenizer.fit_on_texts(data_set)
         data_feature = np.zeros((len(data_set), max_sentences, self.max_len), dtype='int32')
-        for i, sentences in enumerate(data_set):
-            for j, sent in enumerate(sentences):
-                if j < max_sentences:
+        for i, sentence in enumerate(data_set):
+            sentence_symbols = "".join(self.sentence_symbol)
+            split = "[" + sentence_symbols + "]"
+            short_sents = re.split(split, sentence)
+            for j, sent in enumerate(short_sents):
+                if j < max_sentences and sent:
                     words = text_to_word_sequence(sent)
                     k = 0
                     for w in words:

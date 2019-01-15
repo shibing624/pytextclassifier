@@ -9,12 +9,11 @@ from sklearn.model_selection import train_test_split
 import config
 from models.classic_model import get_model
 from models.deep_model import fasttext_model, cnn_model, rnn_model, han_model
-from models.evaluate import eval, simple_evaluate, plt_history
+from models.evaluate import eval, plt_history
 from models.feature import Feature
 from models.reader import data_reader
 from models.xgboost_lr_model import XGBLR
 from utils.data_utils import dump_pkl, write_vocab, load_pkl, build_dict
-import numpy as np
 
 
 def train_classic(model_type='logistic_regression',
@@ -25,7 +24,9 @@ def train_classic(model_type='logistic_regression',
                   feature_type='tfidf_word',
                   min_count=1,
                   word_vocab_path='',
+                  label_vocab_path='',
                   pr_figure_path=''):
+    # load data
     data_content, data_lbl = data_reader(data_path, col_sep)
     word_lst = []
     for i in data_content:
@@ -35,6 +36,13 @@ def train_classic(model_type='logistic_regression',
     word_vocab = build_dict(word_lst, start=0,
                             min_count=min_count, sort=True, lower=True)
     write_vocab(word_vocab, word_vocab_path)
+    # label
+    label_vocab = build_dict(data_lbl, start=0, min_count=0, sort=True, lower=False)
+    write_vocab(label_vocab, label_vocab_path)
+    data_label = [label_vocab[i] for i in data_lbl]
+    num_classes = len(set(data_label))
+    print('num_classes:', num_classes)
+
     # init feature
     if feature_type in ['doc_vectorize', 'vectorize']:
         print('feature type error. use tfidf_word replace.')
@@ -43,18 +51,19 @@ def train_classic(model_type='logistic_regression',
                       feature_vec_path=vectorizer_path, min_count=min_count, word_vocab=word_vocab)
     # get data feature
     data_feature = feature.get_feature()
-    # label
-    data_label = [int(i) for i in data_lbl]
-    num_classes = len(set(data_label))
-    print('num_classes:', num_classes)
+
     X_train, X_val, y_train, y_val = train_test_split(
         data_feature, data_label, test_size=0.1, random_state=0)
-    model = get_model(model_type)
+    if model_type == 'xgboost_lr':
+        model = XGBLR(model_save_path=model_save_path)
+    else:
+        model = get_model(model_type)
     # fit
     model.fit(X_train, y_train)
     # save model
-    dump_pkl(model, model_save_path, overwrite=True)
-
+    if model_type != 'xgboost_lr':
+        dump_pkl(model, model_save_path, overwrite=True)
+    # analysis lr model
     if model_type == "logistic_regression" and config.is_debug:
         # print each category top features
         weights = model.coef_
@@ -68,35 +77,9 @@ def train_classic(model_type='logistic_regression',
             feature_dict = {k[0]: k[1] for k in feature_sorted}
             features[idx] = feature_dict
         dump_pkl(features, 'output/lr_features.pkl', overwrite=True)
-    # evaluate
-    eval(model, X_val, y_val, thresholds=0.5, num_classes=num_classes, pr_figure_path=pr_figure_path)
 
-
-def train_xgboost_lr(data_path='',
-                     vectorizer_path=None,
-                     xgblr_xgb_model_path=None,
-                     xgblr_lr_model_path=None,
-                     feature_encoder_path=None,
-                     feature_type='tfidf_char',
-                     col_sep='\t'):
-    data_content, data_lbl = data_reader(data_path, col_sep)
-    # init feature
-    if feature_type in ['doc_vectorize', 'vectorize']:
-        print('feature type error. use tfidf_word replace.')
-        feature_type = 'tfidf_word'
-    feature = Feature(data=data_content, feature_type=feature_type, feature_vec_path=vectorizer_path)
-    # get data feature
-    data_feature = feature.get_feature()
-    # label
-    data_label = [int(i) for i in data_lbl]
-    X_train, X_val, y_train, y_val = train_test_split(
-        data_feature, data_label, test_size=0.1, random_state=0)
-    model = XGBLR(xgblr_xgb_model_path, xgblr_lr_model_path, feature_encoder_path)
-    # fit
-    model.train_model(X_train, y_train)
     # evaluate
-    label_pred = model.predict(X_val)
-    simple_evaluate(y_val, label_pred)
+    eval(model, X_val, y_val, num_classes=num_classes, pr_figure_path=pr_figure_path)
 
 
 def train_deep_model(model_type='cnn',
@@ -121,20 +104,18 @@ def train_deep_model(model_type='cnn',
         word_lst.extend(i.split())
 
     # word vocab
-    word_vocab = build_dict(word_lst, start=0,
-                            min_count=min_count, sort=True, lower=True)
+    word_vocab = build_dict(word_lst, start=0, min_count=min_count, sort=True, lower=True)
     write_vocab(word_vocab, word_vocab_path)
 
     # label
-    label_vocab = build_dict(data_lbl, start=0,
-                             min_count=0, sort=True, lower=False)
+    label_vocab = build_dict(data_lbl, start=0, min_count=0, sort=True, lower=False)
     write_vocab(label_vocab, label_vocab_path)
 
     data_label = [label_vocab[i] for i in data_lbl]
     # category
     num_classes = len(set(data_label))
     print('num_classes:', num_classes)
-    data_label = to_categorical(np.asarray(data_label), num_classes=num_classes)
+    data_label = to_categorical(data_label, num_classes=num_classes)
     print('Shape of Label Tensor:', data_label.shape)
 
     # init feature
@@ -199,14 +180,6 @@ if __name__ == '__main__':
                          hidden_dim=config.hidden_dim,
                          col_sep=config.col_sep,
                          dropout=config.dropout)
-    elif config.model_type == 'xgboost_lr':
-        train_xgboost_lr(config.train_seg_path,
-                         config.vectorizer_path,
-                         config.xgblr_xgb_model_path,
-                         config.xgblr_lr_model_path,
-                         config.feature_encoder_path,
-                         config.feature_type,
-                         config.col_sep)
     else:
         train_classic(model_type=config.model_type,
                       data_path=config.train_seg_path,
@@ -216,4 +189,5 @@ if __name__ == '__main__':
                       feature_type=config.feature_type,
                       min_count=config.min_count,
                       word_vocab_path=config.word_vocab_path,
+                      label_vocab_path=config.label_vocab_path,
                       pr_figure_path=config.pr_figure_path)

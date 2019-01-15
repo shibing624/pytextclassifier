@@ -95,6 +95,18 @@ def han_model(max_len=400,
               hidden_dim=128,
               max_sentences=16,
               num_classes=4):
+    """
+    Implementation of document classification model described in
+    `Hierarchical Attention Networks for Document Classification (Yang et al., 2016)`
+    (https://www.cs.cmu.edu/~diyiy/docs/naacl16.pdf)
+    :param max_len:
+    :param vocabulary_size:
+    :param embedding_dim:
+    :param hidden_dim:
+    :param max_sentences:
+    :param num_classes:
+    :return:
+    """
     print("Hierarchical Attention Network...")
     inputs = Input(shape=(max_len,), dtype='int32')
     embedding = Embedding(input_dim=vocabulary_size, output_dim=embedding_dim,

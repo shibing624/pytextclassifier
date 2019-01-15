@@ -9,7 +9,7 @@ import numpy as np
 
 
 def build_dict(items, start=0, sort=True,
-               min_count=1, lower=False):
+               min_count=0, lower=False):
     """
     构建字典
     :param items: list  [item1, item2, ... ]
