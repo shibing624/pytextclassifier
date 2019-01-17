@@ -10,26 +10,7 @@ import config
 from models.feature import Feature
 from models.reader import data_reader
 from models.xgboost_lr_model import XGBLR
-from utils.data_utils import load_pkl, load_vocab
-
-
-def save(pred_labels, ture_labels=None, pred_save_path=None, data_set=None):
-    if pred_save_path:
-        with open(pred_save_path, 'w', encoding='utf-8') as f:
-            for i in range(len(pred_labels)):
-                if ture_labels and len(ture_labels) > 0:
-                    assert len(ture_labels) == len(pred_labels)
-                    if data_set:
-                        f.write(
-                            str(ture_labels[i]) + '\t' + data_set[i] + '\n')
-                    else:
-                        f.write(str(ture_labels[i]) + '\n')
-                else:
-                    if data_set:
-                        f.write(str(pred_labels[i]) + '\t' + data_set[i] + '\n')
-                    else:
-                        f.write(str(pred_labels[i]) + '\n')
-        print("pred_save_path:", pred_save_path)
+from utils.data_utils import load_pkl, load_vocab, save
 
 
 def infer_classic(model_type='xgboost_lr',
@@ -83,7 +64,7 @@ def infer_classic(model_type='xgboost_lr',
                 print()
     if true_labels:
         # evaluate
-        print(classification_report(true_labels, pred_labels))
+        #print(classification_report(true_labels, pred_labels))
         print(confusion_matrix(true_labels, pred_labels))
     print("finish prediction.")
 

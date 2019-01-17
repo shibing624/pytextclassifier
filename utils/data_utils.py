@@ -4,6 +4,7 @@
 import os
 import pickle
 from collections import defaultdict
+from codecs import open
 
 import numpy as np
 
@@ -118,7 +119,7 @@ def write_vocab(vocab, filename):
     with open(filename, "w", encoding='utf-8') as f:
         for i, word in enumerate(vocab):
             if i != len(vocab) - 1:
-                f.write("{}\n".format(word))
+                f.write(word + '\n')
             else:
                 f.write(word)
     print("- write to {} done. {} tokens".format(filename, len(vocab)))
@@ -203,3 +204,21 @@ def get_char_segment_data(contents, word_sep=' ', pos_sep='/'):
 
 def load_list(path):
     return [word for word in open(path, 'r', encoding='utf-8').read().split()]
+
+def save(pred_labels, ture_labels=None, pred_save_path=None, data_set=None):
+    if pred_save_path:
+        with open(pred_save_path, 'w', encoding='utf-8') as f:
+            for i in range(len(pred_labels)):
+                if ture_labels and len(ture_labels) > 0:
+                    assert len(ture_labels) == len(pred_labels)
+                    if data_set:
+                        f.write(ture_labels[i] + '\t' + data_set[i] + '\n')
+                    else:
+                        f.write(ture_labels[i] + '\n')
+                else:
+                    if data_set:
+                        f.write(pred_labels[i] + '\t' + data_set[i] + '\n')
+                    else:
+                        f.write(pred_labels[i] + '\n')
+        print("pred_save_path:", pred_save_path)
+
