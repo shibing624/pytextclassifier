@@ -22,7 +22,7 @@ model_type = "logistic_regression"
 # feature type usage
 # classic text classification usage:  one of "tfidf_char, tfidf_word, tf_word",
 # deep text classification usage: han is "doc_vectorize"; cnn, fasttext, rnn is "vectorize"
-feature_type = 'tfidf_char'
+feature_type = 'tfidf_word'
 
 output_dir = "output"                                                                # output dir
 word_vocab_path = output_dir + "/vocab_" + feature_type + "_" + model_type + ".txt"  # vocab path

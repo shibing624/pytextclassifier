@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
 # Brief: read train and test data
+
 from codecs import open
+
 
 def data_reader(path, col_sep='\t'):
     contents, labels = [], []

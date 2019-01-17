@@ -75,7 +75,7 @@ class Feature(object):
             split = "[" + sentence_symbols + "]"
             short_sents = re.split(split, sentence)
             for j, sent in enumerate(short_sents):
-                if j < max_sentences and sent:
+                if j < max_sentences and sent.strip():
                     words = text_to_word_sequence(sent)
                     k = 0
                     for w in words:
@@ -110,9 +110,7 @@ class Feature(object):
                 print(k, v)
                 count += 1
 
-        print('\nIFIDF词频矩阵:')
         print('data_feature shape:', data_feature.shape)
-        print(data_feature.toarray())
         if not self.is_infer:
             dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
         return data_feature
@@ -140,9 +138,7 @@ class Feature(object):
                 print(k, v)
                 count += 1
 
-        print('\nIFIDF词频矩阵:')
         print('data_feature shape:', data_feature.shape)
-        print(data_feature.toarray())
         # if not self.is_infer:
         dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
         return data_feature
@@ -175,9 +171,7 @@ class Feature(object):
         feature_names = self.vectorizer.get_feature_names()
         print('feature_names:\n', feature_names[:100])
 
-        print('\nIFIDF词频矩阵:')
         print('data_feature shape:', data_feature.shape)
-        print(data_feature.toarray())
         if not self.is_infer:
             dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
         return data_feature

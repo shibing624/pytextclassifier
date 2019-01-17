@@ -3,8 +3,8 @@
 # Brief:
 import os
 import pickle
-from collections import defaultdict
 from codecs import open
+from collections import defaultdict
 
 import numpy as np
 
@@ -205,6 +205,7 @@ def get_char_segment_data(contents, word_sep=' ', pos_sep='/'):
 def load_list(path):
     return [word for word in open(path, 'r', encoding='utf-8').read().split()]
 
+
 def save(pred_labels, ture_labels=None, pred_save_path=None, data_set=None):
     if pred_save_path:
         with open(pred_save_path, 'w', encoding='utf-8') as f:
@@ -221,4 +222,3 @@ def save(pred_labels, ture_labels=None, pred_save_path=None, data_set=None):
                     else:
                         f.write(pred_labels[i] + '\n')
         print("pred_save_path:", pred_save_path)
-

@@ -64,7 +64,7 @@ def infer_classic(model_type='xgboost_lr',
                 print()
     if true_labels:
         # evaluate
-        #print(classification_report(true_labels, pred_labels))
+        print(classification_report(true_labels, pred_labels))
         print(confusion_matrix(true_labels, pred_labels))
     print("finish prediction.")
 
