@@ -36,12 +36,30 @@ http://www.borntowin.cn/product/sentiment_classify
 ------
 
 ## Usage
-* text classifier
-1. modify config.py
-2. run segment.py -> train.py -> infer.py: 
+1. 获取代码：
 ```
-python train.py
-python infer.py
+git clone https://github.com/shibing624/text-classifier.git
+```
+
+2. 修改配置文件：
+```
+cd text classifier
+vim config.py.
+```
+
+3. 预处理文本文件（文本切词）：
+```
+python3 proprecess.py
+```
+
+4. 训练模型
+```
+python3 train.py
+```
+
+5. 模型测试或预测
+```
+python3 infer.py
 ```
 
 
@@ -56,7 +74,11 @@ python infer.py
   - [done] MLP
   - [done] Ensemble
   - [done] Stack
-  - [done] CNN
+  - [done] Xgboost_lr
+  - [done] text CNN
+  - [done] text RNN
+  - [done] fasttext
+  - [done] HAN
 
 
 ## Thanks
