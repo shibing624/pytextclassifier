@@ -36,15 +36,16 @@ http://www.borntowin.cn/product/sentiment_classify
 ------
 
 ## Usage
-1. 获取代码：
+1. 获取代码与安装依赖：
 ```
 git clone https://github.com/shibing624/text-classifier.git
+pip3 install -r requirements.txt
 ```
 
 2. 修改配置文件：
 ```
-cd text classifier
-vim config.py.
+cd text-classifier
+vim config.py
 ```
 
 3. 预处理文本文件（文本切词）：
