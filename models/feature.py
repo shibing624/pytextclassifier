@@ -126,7 +126,7 @@ class Feature(object):
             self.vectorizer = load_pkl(self.feature_vec_path)
             data_feature = self.vectorizer.transform(data_set)
         else:
-            self.vectorizer = TfidfVectorizer(analyzer='word', ngram_range=(1, 2), max_df=0.8,
+            self.vectorizer = TfidfVectorizer(analyzer='word', ngram_range=(1, 2),
                                               vocabulary=self.word_vocab, sublinear_tf=True)
             data_feature = self.vectorizer.fit_transform(data_set)
         vocab = self.vectorizer.vocabulary_
@@ -157,7 +157,6 @@ class Feature(object):
             self.vectorizer = CountVectorizer(analyzer='word',
                                               encoding='utf-8',
                                               lowercase=True,
-                                              max_df=1.0,
                                               vocabulary=self.word_vocab)
             data_feature = self.vectorizer.fit_transform(data_set)
         vocab = self.vectorizer.vocabulary_
