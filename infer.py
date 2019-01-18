@@ -31,12 +31,11 @@ def infer_classic(model_type='xgboost_lr',
     # load model
     if model_type == 'xgboost_lr':
         model = XGBLR(model_save_path)
-        # predict
-        pred_labels = model.predict(data_feature)
     else:
         model = load_pkl(model_save_path)
-        pred_labels = model.predict(data_feature)
 
+    # predict
+    pred_labels = model.predict(data_feature)
     # label id map
     label_id = load_vocab(label_vocab_path)
     id_label = {v: k for k, v in label_id.items()}
@@ -64,8 +63,14 @@ def infer_classic(model_type='xgboost_lr',
                 print()
     if true_labels:
         # evaluate
-        print(classification_report(true_labels, pred_labels))
-        print(confusion_matrix(true_labels, pred_labels))
+        try:
+            print(classification_report(true_labels, pred_labels))
+            print(confusion_matrix(true_labels, pred_labels))
+        except UnicodeEncodeError:
+            true_labels_id = [label_id[i] for i in true_labels]
+            pred_labels_id = [label_id[i] for i in pred_labels]
+            print(classification_report(true_labels_id, pred_labels_id))
+            print(confusion_matrix(true_labels_id, pred_labels_id))
     print("finish prediction.")
 
 
