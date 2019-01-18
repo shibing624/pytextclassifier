@@ -110,8 +110,14 @@ def infer_deep_model(model_type='cnn',
         for label, prob in zip(true_labels, pred_label_probs):
             print('label_true:%s\tprob_label:%s\tprob:%s' % (label, id_label[prob.argmax()], prob.max()))
         print('total eval:')
-        print(classification_report(true_labels, pred_labels))
-        print(confusion_matrix(true_labels, pred_labels))
+        try:
+            print(classification_report(true_labels, pred_labels))
+            print(confusion_matrix(true_labels, pred_labels))
+        except UnicodeEncodeError:
+            true_labels_id = [label_id[i] for i in true_labels]
+            pred_labels_id = [label_id[i] for i in pred_labels]
+            print(classification_report(true_labels_id, pred_labels_id))
+            print(confusion_matrix(true_labels_id, pred_labels_id))
     print("finish prediction.")
 
 

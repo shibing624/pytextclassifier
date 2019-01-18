@@ -17,12 +17,12 @@ col_sep = ','                                 # separate label and content of tr
 
 # one of "logistic_regression, random_forest, bayes, decision_tree, svm, knn, xgboost, xgboost_lr,
 # mlp, ensemble, stack, fasttext, cnn, rnn, han"
-model_type = "fasttext"
+model_type = "logistic_regression"
 
 # feature type usage
 # classic text classification usage:  one of "tfidf_char, tfidf_word, tf_word",
 # deep text classification usage: han is "doc_vectorize"; cnn, fasttext, rnn is "vectorize"
-feature_type = 'vectorize'
+feature_type = 'tf_word'
 
 output_dir = "output"                                                                # output dir
 word_vocab_path = output_dir + "/vocab_" + feature_type + "_" + model_type + ".txt"  # vocab path
