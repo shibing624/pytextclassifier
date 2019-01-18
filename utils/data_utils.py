@@ -9,18 +9,16 @@ from collections import defaultdict
 import numpy as np
 
 
-def build_dict(items, start=0, sort=True,
-               min_count=0, lower=False):
+def build_vocab(items, sort=True, min_count=0, lower=False):
     """
-    构建字典
+    构建词典列表
     :param items: list  [item1, item2, ... ]
-    :param start: index 默认0
     :param sort: 是否按频率排序，否则按items排序
     :param min_count: 词典最小频次
     :param lower: 是否小写
-    :return: dict: {word: index}
+    :return: list: word set
     """
-    result = dict()
+    result = []
     if sort:
         # sort by count
         dic = defaultdict(int)
@@ -30,17 +28,15 @@ def build_dict(items, start=0, sort=True,
         # sort
         dic = sorted(dic.items(), key=lambda d: d[1], reverse=True)
         for i, item in enumerate(dic):
-            index = i + start
             key = item[0]
             if min_count and min_count > item[1]:
                 continue
-            result[key] = index
+            result.append(key)
     else:
         # sort by items
         for i, item in enumerate(items):
             item = item if not lower else item.lower()
-            index = i + start
-            result[item] = index
+            result.append(item)
     return result
 
 

@@ -13,7 +13,7 @@ from models.evaluate import eval, plt_history
 from models.feature import Feature
 from models.reader import data_reader
 from models.xgboost_lr_model import XGBLR
-from utils.data_utils import dump_pkl, write_vocab, load_pkl, build_dict
+from utils.data_utils import dump_pkl, write_vocab, load_pkl, build_vocab,load_vocab
 
 
 def train_classic(model_type='logistic_regression',
@@ -33,13 +33,16 @@ def train_classic(model_type='logistic_regression',
         word_lst.extend(i.split())
 
     # word vocab
-    word_vocab = build_dict(word_lst, start=0,
-                            min_count=min_count, sort=True, lower=True)
+    word_vocab = build_vocab(word_lst, min_count=min_count, sort=True, lower=True)
+    # save word vocab
     write_vocab(word_vocab, word_vocab_path)
     # label
-    label_vocab = build_dict(data_lbl, start=0, min_count=0, sort=True, lower=False)
+    label_vocab = build_vocab(data_lbl)
+    # save label vocab
     write_vocab(label_vocab, label_vocab_path)
-    data_label = [label_vocab[i] for i in data_lbl]
+    label_id = load_vocab(label_vocab_path)
+    print(label_id)
+    data_label = [label_id[i] for i in data_lbl]
     num_classes = len(set(data_label))
     print('num_classes:', num_classes)
 
@@ -104,14 +107,15 @@ def train_deep_model(model_type='cnn',
         word_lst.extend(i.split())
 
     # word vocab
-    word_vocab = build_dict(word_lst, start=0, min_count=min_count, sort=True, lower=True)
+    word_vocab = build_vocab(word_lst, min_count=min_count, sort=True, lower=True)
     write_vocab(word_vocab, word_vocab_path)
 
     # label
-    label_vocab = build_dict(data_lbl, start=0, min_count=0, sort=True, lower=False)
+    label_vocab = build_vocab(data_lbl)
     write_vocab(label_vocab, label_vocab_path)
-
-    data_label = [label_vocab[i] for i in data_lbl]
+    label_id = load_vocab(label_vocab_path)
+    print(label_id)
+    data_label = [label_id[i] for i in data_lbl]
     # category
     num_classes = len(set(data_label))
     print('num_classes:', num_classes)
