@@ -2,7 +2,6 @@
 # Author: XuMing <xuming624@qq.com>
 # Brief:
 
-from mlxtend.classifier import EnsembleVoteClassifier, StackingClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
@@ -31,6 +30,7 @@ def get_model(model_type):
     elif model_type == 'mlp':
         model = MLPClassifier()  # 速度一般，准确率一般。val mean acc:0.89125
     elif model_type == 'ensemble':
+        from mlxtend.classifier import EnsembleVoteClassifier
         clf1 = LogisticRegression(random_state=0)
         clf2 = XGBClassifier(random_state=0)
         clf3 = SVC(random_state=0, kernel='linear', probability=True)
@@ -38,6 +38,7 @@ def get_model(model_type):
         model = EnsembleVoteClassifier(clfs=[clf1, clf2, clf3, clf4],
                                        weights=[1, 2, 2, 1], voting='soft', verbose=2)
     elif model_type == 'stack':
+        from mlxtend.classifier import StackingClassifier
         clf1 = XGBClassifier(random_state=0)
         clf2 = SVC(random_state=0, kernel='linear', probability=True)
         clf3 = MLPClassifier(random_state=0)

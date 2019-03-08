@@ -3,15 +3,13 @@
 @author:XuMing（xuming624@qq.com)
 @description: 
 """
-from keras.layers import Dense, Dropout, Flatten, Input, MaxPooling1D, Convolution1D, GRU, Masking
+from keras.layers import Dense, Dropout, Flatten, Input, MaxPooling1D, Convolution1D
 from keras.layers import Embedding
 from keras.layers import GlobalAveragePooling1D
 from keras.layers import LSTM, Bidirectional, TimeDistributed
 from keras.layers.merge import Concatenate
 from keras.models import Model
 from keras.models import Sequential
-
-from models.attention_layer import AttLayer
 
 
 def fasttext_model(max_len=300,
