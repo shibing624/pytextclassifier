@@ -42,7 +42,7 @@ def infer_classic(model_type='xgboost_lr',
     id_label = {v: k for k, v in label_id.items()}
 
     pred_labels = [id_label[prob.argmax()] for prob in pred_label_probs]
-    pred_output = [str(id_label[prob.argmax()] + col_sep + str(prob.max())) for prob in pred_label_probs]
+    pred_output = [id_label[prob.argmax()] + col_sep + str(prob.max()) for prob in pred_label_probs]
     print("save infer label and prob result to:")
     save(pred_output, ture_labels=None, pred_save_path=pred_save_path, data_set=data_set)
     if 'logistic_regression' in model_save_path and config.is_debug:
@@ -107,7 +107,7 @@ def infer_deep_model(model_type='cnn',
     id_label = {v: k for k, v in label_id.items()}
     pred_labels = [prob.argmax() for prob in pred_label_probs]
     pred_labels = [id_label[i] for i in pred_labels]
-    pred_output = [str(id_label[prob.argmax()] + col_sep + str(prob.max())) for prob in pred_label_probs]
+    pred_output = [id_label[prob.argmax()] + col_sep + str(prob.max()) for prob in pred_label_probs]
     print("save infer label and prob result to:")
     save(pred_output, ture_labels=None, pred_save_path=pred_save_path, data_set=data_set)
     if true_labels:
