@@ -6,6 +6,7 @@ import config
 import jieba
 from codecs import open
 
+
 class Bigram_Tokenizer():
     def __init__(self):
         self.n = 0
@@ -26,7 +27,17 @@ class Bigram_Tokenizer():
         return tokens
 
 
-def seg_data(in_file, out_file, col_sep='\t'):
+def read_stopwords(path):
+    lines = set()
+    with open(path, mode='r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            lines.add(line)
+    return lines
+
+
+def seg_data(in_file, out_file, col_sep='\t', stop_words_path=''):
+    stopwords = read_stopwords(stop_words_path)
     with open(in_file, 'r', encoding='utf-8') as f1, open(out_file, 'w', encoding='utf-8') as f2:
         count = 0
         for line in f1:
@@ -37,7 +48,13 @@ def seg_data(in_file, out_file, col_sep='\t'):
             label_str = parts[0].strip()
             label = label_str
             data = ' '.join(parts[1:])
-            seg_line = ' '.join(jieba.cut(data))
+            seg_list = jieba.lcut(data)
+            seg_words = []
+            for i in seg_list:
+                if i in stopwords:
+                    continue
+                seg_words.append(i)
+            seg_line = ' '.join(seg_words)
             if count % 10000 == 0:
                 print('count:', count)
                 print(line)
@@ -50,6 +67,6 @@ def seg_data(in_file, out_file, col_sep='\t'):
 
 if __name__ == '__main__':
     start_time = time()
-    seg_data(config.train_path, config.train_seg_path, col_sep=config.col_sep)
-    seg_data(config.test_path, config.test_seg_path, col_sep=config.col_sep)
+    seg_data(config.train_path, config.train_seg_path, col_sep=config.col_sep, stop_words_path=config.stop_words_path)
+    seg_data(config.test_path, config.test_seg_path, col_sep=config.col_sep, stop_words_path=config.stop_words_path)
     print("spend time:", time() - start_time)
