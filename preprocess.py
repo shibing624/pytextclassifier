@@ -4,8 +4,7 @@
 from time import time
 import config
 import jieba
-import jieba.posseg
-
+from codecs import open
 
 class Bigram_Tokenizer():
     def __init__(self):
