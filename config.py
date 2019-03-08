@@ -7,13 +7,12 @@ import os
 train_path = "data/train.txt"
 test_path = "data/test.txt"
 train_seg_path = "data/train_seg_sample.txt"  # segment of train file
-test_seg_path = "data/train_seg_sample.txt"   # segment of test file
+test_seg_path = "data/test_seg_sample.txt"    # segment of test file
+col_sep = ','                                 # separate label and content of train data
 
 sentence_symbol_path = 'data/sentence_symbol.txt'
 stop_words_path = 'data/stop_words.txt'
-
 is_debug = False                              # open debug mode, default "False"
-col_sep = ','                                 # separate label and content of train data
 
 # one of "logistic_regression, random_forest, bayes, decision_tree, svm, knn, xgboost, xgboost_lr,
 # mlp, ensemble, stack, fasttext, cnn, rnn, han"

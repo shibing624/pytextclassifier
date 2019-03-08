@@ -20,7 +20,7 @@ class Bigram_Tokenizer():
                     tokens += ["_*_".join(words[i:i + gram])]
         self.n += 1
         if self.n % 10000 == 0:
-            print(self.n, end=' ')
+            print(self.n)
             print(line)
             print('=' * 20)
             print(tokens)
@@ -45,8 +45,7 @@ def seg_data(in_file, out_file, col_sep='\t', stop_words_path=''):
             parts = line.split(col_sep)
             if len(parts) < 2:
                 continue
-            label_str = parts[0].strip()
-            label = label_str
+            label = parts[0].strip()
             data = ' '.join(parts[1:])
             seg_list = jieba.lcut(data)
             seg_words = []
