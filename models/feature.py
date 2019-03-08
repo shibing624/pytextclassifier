@@ -168,7 +168,7 @@ class Feature(object):
                 print(k, v)
                 count += 1
         feature_names = self.vectorizer.get_feature_names()
-        print('feature_names:\n', feature_names[:100])
+        print('feature_names:\n', feature_names[:20])
 
         print('data_feature shape:', data_feature.shape)
         if not self.is_infer:

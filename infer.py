@@ -35,12 +35,16 @@ def infer_classic(model_type='xgboost_lr',
         model = load_pkl(model_save_path)
 
     # predict
-    pred_labels = model.predict(data_feature)
+    pred_label_probs = model.predict_proba(data_feature)
+
     # label id map
     label_id = load_vocab(label_vocab_path)
     id_label = {v: k for k, v in label_id.items()}
-    pred_labels = [id_label[i] for i in pred_labels]
-    save(pred_labels, ture_labels=None, pred_save_path=pred_save_path, data_set=data_set)
+
+    pred_labels = [id_label[prob.argmax()] for prob in pred_label_probs]
+    pred_output = [str(id_label[prob.argmax()] + col_sep + str(prob.max())) for prob in pred_label_probs]
+    print("save infer label and prob result to:")
+    save(pred_output, ture_labels=None, pred_save_path=pred_save_path, data_set=data_set)
     if 'logistic_regression' in model_save_path and config.is_debug:
         count = 0
         features = load_pkl('output/lr_features.pkl')
@@ -71,7 +75,6 @@ def infer_classic(model_type='xgboost_lr',
             pred_labels_id = [label_id[i] for i in pred_labels]
             print(classification_report(true_labels_id, pred_labels_id))
             print(confusion_matrix(true_labels_id, pred_labels_id))
-    print("finish prediction.")
 
 
 def infer_deep_model(model_type='cnn',
@@ -96,19 +99,23 @@ def infer_deep_model(model_type='cnn',
 
     # load model
     model = load_model(model_save_path)
-    # predict
+    # predict, in keras, predict_proba same with predict
     pred_label_probs = model.predict(data_feature, batch_size=batch_size)
-    pred_labels = [prob.argmax() for prob in pred_label_probs]
+
     # label id map
     label_id = load_vocab(label_vocab_path)
     id_label = {v: k for k, v in label_id.items()}
+    pred_labels = [prob.argmax() for prob in pred_label_probs]
     pred_labels = [id_label[i] for i in pred_labels]
-    save(pred_labels, ture_labels=None, pred_save_path=pred_save_path, data_set=data_set)
+    pred_output = [str(id_label[prob.argmax()] + col_sep + str(prob.max())) for prob in pred_label_probs]
+    print("save infer label and prob result to:")
+    save(pred_output, ture_labels=None, pred_save_path=pred_save_path, data_set=data_set)
     if true_labels:
         # evaluate
         assert len(pred_labels) == len(true_labels)
         for label, prob in zip(true_labels, pred_label_probs):
             print('label_true:%s\tprob_label:%s\tprob:%s' % (label, id_label[prob.argmax()], prob.max()))
+
         print('total eval:')
         try:
             print(classification_report(true_labels, pred_labels))
@@ -118,7 +125,6 @@ def infer_deep_model(model_type='cnn',
             pred_labels_id = [label_id[i] for i in pred_labels]
             print(classification_report(true_labels_id, pred_labels_id))
             print(confusion_matrix(true_labels_id, pred_labels_id))
-    print("finish prediction.")
 
 
 if __name__ == "__main__":
@@ -142,3 +148,4 @@ if __name__ == "__main__":
                       col_sep=config.col_sep,
                       feature_type=config.feature_type)
     print("spend time %ds." % (time.time() - start_time))
+    print("finish predict.")

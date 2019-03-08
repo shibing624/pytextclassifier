@@ -66,14 +66,33 @@ class XGBLR(object):
             self.one_hot_encoder = model[2]
 
     def predict(self, test_x):
+        """
+        返回标签
+        :param test_x:
+        :return:
+        """
         if not self.init:
             self.load_model()
         test_x_mat = DMatrix(test_x)
         xgb_pred_mat = self.xgb_clf.get_booster().predict(test_x_mat, pred_leaf=True)
 
         lr_feature = self.one_hot_encoder.transform(xgb_pred_mat)
-        output = self.lr_clf.predict(lr_feature)
-        return output
+        return self.lr_clf.predict(lr_feature)
+
+    def predict_proba(self, test_x):
+        """
+        返回标签及其概率值
+        :param test_x: X : array-like, shape = [n_samples, n_features]
+        :return: T : array-like, shape = [n_samples, n_classes]
+            Returns the probability of the sample for each class in the model
+        """
+        if not self.init:
+            self.load_model()
+        test_x_mat = DMatrix(test_x)
+        xgb_pred_mat = self.xgb_clf.get_booster().predict(test_x_mat, pred_leaf=True)
+
+        lr_feature = self.one_hot_encoder.transform(xgb_pred_mat)
+        return self.lr_clf.predict_proba(lr_feature)
 
     def evaluate(self, right_labels, pred_labels, ignore_label=None):
         """

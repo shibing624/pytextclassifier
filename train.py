@@ -2,6 +2,8 @@
 # Author: XuMing <xuming624@qq.com>
 # Brief:
 
+import time
+
 from keras.callbacks import ModelCheckpoint
 from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
@@ -13,7 +15,7 @@ from models.evaluate import eval, plt_history
 from models.feature import Feature
 from models.reader import data_reader
 from models.xgboost_lr_model import XGBLR
-from utils.data_utils import dump_pkl, write_vocab, load_pkl, build_vocab,load_vocab
+from utils.data_utils import dump_pkl, write_vocab, load_pkl, build_vocab, load_vocab
 
 
 def train_classic(model_type='logistic_regression',
@@ -170,6 +172,7 @@ def train_deep_model(model_type='cnn',
 
 
 if __name__ == '__main__':
+    start_time = time.time()
     if config.model_type in ['fasttext', 'cnn', 'rnn', 'han']:
         train_deep_model(model_type=config.model_type,
                          data_path=config.train_seg_path,
@@ -195,3 +198,5 @@ if __name__ == '__main__':
                       word_vocab_path=config.word_vocab_path,
                       label_vocab_path=config.label_vocab_path,
                       pr_figure_path=config.pr_figure_path)
+    print("spend time %ds." % (time.time() - start_time))
+    print("finish train.")
