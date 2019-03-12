@@ -201,5 +201,5 @@ if __name__ == '__main__':
                       word_vocab_path=config.word_vocab_path,
                       label_vocab_path=config.label_vocab_path,
                       pr_figure_path=config.pr_figure_path)
-    logger.info("spend time %ds." % (time.time() - start_time))
+    logger.info("spend time %s s." % (time.time() - start_time))
     logger.info("finish train.")

@@ -65,7 +65,7 @@ def seg_data(in_file, out_file, col_sep='\t', stop_words_path=''):
                 logger.info('=' * 20)
                 logger.info(seg_line)
             count += 1
-            f2.write(str(label) + '\t' + seg_line + "\n")
+            f2.write('%s\t%s\n' % (label, seg_line))
         logger.info('%s to %s, size: %d' % (in_file, out_file, count))
 
 
@@ -73,4 +73,4 @@ if __name__ == '__main__':
     start_time = time()
     seg_data(config.train_path, config.train_seg_path, col_sep=config.col_sep, stop_words_path=config.stop_words_path)
     seg_data(config.test_path, config.test_seg_path, col_sep=config.col_sep, stop_words_path=config.stop_words_path)
-    logger.info("spend time:", time() - start_time)
+    logger.info("spend time: %s s" % (time() - start_time))
