@@ -13,6 +13,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.feature_selection import SelectKBest, chi2
 
 from utils.data_utils import dump_pkl, load_pkl, get_word_segment_data, get_char_segment_data, load_list
+from utils.io_utils import get_logger
+
+logger = get_logger(__name__)
 
 
 class Feature(object):
@@ -61,9 +64,9 @@ class Feature(object):
         sequences = tokenizer.texts_to_sequences(data_set)
 
         word_index = tokenizer.word_index
-        print('Number of Unique Tokens', len(word_index))
+        logger.info('Number of Unique Tokens: %d' % len(word_index))
         data_feature = pad_sequences(sequences, maxlen=self.max_len)
-        print('Shape of Data Tensor:', data_feature.shape)
+        logger.info('Shape of Data Tensor:%s' % data_feature.shape)
         return data_feature
 
     def doc_vectorize(self, data_set, max_sentences=16):
@@ -84,8 +87,8 @@ class Feature(object):
                                 data_feature[i, j, k] = tokenizer.word_index[w]
                             k += 1
         word_index = tokenizer.word_index
-        print('Number of Unique Tokens', len(word_index))
-        print('Shape of Data Tensor:', data_feature.shape)
+        logger.info('Number of Unique Tokens: %d' % len(word_index))
+        logger.info('Shape of Data Tensor:%s' % data_feature.shape)
         return data_feature
 
     def tfidf_char_feature(self, data_set):
@@ -102,15 +105,15 @@ class Feature(object):
             self.vectorizer = TfidfVectorizer(analyzer='char', ngram_range=(1, 2), sublinear_tf=True)
             data_feature = self.vectorizer.fit_transform(data_set)
         vocab = self.vectorizer.vocabulary_
-        print('Vocab size:', len(vocab))
-        print('Vocab list:')
+        logger.info('Vocab size:%d' % len(vocab))
+        logger.debug('Vocab list:')
         count = 0
         for k, v in self.vectorizer.vocabulary_.items():
             if count < 10:
-                print(k, v)
+                logger.debug("%s	%s" % (k, v))
                 count += 1
 
-        print('data_feature shape:', data_feature.shape)
+        logger.info(data_feature.shape)
         if not self.is_infer:
             dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
         return data_feature
@@ -130,15 +133,15 @@ class Feature(object):
                                               vocabulary=self.word_vocab, sublinear_tf=True)
             data_feature = self.vectorizer.fit_transform(data_set)
         vocab = self.vectorizer.vocabulary_
-        print('Vocab size:', len(vocab))
-        print('Vocab list:')
+        logger.info('Vocab size:', len(vocab))
+        logger.debug('Vocab list:')
         count = 0
         for k, v in self.vectorizer.vocabulary_.items():
             if count < 10:
-                print(k, v)
+                logger.debug("%s	%s" % (k, v))
                 count += 1
 
-        print('data_feature shape:', data_feature.shape)
+        logger.info(data_feature.shape)
         # if not self.is_infer:
         dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
         return data_feature
@@ -160,17 +163,17 @@ class Feature(object):
                                               vocabulary=self.word_vocab)
             data_feature = self.vectorizer.fit_transform(data_set)
         vocab = self.vectorizer.vocabulary_
-        print('Vocab size:', len(vocab))
-        print('Vocab list:')
+        logger.info('Vocab size:%d' % len(vocab))
+        logger.debug('Vocab list:')
         count = 0
         for k, v in self.vectorizer.vocabulary_.items():
             if count < 10:
-                print(k, v)
+                logger.debug("%s	%s" % (k, v))
                 count += 1
         feature_names = self.vectorizer.get_feature_names()
-        print('feature_names:\n', feature_names[:20])
+        logger.info('feature_names:%s' % feature_names[:20])
 
-        print('data_feature shape:', data_feature.shape)
+        logger.info(data_feature.shape)
         if not self.is_infer:
             dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
         return data_feature
@@ -204,14 +207,14 @@ class Feature(object):
                 pos_feature, pos_top = self._get_word_feature_by_pos(word_pos_list,
                                                                      pos=pos, most_common_num=10)
                 feature.extend(pos_feature)
-                # print(pos_top)
+                # logger.info(pos_top)
             for i in range(len(feature)):
                 if feature[i] == 0:
                     feature[i] = 1e-5
             feature = [float(i) for i in feature]
             features.append(feature)
             if len(feature) < 97:
-                print('error', len(feature), line)
+                logger.error('error:%d, %s' % (len(feature), line))
         features_np = np.array(features, dtype=float)
         X = sparse.csr_matrix(features_np)
         return X
@@ -234,7 +237,7 @@ class Feature(object):
         linguistics_feature = self.language_feature(data_set)
         linguistics_feature_np = linguistics_feature.toarray()
         data_feature = self.add_feature(tfidf_feature, linguistics_feature_np)
-        print('data_feature shape:', data_feature.shape)
+        logger.info('data_feature shape: %s' % data_feature.shape)
         return data_feature
 
     def _get_word_feature_by_pos(self, word_pos_list, pos='n', most_common_num=10):
@@ -307,7 +310,7 @@ class Feature(object):
     def label_encoder(self, labels):
         encoder = preprocessing.LabelEncoder()
         corpus_encode_label = encoder.fit_transform(labels)
-        print('corpus_encode_label shape:', corpus_encode_label.shape)
+        logger.info('corpus_encode_label shape:%s' % corpus_encode_label.shape)
         return corpus_encode_label
 
     def select_best_feature(self, data_set, data_lbl):

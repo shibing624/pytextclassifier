@@ -16,6 +16,9 @@ from models.feature import Feature
 from models.reader import data_reader
 from models.xgboost_lr_model import XGBLR
 from utils.data_utils import dump_pkl, write_vocab, load_pkl, build_vocab, load_vocab
+from utils.io_utils import get_logger
+
+logger = get_logger(__name__)
 
 
 def train_classic(model_type='logistic_regression',
@@ -43,14 +46,14 @@ def train_classic(model_type='logistic_regression',
     # save label vocab
     write_vocab(label_vocab, label_vocab_path)
     label_id = load_vocab(label_vocab_path)
-    print(label_id)
+    logger.info(label_id)
     data_label = [label_id[i] for i in data_lbl]
     num_classes = len(set(data_label))
-    print('num_classes:', num_classes)
+    logger.info('num_classes:%d' % num_classes)
 
     # init feature
     if feature_type in ['doc_vectorize', 'vectorize']:
-        print('feature type error. use tfidf_word replace.')
+        logger.info('feature type error. use tfidf_word replace.')
         feature_type = 'tfidf_word'
     feature = Feature(data=data_content, feature_type=feature_type,
                       feature_vec_path=vectorizer_path, min_count=min_count, word_vocab=word_vocab)
@@ -70,15 +73,15 @@ def train_classic(model_type='logistic_regression',
         dump_pkl(model, model_save_path, overwrite=True)
     # analysis lr model
     if model_type == "logistic_regression" and config.is_debug:
-        # print each category top features
+        # logger.info each category top features
         weights = model.coef_
         vectorizer = load_pkl(vectorizer_path)
-        print("20 top features of each category:")
+        logger.debug("20 top features of each category:")
         features = dict()
         for idx, weight in enumerate(weights):
             feature_sorted = sorted(zip(vectorizer.get_feature_names(), weight), key=lambda k: k[1], reverse=True)
-            print("category_" + str(idx) + ":")
-            print(feature_sorted[:20])
+            logger.debug("category_" + str(idx) + ":")
+            logger.debug(feature_sorted[:20])
             feature_dict = {k[0]: k[1] for k in feature_sorted}
             features[idx] = feature_dict
         dump_pkl(features, 'output/lr_features.pkl', overwrite=True)
@@ -116,21 +119,21 @@ def train_deep_model(model_type='cnn',
     label_vocab = build_vocab(data_lbl)
     write_vocab(label_vocab, label_vocab_path)
     label_id = load_vocab(label_vocab_path)
-    print(label_id)
+    logger.info(label_id)
     data_label = [label_id[i] for i in data_lbl]
     # category
     num_classes = len(set(data_label))
-    print('num_classes:', num_classes)
+    logger.info('num_classes:', num_classes)
     data_label = to_categorical(data_label, num_classes=num_classes)
-    print('Shape of Label Tensor:', data_label.shape)
+    logger.info('Shape of Label Tensor:', data_label.shape)
 
     # init feature
     # han model need [doc sentence dim] feature(shape 3); others is [sentence dim] feature(shape 2)
     if model_type == 'han':
-        print('Hierarchical Attention Network model feature_type must be: doc_vectorize')
+        logger.info('Hierarchical Attention Network model feature_type must be: doc_vectorize')
         feature_type = 'doc_vectorize'
     else:
-        print('feature_type: vectorize')
+        logger.info('feature_type: vectorize')
         feature_type = 'vectorize'
     feature = Feature(data=data_content, feature_type=feature_type, word_vocab=word_vocab, max_len=max_len)
     # get data feature
@@ -167,7 +170,7 @@ def train_deep_model(model_type='cnn',
     # fit and save model
     history = model.fit(X_train, y_train, batch_size=batch_size, epochs=nb_epoch,
                         validation_data=(X_val, y_val), callbacks=[cp])
-    print('save model:', model_save_path)
+    logger.info('save model:%s' % model_save_path)
     plt_history(history, model_name=model_type)
 
 
@@ -198,5 +201,5 @@ if __name__ == '__main__':
                       word_vocab_path=config.word_vocab_path,
                       label_vocab_path=config.label_vocab_path,
                       pr_figure_path=config.pr_figure_path)
-    print("spend time %ds." % (time.time() - start_time))
-    print("finish train.")
+    logger.info("spend time %ds." % (time.time() - start_time))
+    logger.info("finish train.")

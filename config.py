@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
-# Brief: 
-# data
+# Brief: 配置文件
+
+
 import os
 
 train_path = "data/train.txt"
@@ -12,7 +13,7 @@ col_sep = '\t'                                # separate label and content of tr
 
 sentence_symbol_path = 'data/sentence_symbol.txt'
 stop_words_path = 'data/stop_words.txt'
-is_debug = False                              # open debug mode, default "False"
+is_debug = False                               # open debug mode, default "True"
 
 # one of "logistic_regression, random_forest, bayes, decision_tree, svm, knn, xgboost, xgboost_lr,
 # mlp, ensemble, stack, fasttext, cnn, rnn, han"
@@ -21,7 +22,7 @@ model_type = "logistic_regression"
 # feature type usage
 # classic text classification usage:  one of "tfidf_char, tfidf_word, tf_word",
 # deep text classification usage: han is "doc_vectorize"; cnn, fasttext, rnn is "vectorize"
-feature_type = 'tfidf_word'
+feature_type = 'tf_word'
 
 output_dir = "output"                                                                # output dir
 word_vocab_path = output_dir + "/vocab_" + feature_type + "_" + model_type + ".txt"  # vocab path

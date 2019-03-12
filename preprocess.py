@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 # Author: XuMing <xuming624@qq.com>
 # Brief: 
-from time import time
-import config
-import jieba
 from codecs import open
+from time import time
+
+import jieba
+
+import config
+from utils.io_utils import get_logger
+
+logger = get_logger(__name__)
 
 
 class Bigram_Tokenizer():
@@ -20,10 +25,10 @@ class Bigram_Tokenizer():
                     tokens += ["_*_".join(words[i:i + gram])]
         self.n += 1
         if self.n % 10000 == 0:
-            print(self.n)
-            print(line)
-            print('=' * 20)
-            print(tokens)
+            logger.info(self.n)
+            logger.info(line)
+            logger.info('=' * 20)
+            logger.info(tokens)
         return tokens
 
 
@@ -55,17 +60,17 @@ def seg_data(in_file, out_file, col_sep='\t', stop_words_path=''):
                 seg_words.append(i)
             seg_line = ' '.join(seg_words)
             if count % 10000 == 0:
-                print('count:', count)
-                print(line)
-                print('=' * 20)
-                print(seg_line)
+                logger.info('count:%d' % count)
+                logger.info(line)
+                logger.info('=' * 20)
+                logger.info(seg_line)
             count += 1
             f2.write(str(label) + '\t' + seg_line + "\n")
-        print('%s to %s, size: %d' % (in_file, out_file, count))
+        logger.info('%s to %s, size: %d' % (in_file, out_file, count))
 
 
 if __name__ == '__main__':
     start_time = time()
     seg_data(config.train_path, config.train_seg_path, col_sep=config.col_sep, stop_words_path=config.stop_words_path)
     seg_data(config.test_path, config.test_seg_path, col_sep=config.col_sep, stop_words_path=config.stop_words_path)
-    print("spend time:", time() - start_time)
+    logger.info("spend time:", time() - start_time)
