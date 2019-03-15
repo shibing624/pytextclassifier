@@ -93,18 +93,23 @@ def kmeans_train(feature_matrix, output_file):
                              n_init=10, max_no_improvement=10, verbose=0)
     kmeans.fit(feature_matrix)
     print(kmeans.cluster_centers_)
-    print(kmeans.labels_)
-    print(Counter(kmeans.labels_))
+    labels = kmeans.labels_
+    print(labels)
+    print(Counter(labels))
     with open(output_file, 'w', encoding='utf-8') as f:
         for i in kmeans.labels_:
             f.write("%s\n" % i)
     print("save to:%s" % output_file)
+    return labels
 
-    print("-" * 30)
-    k_means_cluster_centers = np.sort(kmeans.cluster_centers_, axis=0)
-    k_means_labels = pairwise_distances_argmin(feature_matrix, k_means_cluster_centers)
-    print(k_means_cluster_centers)
-    print(k_means_labels)
+
+def show_plt(feature_matrix, labels):
+    from sklearn.decomposition import TruncatedSVD
+    import matplotlib.pyplot as plt
+    svd = TruncatedSVD()
+    plot_columns = svd.fit_transform(feature_matrix)
+    plt.scatter(x=plot_columns[:, 0], y=plot_columns[:, 1], c=labels)
+    plt.show()
 
 
 if __name__ == "__main__":
@@ -113,4 +118,5 @@ if __name__ == "__main__":
     feature_file_path = input_file_path + '_feature.pkl'
 
     feature_matrix = feature(feature_file_path)
-    kmeans_train(feature_matrix, output_file)
+    labels = kmeans_train(feature_matrix, output_file)
+    show_plt(feature_matrix, labels)
