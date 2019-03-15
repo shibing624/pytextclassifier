@@ -2,7 +2,7 @@
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/deepmipt/DeepPavlov/blob/master/LICENSE) ![](https://img.shields.io/badge/Language-Python-blue.svg) ![](https://img.shields.io/badge/Python-3.X-red.svg)
 
 
-Text classifier. It can be applied to the fields of sentiment polarity analysis, text risk classification and so on, and it supports multiple classification algorithms.
+Text classifier and cluster. It can be applied to the fields of sentiment polarity analysis, text risk classification and so on, and it supports multiple classification algorithms.
 
 -----
 
@@ -25,6 +25,8 @@ Text classifier. It can be applied to the fields of sentiment polarity analysis,
   * F1
 > * Test
   * Chi-square test
+> * Cluster
+  * MiniBatchKmeans
 
 While providing rich functions, **text-classifier** internal modules adhere to low coupling, model adherence to inert loading, dictionary publication, and easy to use.
 
@@ -65,21 +67,22 @@ python3 infer.py
 
 
 ## Algorithm
-  - [done] LogisticRegression
-  - [done] Random Forest
-  - [done] Decision Tree
-  - [done] K-Nearest Neighbours
-  - [done] Naive bayes
-  - [done] Xgboost
-  - [done] Support Vector Machine(SVM)
-  - [done] MLP
-  - [done] Ensemble
-  - [done] Stack
-  - [done] Xgboost_lr
-  - [done] text CNN
-  - [done] text RNN
-  - [done] fasttext
-  - [done] HAN
+  - [x] LogisticRegression
+  - [x] Random Forest
+  - [x] Decision Tree
+  - [x] K-Nearest Neighbours
+  - [x] Naive bayes
+  - [x] Xgboost
+  - [x] Support Vector Machine(SVM)
+  - [x] MLP
+  - [x] Ensemble
+  - [x] Stack
+  - [x] Xgboost_lr
+  - [x] text CNN
+  - [x] text RNN
+  - [x] fasttext
+  - [x] HAN
+  - [x] Kmenas
 
 
 ## Thanks
