@@ -9,10 +9,8 @@ import pickle
 from collections import Counter
 
 import jieba
-import numpy as np
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import pairwise_distances_argmin
 
 from config import stop_words_path
 

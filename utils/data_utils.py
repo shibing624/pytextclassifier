@@ -154,7 +154,7 @@ def load_pkl(pkl_path):
     return result
 
 
-def dump_pkl(vocab, pkl_path, overwrite=False):
+def dump_pkl(vocab, pkl_path, overwrite=True):
     """
     存储文件
     :param pkl_path:
