@@ -170,18 +170,17 @@ def dump_pkl(vocab, pkl_path, overwrite=True):
         print("save %s ok." % pkl_path)
 
 
-def get_content_words(text, word_sep=' ', pos_sep='/'):
-    content = ''
-    for word in text.split(word_sep):
-        if pos_sep in word:
-            content += word.split(pos_sep)[0] + word_sep
-        else:
-            content += word.strip() + word_sep
-    return content
-
-
 def get_word_segment_data(contents, word_sep=' ', pos_sep='/'):
-    return [get_content_words(content, word_sep, pos_sep) for content in contents]
+    data = []
+    for content in contents:
+        temp = []
+        for word in content.split(word_sep):
+            if pos_sep in word:
+                temp.append(word.split(pos_sep)[0])
+            else:
+                temp.append(word.strip())
+        data.append(word_sep.join(temp))
+    return data
 
 
 def get_char_segment_data(contents, word_sep=' ', pos_sep='/'):
@@ -193,8 +192,8 @@ def get_char_segment_data(contents, word_sep=' ', pos_sep='/'):
                 temp += word.split(pos_sep)[0]
             else:
                 temp += word.strip()
-        temp = ' '.join(list(temp))
-        data.append(temp)
+        # char seg with list
+        data.append(word_sep.join(list(temp)))
     return data
 
 
