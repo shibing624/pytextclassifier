@@ -24,7 +24,7 @@ logger = get_logger(__name__)
 def train_classic(model_type='logistic_regression',
                   data_path='',
                   model_save_path='',
-                  vectorizer_path='',
+                  feature_vec_path='',
                   col_sep='\t',
                   feature_type='tfidf_word',
                   min_count=1,
@@ -56,7 +56,7 @@ def train_classic(model_type='logistic_regression',
         logger.info('feature type error. use tfidf_word replace.')
         feature_type = 'tfidf_word'
     feature = Feature(data=data_content, feature_type=feature_type,
-                      feature_vec_path=vectorizer_path, min_count=min_count, word_vocab=word_vocab)
+                      feature_vec_path=feature_vec_path, min_count=min_count, word_vocab=word_vocab)
     # get data feature
     data_feature = feature.get_feature()
 
@@ -73,9 +73,9 @@ def train_classic(model_type='logistic_regression',
         dump_pkl(model, model_save_path, overwrite=True)
     # analysis lr model
     if model_type == "logistic_regression" and config.is_debug:
-        # logger.info each category top features
+        # show each category top features
         weights = model.coef_
-        vectorizer = load_pkl(vectorizer_path)
+        vectorizer = load_pkl(feature_vec_path)
         logger.debug("20 top features of each category:")
         features = dict()
         for idx, weight in enumerate(weights):
@@ -194,7 +194,7 @@ if __name__ == '__main__':
         train_classic(model_type=config.model_type,
                       data_path=config.train_seg_path,
                       model_save_path=config.model_save_path,
-                      vectorizer_path=config.vectorizer_path,
+                      feature_vec_path=config.feature_vec_path,
                       col_sep=config.col_sep,
                       feature_type=config.feature_type,
                       min_count=config.min_count,

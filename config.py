@@ -28,7 +28,7 @@ output_dir = "output"                                                           
 word_vocab_path = output_dir + "/vocab_" + feature_type + "_" + model_type + ".txt"  # vocab path
 label_vocab_path = output_dir + "/label_" + feature_type + "_" + model_type + ".txt" # label path
 pr_figure_path = output_dir + "/R_P_" + feature_type + "_" + model_type + ".png"     # precision recall figure
-vectorizer_path = output_dir + "/vectorizer_" + feature_type + ".pkl"                # vector path
+feature_vec_path = output_dir + "/feature_" + feature_type + ".pkl"                # vector path
 model_save_path = output_dir + "/model_" + feature_type + "_" + model_type + ".pkl"  # save model path
 
 # --- deep model for train ---

@@ -21,14 +21,14 @@ def infer_classic(model_type='xgboost_lr',
                   label_vocab_path='',
                   test_data_path='',
                   pred_save_path='',
-                  vectorizer_path='',
+                  feature_vec_path='',
                   col_sep='\t',
                   feature_type='tfidf_word'):
     # load data content
     data_set, true_labels = data_reader(test_data_path, col_sep)
     # init feature
     feature = Feature(data_set, feature_type=feature_type,
-                      feature_vec_path=vectorizer_path, is_infer=True)
+                      feature_vec_path=feature_vec_path, is_infer=True)
     # get data feature
     data_feature = feature.get_feature()
     # load model
@@ -146,7 +146,7 @@ if __name__ == "__main__":
                       label_vocab_path=config.label_vocab_path,
                       test_data_path=config.test_seg_path,
                       pred_save_path=config.pred_save_path,
-                      vectorizer_path=config.vectorizer_path,
+                      feature_vec_path=config.feature_vec_path,
                       col_sep=config.col_sep,
                       feature_type=config.feature_type)
     logger.info("spend time %ds." % (time.time() - start_time))
