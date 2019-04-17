@@ -56,7 +56,7 @@ def train_classic(model_type='logistic_regression',
         logger.info('feature type error. use tfidf_word replace.')
         feature_type = 'tfidf_word'
     feature = Feature(data=data_content, feature_type=feature_type,
-                      feature_vec_path=feature_vec_path, min_count=min_count, word_vocab=word_vocab)
+                      feature_vec_path=feature_vec_path, word_vocab=word_vocab)
     # get data feature
     data_feature = feature.get_feature()
 

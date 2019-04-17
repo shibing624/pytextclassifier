@@ -133,7 +133,7 @@ class Feature(object):
                                               vocabulary=self.word_vocab, sublinear_tf=True)
             data_feature = self.vectorizer.fit_transform(data_set)
         vocab = self.vectorizer.vocabulary_
-        logger.info('Vocab size:', len(vocab))
+        logger.info('Vocab size:%d' % len(vocab))
         logger.debug('Vocab list:')
         count = 0
         for k, v in self.vectorizer.vocabulary_.items():
