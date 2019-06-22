@@ -9,7 +9,7 @@ Text classifier and cluster. It can be applied to the fields of sentiment polari
 -----
 
 
-**text-classifier** s a python Open Source Toolkit for Chinese text categorization. The goal is to implement text categorization algorithm, so as to achieve the use in the generative environment. **text-classifier** has the characteristics of clear algorithm, high performance and customizable corpus.
+**text-classifier** s a python Open Source Toolkit for text classification and text clustering. The goal is to implement text analysis algorithm, so as to achieve the use in the production environment. **text-classifier** has the characteristics of clear algorithm, high performance and customizable corpus.
 
 **text-classifier** provides the following functions：
 > * Classifier
@@ -47,10 +47,6 @@ pip3 install -r requirements.txt
 ```
 
 ### Example Usage
-```
-cd text-classifier
-vim config.py
-```
 
 1. Preprocess with segment
 ```
