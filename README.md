@@ -40,29 +40,31 @@ https://www.borntowin.cn/product/sentiment_classify
 ------
 
 ## Usage
-1. 获取代码与安装依赖：
+### Requirements and Installation
 ```
 git clone https://github.com/shibing624/text-classifier.git
 pip3 install -r requirements.txt
 ```
 
-2. 修改配置文件：
+### Example Usage
 ```
 cd text-classifier
 vim config.py
 ```
 
-3. 预处理文本文件（文本切词）：
+1. Preprocess with segment
 ```
-python3 proprecess.py
+python3 preprocess.py
 ```
 
-4. 训练模型
+2. Train model
+
+you can change model with edit `config.py` and train model.
 ```
 python3 train.py
 ```
 
-5. 模型测试或预测
+3. Predict with test data
 ```
 python3 infer.py
 ```
