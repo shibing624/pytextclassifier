@@ -50,6 +50,8 @@ def train_classic(model_type='logistic_regression',
     data_label = [label_id[i] for i in data_lbl]
     num_classes = len(set(data_label))
     logger.info('num_classes:%d' % num_classes)
+    logger.info('data size:%d' % len(data_content))
+    logger.info('label size:%d' % len(data_lbl))
 
     # init feature
     if feature_type in ['doc_vectorize', 'vectorize']:
@@ -123,9 +125,9 @@ def train_deep_model(model_type='cnn',
     data_label = [label_id[i] for i in data_lbl]
     # category
     num_classes = len(set(data_label))
-    logger.info('num_classes:', num_classes)
+    logger.info('num_classes:%s' % num_classes)
     data_label = to_categorical(data_label, num_classes=num_classes)
-    logger.info('Shape of Label Tensor:', data_label.shape)
+    print('Shape of Label Tensor:', data_label.shape)
 
     # init feature
     # han model need [doc sentence dim] feature(shape 3); others is [sentence dim] feature(shape 2)

@@ -77,6 +77,9 @@ def infer_classic(model_type='xgboost_lr',
             pred_labels_id = [label_id[i] for i in pred_labels]
             print(classification_report(true_labels_id, pred_labels_id))
             print(confusion_matrix(true_labels_id, pred_labels_id))
+        except Exception:
+            print("no true labels")
+            pass
 
 
 def infer_deep_model(model_type='cnn',

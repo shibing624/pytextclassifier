@@ -13,9 +13,17 @@ def data_reader(path, col_sep='\t'):
             if col_sep in line:
                 index = line.index(col_sep)
                 label = line[:index].strip()
-                labels.append(label)
                 content = line[index + 1:].strip()
+                if not content:
+                    print('error, ', line)
+                    continue
+                if not label:
+                    print('error, ', line)
+                    continue
+                labels.append(label)
             else:
+                if line in labels:
+                    continue
                 content = line
             contents.append(content)
     return contents, labels

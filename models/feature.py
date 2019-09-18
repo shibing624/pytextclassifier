@@ -66,7 +66,7 @@ class Feature(object):
         word_index = tokenizer.word_index
         logger.info('Number of Unique Tokens: %d' % len(word_index))
         data_feature = pad_sequences(sequences, maxlen=self.max_len)
-        logger.info('Shape of Data Tensor:%s' % data_feature.shape)
+        print('Shape of Data Tensor:', data_feature.shape)
         return data_feature
 
     def doc_vectorize(self, data_set, max_sentences=16):
