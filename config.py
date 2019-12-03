@@ -36,6 +36,7 @@ label_vocab_path = os.path.join(output_dir, "label_{}_{}.txt".format(feature_typ
 pr_figure_path = os.path.join(output_dir, "R_P_{}_{}.png".format(feature_type, model_type))  # precision recall figure
 feature_vec_path = os.path.join(output_dir, "feature_{}.pkl".format(feature_type))  # vector path
 model_save_path = os.path.join(output_dir, "model_{}_{}.pkl".format(feature_type, model_type))  # save model path
+lr_feature_weight_path = os.path.join(output_dir, "lr_feature_weight.txt")
 # predict
 pred_save_path = os.path.join(output_dir, "pred_result_{}_{}.txt".format(feature_type, model_type))
 

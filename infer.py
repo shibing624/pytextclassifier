@@ -9,7 +9,8 @@ import config
 from models.feature import Feature
 from models.reader import data_reader
 from models.xgboost_lr_model import XGBLR
-from utils.data_utils import load_pkl, load_vocab, save
+from models.evaluate import cal_multiclass_lr_predict
+from utils.data_utils import load_pkl, load_vocab, save_predict_result,load_dict
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -46,28 +47,10 @@ def infer_classic(model_type='xgboost_lr',
     pred_labels = [id_label[prob.argmax()] for prob in pred_label_probs]
     pred_output = [id_label[prob.argmax()] + col_sep + str(prob.max()) for prob in pred_label_probs]
     logger.info("save infer label and prob result to:%s" % pred_save_path)
-    save(pred_output, ture_labels=None, pred_save_path=pred_save_path, data_set=data_set)
-    if 'logistic_regression' in model_save_path and config.is_debug:
-        count = 0
-        features = load_pkl('output/lr_features.pkl')
-        for line in data_set:
-            if count > 5:
-                break
-            count += 1
-            logger.debug(line)
-            words = line.split()
-            for category, category_feature in features.items():
-                logger.debug('*' * 43)
-                logger.debug(category)
-                category_score = 0
-                for w in words:
-                    if w in category_feature:
-                        category_score += category_feature[w]
-                        logger.debug("%s:%s" % (w, category_feature[w]))
-                logger.debug("%s\t%f" % (category, category_score))
-                logger.debug('=' * 43)
+    save_predict_result(pred_output, ture_labels=None, pred_save_path=pred_save_path, data_set=data_set)
+
+    # evaluate
     if true_labels:
-        # evaluate
         try:
             print(classification_report(true_labels, pred_labels))
             print(confusion_matrix(true_labels, pred_labels))
@@ -77,7 +60,15 @@ def infer_classic(model_type='xgboost_lr',
             print(classification_report(true_labels_id, pred_labels_id))
             print(confusion_matrix(true_labels_id, pred_labels_id))
         except Exception:
-            print("no true labels")
+            print("error. no true labels")
+
+    # analysis lr model
+    if model_type == "logistic_regression":
+        feature_weight_dict = load_dict(config.lr_feature_weight_path)
+        data_ngrams = feature.gen_ngrams(data_set)
+        pred_labels = cal_multiclass_lr_predict(data_ngrams, feature_weight_dict, id_label)
+        print(pred_labels[:5])
+
 
 
 def infer_deep_model(model_type='cnn',
@@ -113,7 +104,7 @@ def infer_deep_model(model_type='cnn',
     pred_labels = [id_label[i] for i in pred_labels]
     pred_output = [id_label[prob.argmax()] + col_sep + str(prob.max()) for prob in pred_label_probs]
     logger.info("save infer label and prob result to: %s" % pred_save_path)
-    save(pred_output, ture_labels=None, pred_save_path=pred_save_path, data_set=data_set)
+    save_predict_result(pred_output, ture_labels=None, pred_save_path=pred_save_path, data_set=data_set)
     if true_labels:
         # evaluate
         assert len(pred_labels) == len(true_labels)

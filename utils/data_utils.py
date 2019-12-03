@@ -41,8 +41,18 @@ def build_vocab(items, sort=True, min_count=0, lower=False):
 
 
 def load_dict(dict_path):
-    return dict((line.strip().split("\t")[0], idx)
+    return dict((line.strip().split("\t")[0], line.strip().split("\t")[-1])
                 for idx, line in enumerate(open(dict_path, "r", encoding='utf-8').readlines()))
+
+
+def save_dict(dict_data, dict_path):
+    with open(dict_path, 'w', encoding='utf-8') as f:
+        count = 0
+        for k, v in dict_data.items():
+            v_str = map(str, v)
+            f.write(k + '\t' + ' '.join(v_str) + '\n')
+            count += 1
+        print('save dict size:', count, 'dict_path:', dict_path)
 
 
 def load_reverse_dict(dict_path):
@@ -201,7 +211,7 @@ def load_list(path):
     return [word for word in open(path, 'r', encoding='utf-8').read().split()]
 
 
-def save(pred_labels, ture_labels=None, pred_save_path=None, data_set=None):
+def save_predict_result(pred_labels, ture_labels=None, pred_save_path=None, data_set=None):
     if pred_save_path:
         with open(pred_save_path, 'w', encoding='utf-8') as f:
             for i in range(len(pred_labels)):

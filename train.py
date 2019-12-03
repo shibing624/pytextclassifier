@@ -12,7 +12,7 @@ from models.evaluate import eval, plt_history
 from models.feature import Feature
 from models.reader import data_reader
 from models.xgboost_lr_model import XGBLR
-from utils.data_utils import save_pkl, write_vocab, load_pkl, build_vocab, load_vocab
+from utils.data_utils import save_pkl, write_vocab, build_vocab, load_vocab, save_dict
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -71,23 +71,17 @@ def train_classic(model_type='logistic_regression',
     # save model
     if model_type != 'xgboost_lr':
         save_pkl(model, model_save_path, overwrite=True)
-    # analysis lr model
-    if model_type == "logistic_regression" and config.is_debug:
-        # show each category top features
-        weights = model.coef_
-        vectorizer = load_pkl(feature_vec_path)
-        logger.debug("20 top features of each category:")
-        features = dict()
-        for idx, weight in enumerate(weights):
-            feature_sorted = sorted(zip(vectorizer.get_feature_names(), weight), key=lambda k: k[1], reverse=True)
-            logger.debug("category_" + str(idx) + ":")
-            logger.debug(feature_sorted[:20])
-            feature_dict = {k[0]: k[1] for k in feature_sorted}
-            features[idx] = feature_dict
-        save_pkl(features, 'output/lr_features.pkl', overwrite=True)
-
     # evaluate
     eval(model, X_val, y_val, num_classes=num_classes, pr_figure_path=pr_figure_path)
+
+    # analysis lr model
+    if model_type == "logistic_regression":
+        word_id = load_vocab(word_vocab_path)
+        feature_weight = {}
+        word_dict_rev = sorted(word_id.items(), key=lambda x: x[1])
+        for feature, index in word_dict_rev:
+            feature_weight[feature] = list(map(float, model.coef_[:, index]))
+        save_dict(feature_weight, config.lr_feature_weight_path)
 
 
 def train_deep_model(model_type='cnn',
