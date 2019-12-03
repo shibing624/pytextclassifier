@@ -2,7 +2,6 @@
 # Author: XuMing <xuming624@qq.com>
 # Brief:
 
-import logging
 import os
 
 
@@ -41,22 +40,3 @@ def clear_directory(path):
         print("error: %s" % e)
         return False
     return True
-
-
-def get_logger(name, log_file=None):
-    """
-    logger
-    :param name: 模块名称
-    :param log_file: 日志文件，如无则输出到标准输出
-    :return:
-    """
-    format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-    if not log_file:
-        handle = logging.StreamHandler()
-    else:
-        handle = logging.FileHandler(log_file)
-    handle.setFormatter(format)
-    logger = logging.getLogger(name)
-    logger.addHandler(handle)
-    logger.setLevel(logging.DEBUG)
-    return logger

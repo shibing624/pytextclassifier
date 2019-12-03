@@ -3,7 +3,6 @@
 # Brief:
 import time
 
-from keras.models import load_model
 from sklearn.metrics import classification_report, confusion_matrix
 
 import config
@@ -11,7 +10,7 @@ from models.feature import Feature
 from models.reader import data_reader
 from models.xgboost_lr_model import XGBLR
 from utils.data_utils import load_pkl, load_vocab, save
-from utils.io_utils import get_logger
+from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -27,7 +26,7 @@ def infer_classic(model_type='xgboost_lr',
     # load data content
     data_set, true_labels = data_reader(test_data_path, col_sep)
     # init feature
-    feature = Feature(data_set, feature_type=feature_type,
+    feature = Feature(data=data_set, feature_type=feature_type,
                       feature_vec_path=feature_vec_path, is_infer=True)
     # get data feature
     data_feature = feature.get_feature()
@@ -79,7 +78,6 @@ def infer_classic(model_type='xgboost_lr',
             print(confusion_matrix(true_labels_id, pred_labels_id))
         except Exception:
             print("no true labels")
-            pass
 
 
 def infer_deep_model(model_type='cnn',
@@ -90,6 +88,7 @@ def infer_deep_model(model_type='cnn',
                      batch_size=128,
                      col_sep='\t',
                      pred_save_path=None):
+    from keras.models import load_model
     # load data content
     data_set, true_labels = data_reader(data_path, col_sep)
     # init feature

@@ -6,7 +6,7 @@ from gensim.models import Word2Vec
 from gensim.models.keyedvectors import KeyedVectors
 from gensim.models.word2vec import LineSentence
 
-from utils.data_utils import read_lines, dump_pkl
+from utils.data_utils import read_lines, save_pkl
 
 
 def get_sentence(sentence_tag, word_sep=' ', pos_sep='/'):
@@ -69,4 +69,4 @@ def build(train_seg_path, test_seg_path, out_path=None, sentence_path='',
     word_dict = {}
     for word in model.vocab:
         word_dict[word] = model[word]
-    dump_pkl(word_dict, out_path, overwrite=True)
+    save_pkl(word_dict, out_path, overwrite=True)

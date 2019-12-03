@@ -71,6 +71,6 @@ def seg_data(in_file, out_file, col_sep='\t', stop_words_path=''):
 
 if __name__ == '__main__':
     start_time = time()
-    seg_data(config.train_path, config.train_seg_path, col_sep=config.col_sep, stop_words_path=config.stop_words_path)
+    # seg_data(config.train_path, config.train_seg_path, col_sep=config.col_sep, stop_words_path=config.stop_words_path)
     seg_data(config.test_path, config.test_seg_path, col_sep=config.col_sep, stop_words_path=config.stop_words_path)
     logger.info("spend time: %s s" % (time() - start_time))

@@ -9,12 +9,11 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
-from xgboost import XGBClassifier
 
 
 def get_model(model_type):
     if model_type == "logistic_regression":
-        model = LogisticRegression()  # 快，准确率一般。val mean acc:0.91
+        model = LogisticRegression(solver='lbfgs')  # 快，准确率一般。val mean acc:0.91
     elif model_type == "random_forest":
         model = RandomForestClassifier(n_estimators=300)  # 速度还行，准确率一般。val mean acc:0.93125
     elif model_type == "decision_tree":
@@ -24,6 +23,7 @@ def get_model(model_type):
     elif model_type == "bayes":
         model = MultinomialNB()  # 速度快，准确率低。val mean acc:0.62
     elif model_type == "xgboost":
+        from xgboost import XGBClassifier
         model = XGBClassifier()  # 速度慢，准确率高。val mean acc:0.95
     elif model_type == "svm":
         model = SVC(kernel='linear', probability=True)  # 速度慢，准确率高，val mean acc:0.945
@@ -31,6 +31,7 @@ def get_model(model_type):
         model = MLPClassifier()  # 速度一般，准确率一般。val mean acc:0.89125
     elif model_type == 'ensemble':
         from mlxtend.classifier import EnsembleVoteClassifier
+        from xgboost import XGBClassifier
         clf1 = LogisticRegression(random_state=0)
         clf2 = XGBClassifier(random_state=0)
         clf3 = SVC(random_state=0, kernel='linear', probability=True)
@@ -39,6 +40,7 @@ def get_model(model_type):
                                        weights=[1, 2, 2, 1], voting='soft', verbose=2)
     elif model_type == 'stack':
         from mlxtend.classifier import StackingClassifier
+        from xgboost import XGBClassifier
         clf1 = XGBClassifier(random_state=0)
         clf2 = SVC(random_state=0, kernel='linear', probability=True)
         clf3 = MLPClassifier(random_state=0)
@@ -48,5 +50,5 @@ def get_model(model_type):
                                    average_probas=False,
                                    meta_classifier=lr)
     else:
-        model = LogisticRegression()
+        raise ValueError('model type set error.')
     return model

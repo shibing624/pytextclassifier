@@ -5,15 +5,13 @@ import collections
 import re
 
 import numpy as np
-from keras.preprocessing.sequence import pad_sequences
-from keras.preprocessing.text import Tokenizer, text_to_word_sequence
-from scipy import sparse
 from sklearn import preprocessing
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.feature_selection import SelectKBest, chi2
 
-from utils.data_utils import dump_pkl, load_pkl, get_word_segment_data, get_char_segment_data, load_list
-from utils.io_utils import get_logger
+import config
+from utils.data_utils import save_pkl, load_pkl, get_word_segment_data, get_char_segment_data, load_list
+from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -27,14 +25,16 @@ class Feature(object):
                  feature_type='tfidf_char',
                  feature_vec_path=None,
                  is_infer=False,
-                 min_count=1,
                  word_vocab=None,
-                 max_len=400):
+                 min_count=1,
+                 max_len=400,
+                 sentence_symbol_path=config.sentence_symbol_path,
+                 stop_words_path=config.stop_words_path):
         self.data_set = data
         self.feature_type = feature_type
         self.feature_vec_path = feature_vec_path
-        self.sentence_symbol = load_list(path='data/sentence_symbol.txt')
-        self.stop_words = load_list(path='data/stop_words.txt')
+        self.sentence_symbol = load_list(sentence_symbol_path)
+        self.stop_words = load_list(stop_words_path)
         self.is_infer = is_infer
         self.min_count = min_count
         self.word_vocab = word_vocab
@@ -43,22 +43,23 @@ class Feature(object):
     def get_feature(self):
         if self.feature_type == 'tfidf_word':
             data_feature = self.tfidf_word_feature(self.data_set)
+        elif self.feature_type == 'tfidf_char':
+            data_feature = self.tfidf_char_feature(self.data_set)
         elif self.feature_type == 'tf_word':
             data_feature = self.tf_word_feature(self.data_set)
-        elif self.feature_type == 'language':
-            data_feature = self.language_feature(self.data_set)
         elif self.feature_type == 'tfidf_char_language':
-            data_feature = self.tfidf_char_language(self.data_set)
+            data_feature = self.tfidf_char_lang_feature(self.data_set)
         elif self.feature_type == 'vectorize':
-            data_feature = self.vectorize(self.data_set)
+            data_feature = self.vec_feature(self.data_set)
         elif self.feature_type == 'doc_vectorize':
-            data_feature = self.doc_vectorize(self.data_set)
+            data_feature = self.doc_vec_feature(self.data_set)
         else:
-            # tfidf_char
-            data_feature = self.tfidf_char_feature(self.data_set)
+            raise ValueError('not found feature type.')
         return data_feature
 
-    def vectorize(self, data_set):
+    def vec_feature(self, data_set):
+        from keras.preprocessing.sequence import pad_sequences
+        from keras.preprocessing.text import Tokenizer
         tokenizer = Tokenizer()
         tokenizer.fit_on_texts(data_set)
         sequences = tokenizer.texts_to_sequences(data_set)
@@ -69,13 +70,14 @@ class Feature(object):
         print('Shape of Data Tensor:', data_feature.shape)
         return data_feature
 
-    def doc_vectorize(self, data_set, max_sentences=16):
+    def doc_vec_feature(self, data_set, max_sentences=16):
+        from keras.preprocessing.text import Tokenizer, text_to_word_sequence
         tokenizer = Tokenizer()
         tokenizer.fit_on_texts(data_set)
         data_feature = np.zeros((len(data_set), max_sentences, self.max_len), dtype='int32')
+        sentence_symbols = "".join(self.sentence_symbol)
+        split = "[" + sentence_symbols + "]"
         for i, sentence in enumerate(data_set):
-            sentence_symbols = "".join(self.sentence_symbol)
-            split = "[" + sentence_symbols + "]"
             short_sents = re.split(split, sentence)
             for j, sent in enumerate(short_sents):
                 if j < max_sentences and sent.strip():
@@ -106,16 +108,16 @@ class Feature(object):
             data_feature = self.vectorizer.fit_transform(data_set)
         vocab = self.vectorizer.vocabulary_
         logger.info('Vocab size:%d' % len(vocab))
-        logger.debug('Vocab list:')
+        print('Vocab list:')
         count = 0
         for k, v in self.vectorizer.vocabulary_.items():
             if count < 10:
-                logger.debug("%s	%s" % (k, v))
+                print("%s:%s" % (k, v))
                 count += 1
 
         logger.info(data_feature.shape)
         if not self.is_infer:
-            dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
+            save_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
         return data_feature
 
     def tfidf_word_feature(self, data_set):
@@ -129,22 +131,48 @@ class Feature(object):
             self.vectorizer = load_pkl(self.feature_vec_path)
             data_feature = self.vectorizer.transform(data_set)
         else:
-            self.vectorizer = TfidfVectorizer(analyzer='word', ngram_range=(1, 2),
+            self.vectorizer = TfidfVectorizer(analyzer='word', ngram_range=(1, 3),
                                               vocabulary=self.word_vocab, sublinear_tf=True)
             data_feature = self.vectorizer.fit_transform(data_set)
         vocab = self.vectorizer.vocabulary_
         logger.info('Vocab size:%d' % len(vocab))
-        logger.debug('Vocab list:')
+        print('Vocab list:')
         count = 0
         for k, v in self.vectorizer.vocabulary_.items():
             if count < 10:
-                logger.debug("%s	%s" % (k, v))
+                print("%s:%s" % (k, v))
                 count += 1
 
         logger.info(data_feature.shape)
         # if not self.is_infer:
-        dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
+        save_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
         return data_feature
+
+    def gen_ngram(self, tokens, n_gram=3, feature_min_len=1):
+        """
+        生成ngram特征
+        :param tokens: 切词或切字后的list
+        :param n_gram: ngram的n
+        :param feature_min_len: 最小特征长度
+        :return: list
+        """
+        ngrams = []
+        token_len = len(tokens)
+        for index in range(token_len):
+            current_feature = ''
+            for offset in range(min(token_len - index, n_gram)):
+                current_feature += tokens[index + offset]
+                if len(current_feature) >= feature_min_len:
+                    ngrams.append(current_feature)
+        return ngrams
+
+    def gen_ngrams(self, data_set, word_sep=' '):
+        features = []
+        for line in data_set:
+            tokens = line.split(word_sep)
+            feature_list = self.gen_ngram(tokens=tokens)
+            features.append(word_sep.join(feature_list))
+        return features
 
     def tf_word_feature(self, data_set):
         """
@@ -153,29 +181,28 @@ class Feature(object):
         :return:
         """
         data_set = get_word_segment_data(data_set)
+        # generate ngram data
+        data_ngrams = self.gen_ngrams(data_set=data_set)
         if self.is_infer:
             self.vectorizer = load_pkl(self.feature_vec_path)
-            data_feature = self.vectorizer.transform(data_set)
+            data_feature = self.vectorizer.transform(data_ngrams)
         else:
-            self.vectorizer = CountVectorizer(analyzer='word',
-                                              encoding='utf-8',
-                                              lowercase=True,
-                                              vocabulary=self.word_vocab)
-            data_feature = self.vectorizer.fit_transform(data_set)
+            self.vectorizer = CountVectorizer(vocabulary=self.word_vocab)
+            data_feature = self.vectorizer.fit_transform(data_ngrams)
         vocab = self.vectorizer.vocabulary_
         logger.info('Vocab size:%d' % len(vocab))
-        logger.debug('Vocab list:')
+        print('Vocab list:')
         count = 0
         for k, v in self.vectorizer.vocabulary_.items():
             if count < 10:
-                logger.debug("%s	%s" % (k, v))
+                print("%s:%s" % (k, v))
                 count += 1
         feature_names = self.vectorizer.get_feature_names()
         logger.info('feature_names:%s' % feature_names[:20])
 
         logger.info(data_feature.shape)
         if not self.is_infer:
-            dump_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
+            save_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
         return data_feature
 
     def language_feature(self, data_set, word_sep=' ', pos_sep='/'):
@@ -196,6 +223,7 @@ class Feature(object):
         :param word_sep:
         :return:
         """
+        from scipy.sparse import csr_matrix
         features = []
         self.word_counts_top_n = self.get_word_counts_top_n(self.data_set, n=30)
         for line in data_set:
@@ -216,18 +244,17 @@ class Feature(object):
             if len(feature) < 97:
                 logger.error('error:%d, %s' % (len(feature), line))
         features_np = np.array(features, dtype=float)
-        X = sparse.csr_matrix(features_np)
-        return X
+        return csr_matrix(features_np)
 
     def add_feature(self, X, feature_to_add):
-        '''
+        """
         Returns sparse feature matrix with added feature.
         feature_to_add can also be a list of features.
-        '''
+        """
         from scipy.sparse import csr_matrix, hstack
         return hstack([X, csr_matrix(feature_to_add)], 'csr')
 
-    def tfidf_char_language(self, data_set):
+    def tfidf_char_lang_feature(self, data_set):
         """
         Get TFIDF feature base on char segment
         :param data_set:

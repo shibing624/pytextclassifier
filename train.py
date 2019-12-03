@@ -4,19 +4,16 @@
 
 import time
 
-from keras.callbacks import ModelCheckpoint
-from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 
 import config
 from models.classic_model import get_model
-from models.deep_model import fasttext_model, cnn_model, rnn_model, han_model
 from models.evaluate import eval, plt_history
 from models.feature import Feature
 from models.reader import data_reader
 from models.xgboost_lr_model import XGBLR
-from utils.data_utils import dump_pkl, write_vocab, load_pkl, build_vocab, load_vocab
-from utils.io_utils import get_logger
+from utils.data_utils import save_pkl, write_vocab, load_pkl, build_vocab, load_vocab
+from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -31,6 +28,7 @@ def train_classic(model_type='logistic_regression',
                   word_vocab_path='',
                   label_vocab_path='',
                   pr_figure_path=''):
+    logger.info("train classic model ...")
     # load data
     data_content, data_lbl = data_reader(data_path, col_sep)
     word_lst = []
@@ -46,7 +44,7 @@ def train_classic(model_type='logistic_regression',
     # save label vocab
     write_vocab(label_vocab, label_vocab_path)
     label_id = load_vocab(label_vocab_path)
-    logger.info(label_id)
+    print(label_id)
     data_label = [label_id[i] for i in data_lbl]
     num_classes = len(set(data_label))
     logger.info('num_classes:%d' % num_classes)
@@ -72,7 +70,7 @@ def train_classic(model_type='logistic_regression',
     model.fit(X_train, y_train)
     # save model
     if model_type != 'xgboost_lr':
-        dump_pkl(model, model_save_path, overwrite=True)
+        save_pkl(model, model_save_path, overwrite=True)
     # analysis lr model
     if model_type == "logistic_regression" and config.is_debug:
         # show each category top features
@@ -86,7 +84,7 @@ def train_classic(model_type='logistic_regression',
             logger.debug(feature_sorted[:20])
             feature_dict = {k[0]: k[1] for k in feature_sorted}
             features[idx] = feature_dict
-        dump_pkl(features, 'output/lr_features.pkl', overwrite=True)
+        save_pkl(features, 'output/lr_features.pkl', overwrite=True)
 
     # evaluate
     eval(model, X_val, y_val, num_classes=num_classes, pr_figure_path=pr_figure_path)
@@ -107,6 +105,11 @@ def train_deep_model(model_type='cnn',
                      num_filters=512,
                      filter_sizes='3,4,5',
                      dropout=0.5):
+    from keras.callbacks import ModelCheckpoint
+    from keras.utils import to_categorical
+
+    from models.deep_model import fasttext_model, cnn_model, rnn_model, han_model
+    logger.info("train deep model ...")
     # data reader
     data_content, data_lbl = data_reader(data_path, col_sep)
     word_lst = []
@@ -132,10 +135,10 @@ def train_deep_model(model_type='cnn',
     # init feature
     # han model need [doc sentence dim] feature(shape 3); others is [sentence dim] feature(shape 2)
     if model_type == 'han':
-        logger.info('Hierarchical Attention Network model feature_type must be: doc_vectorize')
+        logger.warn('Hierarchical Attention Network model feature_type must be: doc_vectorize')
         feature_type = 'doc_vectorize'
     else:
-        logger.info('feature_type: vectorize')
+        logger.warn('feature_type: vectorize')
         feature_type = 'vectorize'
     feature = Feature(data=data_content, feature_type=feature_type, word_vocab=word_vocab, max_len=max_len)
     # get data feature

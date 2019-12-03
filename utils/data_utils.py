@@ -154,7 +154,7 @@ def load_pkl(pkl_path):
     return result
 
 
-def dump_pkl(vocab, pkl_path, overwrite=True):
+def save_pkl(vocab, pkl_path, overwrite=True):
     """
     存储文件
     :param pkl_path:
@@ -165,8 +165,8 @@ def dump_pkl(vocab, pkl_path, overwrite=True):
         return
     if pkl_path:
         with open(pkl_path, 'wb') as f:
-            pickle.dump(vocab, f, protocol=pickle.HIGHEST_PROTOCOL)
-            # pickle.dump(vocab, f, protocol=0)
+            # pickle.dump(vocab, f, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(vocab, f, protocol=0)
         print("save %s ok." % pkl_path)
 
 
