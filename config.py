@@ -14,14 +14,15 @@ train_seg_path = os.path.join(pwd_path, "data/train_seg_sample.txt")  # segment 
 test_seg_path = os.path.join(pwd_path, "data/test_seg_sample.txt")  # segment of test file
 
 col_sep = '\t'  # separate label and content of train data
+
 # one of "logistic_regression, random_forest, bayes, decision_tree, svm, knn, xgboost, xgboost_lr,
 # mlp, ensemble, stack, fasttext, cnn, rnn, han"
-model_type = "logistic_regression"
+model_type = "fasttext"
 
-# feature type usage
+# feature type
 # classic text classification usage:  one of "tfidf_char, tfidf_word, tf_word",
-# deep text classification usage: han is "doc_vectorize"; cnn is "fasttext", rnn is "vectorize"
-feature_type = 'tf_word'
+# deep text classification usage: cnn/rnn/fasttext is "vectorize"
+feature_type = 'vectorize'
 
 # default params
 sentence_symbol_path = os.path.join(pwd_path, 'data/sentence_symbol.txt')

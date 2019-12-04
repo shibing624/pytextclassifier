@@ -28,7 +28,7 @@ def train_classic(model_type='logistic_regression',
                   word_vocab_path='',
                   label_vocab_path='',
                   pr_figure_path=''):
-    logger.info("train classic model ...")
+    logger.info("train classic model, model_type:{}, feature_type:{}".format(model_type, feature_type))
     # load data
     data_content, data_lbl = data_reader(data_path, col_sep)
     word_lst = []
@@ -39,6 +39,7 @@ def train_classic(model_type='logistic_regression',
     word_vocab = build_vocab(word_lst, min_count=min_count, sort=True, lower=True)
     # save word vocab
     write_vocab(word_vocab, word_vocab_path)
+    word_id = load_vocab(word_vocab_path)
     # label
     label_vocab = build_vocab(data_lbl)
     # save label vocab
@@ -53,10 +54,10 @@ def train_classic(model_type='logistic_regression',
 
     # init feature
     if feature_type in ['doc_vectorize', 'vectorize']:
-        logger.info('feature type error. use tfidf_word replace.')
+        logger.error('feature type error. use tfidf_word replace.')
         feature_type = 'tfidf_word'
     feature = Feature(data=data_content, feature_type=feature_type,
-                      feature_vec_path=feature_vec_path, word_vocab=word_vocab)
+                      feature_vec_path=feature_vec_path, word_vocab=word_vocab, is_infer=False)
     # get data feature
     data_feature = feature.get_feature()
 
@@ -76,7 +77,6 @@ def train_classic(model_type='logistic_regression',
 
     # analysis lr model
     if model_type == "logistic_regression":
-        word_id = load_vocab(word_vocab_path)
         feature_weight = {}
         word_dict_rev = sorted(word_id.items(), key=lambda x: x[1])
         for feature, index in word_dict_rev:
@@ -103,7 +103,7 @@ def train_deep_model(model_type='cnn',
     from keras.utils import to_categorical
 
     from models.deep_model import fasttext_model, cnn_model, rnn_model, han_model
-    logger.info("train deep model ...")
+    logger.info("train deep model, model_type:{}, data_path:{}".format(model_type, data_path))
     # data reader
     data_content, data_lbl = data_reader(data_path, col_sep)
     word_lst = []

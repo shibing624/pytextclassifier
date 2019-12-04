@@ -96,21 +96,23 @@ def plt_history(history, output_dir='output/', model_name='cnn'):
     print('save to:', acc_path)
 
 
-def cal_multiclass_lr_predict(data_ngrams, feature_weight_dict, id_label):
+def cal_multiclass_lr_predict(data_set, feature_weight_dict, id_label):
     """计算多分类预测结果, 返回预测值大于0.03的结果list, 每个元素[id, name, prob]
-    [in]  data_ngrams: 输入数据
+    [in]  data_set: 输入数据
           feature_weight_dict: 特征
           id_label: label分类
     [out] label_list: 预测结果
     """
     result = []
-    for f in data_ngrams:
-        hit_feature = set(f.split(" ")) & set(feature_weight_dict.keys())
+    for line in data_set:
+        features = line.split(" ")
         label_pred = {}
         total = 0.0
         for id in id_label.keys():
             value = 0.0
-            for word in hit_feature:
+            for word in features:
+                if word not in feature_weight_dict:
+                    continue
                 cur_weight = float(feature_weight_dict[word].split(" ")[id])
                 value += cur_weight
             label_prob = 1.0 / (1.0 + math.exp(-value))
@@ -122,6 +124,6 @@ def cal_multiclass_lr_predict(data_ngrams, feature_weight_dict, id_label):
             val = "%.4f" % (v / total)
             if float(val) < 0.03:
                 continue
-            label_list.append([k, id_label[k], float(val)])
+            label_list.append((k, id_label[k], float(val)))
         result.append(label_list)
     return result

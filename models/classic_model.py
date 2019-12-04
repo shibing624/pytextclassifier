@@ -13,7 +13,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 def get_model(model_type):
     if model_type == "logistic_regression":
-        model = LogisticRegression(solver='lbfgs')  # 快，准确率一般。val mean acc:0.91
+        model = LogisticRegression(solver='lbfgs', fit_intercept=False)  # 快，准确率一般。val mean acc:0.91
     elif model_type == "random_forest":
         model = RandomForestClassifier(n_estimators=300)  # 速度还行，准确率一般。val mean acc:0.93125
     elif model_type == "decision_tree":

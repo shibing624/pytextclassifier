@@ -67,9 +67,9 @@ if __name__ == "__main__":
 
     data_content, data_lbl = data_reader('../data/training_new_seg_10k.txt', '\t')
     # init feature
-    feature = Feature(feature_type='tfidf_word', feature_vec_path='../output/temp')
+    feature = Feature(data_content, feature_type='tfidf_word', feature_vec_path='../output/temp')
     # get data feature
-    data_feature = feature.get_feature(data_content)
+    data_feature = feature.get_feature()
     # label
     data_label = feature.label_encoder(data_lbl)
     X_train, X_val, y_train, y_val = train_test_split(

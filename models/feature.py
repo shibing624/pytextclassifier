@@ -131,8 +131,7 @@ class Feature(object):
             self.vectorizer = load_pkl(self.feature_vec_path)
             data_feature = self.vectorizer.transform(data_set)
         else:
-            self.vectorizer = TfidfVectorizer(analyzer='word', ngram_range=(1, 3),
-                                              vocabulary=self.word_vocab, sublinear_tf=True)
+            self.vectorizer = TfidfVectorizer(analyzer='word', vocabulary=self.word_vocab, sublinear_tf=True)
             data_feature = self.vectorizer.fit_transform(data_set)
         vocab = self.vectorizer.vocabulary_
         logger.info('Vocab size:%d' % len(vocab))
@@ -157,6 +156,7 @@ class Feature(object):
         :return: list
         """
         ngrams = []
+        words = []
         token_len = len(tokens)
         for index in range(token_len):
             current_feature = ''
@@ -164,15 +164,18 @@ class Feature(object):
                 current_feature += tokens[index + offset]
                 if len(current_feature) >= feature_min_len:
                     ngrams.append(current_feature)
-        return ngrams
+                    words.append(current_feature)
+        return ngrams, words
 
     def gen_ngrams(self, data_set, word_sep=' '):
         features = []
+        words = []
         for line in data_set:
             tokens = line.split(word_sep)
-            feature_list = self.gen_ngram(tokens=tokens)
+            feature_list,ws = self.gen_ngram(tokens=tokens)
             features.append(word_sep.join(feature_list))
-        return features
+            words.extend(ws)
+        return features, words
 
     def tf_word_feature(self, data_set):
         """
@@ -181,14 +184,12 @@ class Feature(object):
         :return:
         """
         data_set = get_word_segment_data(data_set)
-        # generate ngram data
-        data_ngrams = self.gen_ngrams(data_set=data_set)
         if self.is_infer:
             self.vectorizer = load_pkl(self.feature_vec_path)
-            data_feature = self.vectorizer.transform(data_ngrams)
+            data_feature = self.vectorizer.transform(data_set)
         else:
             self.vectorizer = CountVectorizer(vocabulary=self.word_vocab)
-            data_feature = self.vectorizer.fit_transform(data_ngrams)
+            data_feature = self.vectorizer.fit_transform(data_set)
         vocab = self.vectorizer.vocabulary_
         logger.info('Vocab size:%d' % len(vocab))
         print('Vocab list:')
@@ -205,7 +206,7 @@ class Feature(object):
             save_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
         return data_feature
 
-    def language_feature(self, data_set, word_sep=' ', pos_sep='/'):
+    def _language_feature(self, data_set, word_sep=' ', pos_sep='/'):
         """
         Get Linguistics feature
         词性表：
@@ -225,7 +226,7 @@ class Feature(object):
         """
         from scipy.sparse import csr_matrix
         features = []
-        self.word_counts_top_n = self.get_word_counts_top_n(self.data_set, n=30)
+        self.word_counts_top_n = self._get_word_counts_top_n(self.data_set, n=30)
         for line in data_set:
             if pos_sep not in line:
                 continue
@@ -246,7 +247,7 @@ class Feature(object):
         features_np = np.array(features, dtype=float)
         return csr_matrix(features_np)
 
-    def add_feature(self, X, feature_to_add):
+    def _add_feature(self, X, feature_to_add):
         """
         Returns sparse feature matrix with added feature.
         feature_to_add can also be a list of features.
@@ -261,9 +262,9 @@ class Feature(object):
         :return:
         """
         tfidf_feature = self.tfidf_char_feature(data_set)
-        linguistics_feature = self.language_feature(data_set)
+        linguistics_feature = self._language_feature(data_set)
         linguistics_feature_np = linguistics_feature.toarray()
-        data_feature = self.add_feature(tfidf_feature, linguistics_feature_np)
+        data_feature = self._add_feature(tfidf_feature, linguistics_feature_np)
         logger.info('data_feature shape: %s' % data_feature.shape)
         return data_feature
 
@@ -325,7 +326,7 @@ class Feature(object):
 
         return features
 
-    def get_word_counts_top_n(self, data_set, n=30, word_sep=' '):
+    def _get_word_counts_top_n(self, data_set, n=30, word_sep=' '):
         data_set = get_word_segment_data(data_set)
         words = []
         for content in data_set:

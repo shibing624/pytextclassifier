@@ -6,11 +6,11 @@ import time
 from sklearn.metrics import classification_report, confusion_matrix
 
 import config
+from models.evaluate import cal_multiclass_lr_predict
 from models.feature import Feature
 from models.reader import data_reader
 from models.xgboost_lr_model import XGBLR
-from models.evaluate import cal_multiclass_lr_predict
-from utils.data_utils import load_pkl, load_vocab, save_predict_result,load_dict
+from utils.data_utils import load_pkl, load_vocab, save_predict_result, load_dict
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -65,10 +65,8 @@ def infer_classic(model_type='xgboost_lr',
     # analysis lr model
     if model_type == "logistic_regression":
         feature_weight_dict = load_dict(config.lr_feature_weight_path)
-        data_ngrams = feature.gen_ngrams(data_set)
-        pred_labels = cal_multiclass_lr_predict(data_ngrams, feature_weight_dict, id_label)
+        pred_labels = cal_multiclass_lr_predict(data_set, feature_weight_dict, id_label)
         print(pred_labels[:5])
-
 
 
 def infer_deep_model(model_type='cnn',
