@@ -90,7 +90,7 @@ class Feature(object):
                             k += 1
         word_index = tokenizer.word_index
         logger.info('Number of Unique Tokens: %d' % len(word_index))
-        logger.info('Shape of Data Tensor:%s' % data_feature.shape)
+        print('Shape of Data Tensor:', data_feature.shape)
         return data_feature
 
     def tfidf_char_feature(self, data_set):
@@ -158,7 +158,7 @@ class Feature(object):
         words = []
         for line in data_set:
             tokens = line.split(word_sep)
-            feature_list,ws = self.gen_ngram(tokens=tokens)
+            feature_list, ws = self.gen_ngram(tokens=tokens)
             features.append(word_sep.join(feature_list))
             words.extend(ws)
         return features, words

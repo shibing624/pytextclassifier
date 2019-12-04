@@ -111,10 +111,10 @@ def han_model(max_len=400,
                           input_length=max_len, name="embedding")(inputs)
     lstm_layer = Bidirectional(LSTM(hidden_dim))(embedding)
     # lstm_layer_att = AttLayer(hidden_dim)(lstm_layer)
-    sentEncoder = Model(inputs, lstm_layer)
+    sent_encoder = Model(inputs, lstm_layer)
 
     doc_inputs = Input(shape=(max_sentences, max_len), dtype='int32', name='doc_input')
-    doc_encoder = TimeDistributed(sentEncoder)(doc_inputs)
+    doc_encoder = TimeDistributed(sent_encoder)(doc_inputs)
     doc_layer = Bidirectional(LSTM(hidden_dim))(doc_encoder)
     # doc_layer_att = AttLayer(hidden_dim)(doc_layer)
     output = Dense(num_classes, activation='softmax')(doc_layer)
