@@ -70,30 +70,34 @@ def plot_pr(auc_score, precision, recall, label=None, figure_path=None):
 
 
 def plt_history(history, output_dir='output/', model_name='cnn'):
-    from matplotlib import pyplot
-    model_name = model_name.upper()
-    fig1 = pyplot.figure()
-    pyplot.plot(history.history['loss'], 'r', linewidth=3.0)
-    pyplot.plot(history.history['val_loss'], 'b', linewidth=3.0)
-    pyplot.legend(['Training loss', 'Validation Loss'], fontsize=18)
-    pyplot.xlabel('Epochs ', fontsize=16)
-    pyplot.ylabel('Loss', fontsize=16)
-    pyplot.title('Loss Curves :' + model_name, fontsize=16)
-    loss_path = output_dir + model_name + '_loss.png'
-    fig1.savefig(loss_path)
-    print('save to:', loss_path)
-    # pyplot.show()
+    try:
+        from matplotlib import pyplot
+        model_name = model_name.upper()
+        fig1 = pyplot.figure()
+        pyplot.plot(history.history['loss'], 'r', linewidth=3.0)
+        pyplot.plot(history.history['val_loss'], 'b', linewidth=3.0)
+        pyplot.legend(['Training loss', 'Validation Loss'], fontsize=18)
+        pyplot.xlabel('Epochs ', fontsize=16)
+        pyplot.ylabel('Loss', fontsize=16)
+        pyplot.title('Loss Curves :' + model_name, fontsize=16)
+        loss_path = output_dir + model_name + '_loss.png'
+        fig1.savefig(loss_path)
+        print('save to:', loss_path)
+        # pyplot.show()
 
-    fig2 = pyplot.figure()
-    pyplot.plot(history.history['acc'], 'r', linewidth=3.0)
-    pyplot.plot(history.history['val_acc'], 'b', linewidth=3.0)
-    pyplot.legend(['Training Accuracy', 'Validation Accuracy'], fontsize=18)
-    pyplot.xlabel('Epochs ', fontsize=16)
-    pyplot.ylabel('Accuracy', fontsize=16)
-    pyplot.title('Accuracy Curves : ' + model_name, fontsize=16)
-    acc_path = output_dir + model_name + '_accuracy.png'
-    fig2.savefig(acc_path)
-    print('save to:', acc_path)
+        fig2 = pyplot.figure()
+        pyplot.plot(history.history['acc'], 'r', linewidth=3.0)
+        pyplot.plot(history.history['val_acc'], 'b', linewidth=3.0)
+        pyplot.legend(['Training Accuracy', 'Validation Accuracy'], fontsize=18)
+        pyplot.xlabel('Epochs ', fontsize=16)
+        pyplot.ylabel('Accuracy', fontsize=16)
+        pyplot.title('Accuracy Curves : ' + model_name, fontsize=16)
+        acc_path = output_dir + model_name + '_accuracy.png'
+        fig2.savefig(acc_path)
+        print('save to:', acc_path)
+    except Exception as e:
+        print("save image error with matplotlib")
+        pass
 
 
 def cal_multiclass_lr_predict(data_set, feature_weight_dict, id_label):

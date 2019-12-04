@@ -17,17 +17,16 @@ col_sep = '\t'  # separate label and content of train data
 
 # one of "logistic_regression, random_forest, bayes, decision_tree, svm, knn, xgboost, xgboost_lr,
 # mlp, ensemble, stack, fasttext, cnn, rnn, han"
-model_type = "fasttext"
+model_type = "logistic_regression"
 
 # feature type
 # classic text classification usage:  one of "tfidf_char, tfidf_word, tf_word",
 # deep text classification usage: cnn/rnn/fasttext is "vectorize"
-feature_type = 'vectorize'
+feature_type = 'tf_word'
 
 # default params
 sentence_symbol_path = os.path.join(pwd_path, 'data/sentence_symbol.txt')
 stop_words_path = os.path.join(pwd_path, 'data/stop_words.txt')
-is_debug = True  # open debug mode, default "True"
 
 output_dir = os.path.join(pwd_path, "output")  # output dir
 if not os.path.exists(output_dir):

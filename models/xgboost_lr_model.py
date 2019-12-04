@@ -4,10 +4,8 @@
 
 import pickle
 
-import xgboost as xgb
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import OneHotEncoder
-from xgboost import DMatrix
 import numpy as np
 
 
@@ -16,8 +14,8 @@ class XGBLR(object):
     xgboost as feature transform
     xgboost's output as the input feature of LR
     """
-
     def __init__(self, model_save_path=''):
+        import xgboost as xgb
         self.lr_clf = LogisticRegression()
         self.one_hot_encoder = OneHotEncoder()
         self.xgb_clf = xgb.XGBClassifier()
@@ -32,6 +30,7 @@ class XGBLR(object):
         :param train_y:
         :return:
         """
+        from xgboost import DMatrix
         self.xgb_clf.fit(train_x, train_y, eval_metric=self.xgb_eval_metric,
                          eval_set=[(train_x, train_y)])
         xgb_eval_result = self.xgb_clf.evals_result()
@@ -71,6 +70,7 @@ class XGBLR(object):
         :param test_x:
         :return:
         """
+        from xgboost import DMatrix
         if not self.init:
             self.load_model()
         test_x_mat = DMatrix(test_x)
@@ -86,6 +86,7 @@ class XGBLR(object):
         :return: T : array-like, shape = [n_samples, n_classes]
             Returns the probability of the sample for each class in the model
         """
+        from xgboost import DMatrix
         if not self.init:
             self.load_model()
         test_x_mat = DMatrix(test_x)
