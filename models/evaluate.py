@@ -56,17 +56,21 @@ def eval(model, test_data, test_label, thresholds=0.5, num_classes=2, pr_figure_
 
 def plot_pr(auc_score, precision, recall, label=None, figure_path=None):
     """绘制R/P曲线"""
-    from matplotlib import pylab
-    pylab.figure(num=None, figsize=(6, 5))
-    pylab.xlim([0.0, 1.0])
-    pylab.ylim([0.0, 1.0])
-    pylab.xlabel('Recall')
-    pylab.ylabel('Precision')
-    pylab.title('P/R (AUC=%0.2f) / %s' % (auc_score, label))
-    pylab.fill_between(recall, precision, alpha=0.5)
-    pylab.grid(True, linestyle='-', color='0.75')
-    pylab.plot(recall, precision, lw=1)
-    pylab.savefig(figure_path)
+    try:
+        from matplotlib import pylab
+        pylab.figure(num=None, figsize=(6, 5))
+        pylab.xlim([0.0, 1.0])
+        pylab.ylim([0.0, 1.0])
+        pylab.xlabel('Recall')
+        pylab.ylabel('Precision')
+        pylab.title('P/R (AUC=%0.2f) / %s' % (auc_score, label))
+        pylab.fill_between(recall, precision, alpha=0.5)
+        pylab.grid(True, linestyle='-', color='0.75')
+        pylab.plot(recall, precision, lw=1)
+        pylab.savefig(figure_path)
+    except Exception as e:
+        print("save image error with matplotlib")
+        pass
 
 
 def plt_history(history, output_dir='output/', model_name='cnn'):
