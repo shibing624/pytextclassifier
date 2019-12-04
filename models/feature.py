@@ -108,13 +108,6 @@ class Feature(object):
             data_feature = self.vectorizer.fit_transform(data_set)
         vocab = self.vectorizer.vocabulary_
         logger.info('Vocab size:%d' % len(vocab))
-        print('Vocab list:')
-        count = 0
-        for k, v in self.vectorizer.vocabulary_.items():
-            if count < 10:
-                print("%s:%s" % (k, v))
-                count += 1
-
         logger.info(data_feature.shape)
         if not self.is_infer:
             save_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
@@ -135,13 +128,6 @@ class Feature(object):
             data_feature = self.vectorizer.fit_transform(data_set)
         vocab = self.vectorizer.vocabulary_
         logger.info('Vocab size:%d' % len(vocab))
-        print('Vocab list:')
-        count = 0
-        for k, v in self.vectorizer.vocabulary_.items():
-            if count < 10:
-                print("%s:%s" % (k, v))
-                count += 1
-
         logger.info(data_feature.shape)
         # if not self.is_infer:
         save_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
@@ -192,15 +178,8 @@ class Feature(object):
             data_feature = self.vectorizer.fit_transform(data_set)
         vocab = self.vectorizer.vocabulary_
         logger.info('Vocab size:%d' % len(vocab))
-        print('Vocab list:')
-        count = 0
-        for k, v in self.vectorizer.vocabulary_.items():
-            if count < 10:
-                print("%s:%s" % (k, v))
-                count += 1
         feature_names = self.vectorizer.get_feature_names()
         logger.info('feature_names:%s' % feature_names[:20])
-
         logger.info(data_feature.shape)
         if not self.is_infer:
             save_pkl(self.vectorizer, self.feature_vec_path, overwrite=True)
