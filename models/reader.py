@@ -21,9 +21,5 @@ def data_reader(path, col_sep='\t'):
                     print('error, ', line)
                     continue
                 labels.append(label)
-            else:
-                if line in labels:
-                    continue
-                content = line
-            contents.append(content)
+                contents.append(content)
     return contents, labels
