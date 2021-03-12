@@ -23,3 +23,8 @@ def data_reader(path, col_sep='\t'):
                 labels.append(label)
                 contents.append(content)
     return contents, labels
+
+
+if __name__ == '__main__':
+    a, b = data_reader('../data/test_seg_sample.txt', '\t')
+    print(a[:3], b[:3])
