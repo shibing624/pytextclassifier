@@ -63,7 +63,7 @@ def infer_classic(model_type='xgboost_lr',
             print("error. no true labels")
 
     # analysis lr model
-    if model_type == "logistic_regression":
+    if config.debug and model_type == "logistic_regression":
         feature_weight_dict = load_dict(config.lr_feature_weight_path)
         pred_labels = cal_multiclass_lr_predict(data_set, feature_weight_dict, id_label)
         print(pred_labels[:5])

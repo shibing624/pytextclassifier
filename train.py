@@ -76,7 +76,7 @@ def train_classic(model_type='logistic_regression',
     eval(model, X_val, y_val, num_classes=num_classes, pr_figure_path=pr_figure_path)
 
     # analysis lr model
-    if model_type == "logistic_regression":
+    if config.debug and model_type == "logistic_regression":
         feature_weight = {}
         word_dict_rev = sorted(word_id.items(), key=lambda x: x[1])
         for feature, index in word_dict_rev:

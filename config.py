@@ -24,6 +24,7 @@ model_type = "logistic_regression"
 # deep text classification usage: cnn/rnn/fasttext is "vectorize"
 feature_type = 'tf_word'
 
+debug = False
 # default params
 sentence_symbol_path = os.path.join(pwd_path, 'data/sentence_symbol.txt')
 stop_words_path = os.path.join(pwd_path, 'data/stop_words.txt')
