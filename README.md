@@ -20,22 +20,26 @@ Text classifier and cluster. It can be applied to the fields of sentiment polari
   * RandomForest
   * DecisionTreeClassifier
   * Xgboost
-  * Neural Network
+  * Xgboost_lr
+  * MLP
+  * Ensemble
+  * Stack
+  * Fasttext
+  * TextCNN
+  * BILSTM
+
 > * Evaluate
   * Precision
   * Recall
   * F1
+  
 > * Test
   * Chi-square test
+  
 > * Cluster
   * MiniBatchKmeans
 
 While providing rich functions, **text-classifier** internal modules adhere to low coupling, model adherence to inert loading, dictionary publication, and easy to use.
-
-------
-## demo 
-
-https://www.borntowin.cn/product/sentiment_classify
 
 ------
 
@@ -78,8 +82,8 @@ python3 infer.py
   - [x] Ensemble
   - [x] Stack
   - [x] Xgboost_lr
-  - [x] text CNN
-  - [x] text RNN
+  - [x] textCNN
+  - [x] textRNN
   - [x] fasttext
   - [x] HAN
   - [x] Kmenas
