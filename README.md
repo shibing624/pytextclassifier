@@ -12,32 +12,34 @@ Text classifier and cluster. It can be applied to the fields of sentiment polari
 **text-classifier** is a python Open Source Toolkit for text classification and text clustering. The goal is to implement text analysis algorithm, so as to achieve the use in the production environment. **text-classifier** has the characteristics of clear algorithm, high performance and customizable corpus.
 
 **text-classifier** provides the following functions：
-> * Classifier
-  * LogisticRegression
-  * MultinomialNB
-  * KNN
-  * SVM
-  * RandomForest
-  * DecisionTreeClassifier
-  * Xgboost
-  * Xgboost_lr
-  * MLP
-  * Ensemble
-  * Stack
-  * Fasttext
-  * TextCNN
-  * BILSTM
+### Classifier
+  - [x] LogisticRegression
+  - [x] Random Forest
+  - [x] Decision Tree
+  - [x] K-Nearest Neighbours
+  - [x] Naive bayes
+  - [x] Xgboost
+  - [x] Support Vector Machine(SVM)
+  - [x] Xgboost
+  - [x] Xgboost_lr
+  - [x] MLP
+  - [x] Ensemble
+  - [x] Stack
+  - [x] TextCNN
+  - [x] TextRNN
+  - [x] Fasttext
 
-> * Evaluate
-  * Precision
-  * Recall
-  * F1
+### Evaluate
+  - [x] Precision
+  - [x] Recall
+  - [x] F1
+
   
-> * Test
-  * Chi-square test
+### Test
+  - [x] Chi-square test
   
-> * Cluster
-  * MiniBatchKmeans
+### Cluster
+  - [x] MiniBatchKmeans
 
 While providing rich functions, **text-classifier** internal modules adhere to low coupling, model adherence to inert loading, dictionary publication, and easy to use.
 
@@ -68,25 +70,6 @@ python3 train.py
 ```
 python3 infer.py
 ```
-
-
-## Algorithm
-  - [x] LogisticRegression
-  - [x] Random Forest
-  - [x] Decision Tree
-  - [x] K-Nearest Neighbours
-  - [x] Naive bayes
-  - [x] Xgboost
-  - [x] Support Vector Machine(SVM)
-  - [x] MLP
-  - [x] Ensemble
-  - [x] Stack
-  - [x] Xgboost_lr
-  - [x] textCNN
-  - [x] textRNN
-  - [x] fasttext
-  - [x] HAN
-  - [x] Kmenas
 
 
 ## Thanks
