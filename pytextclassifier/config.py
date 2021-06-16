@@ -31,7 +31,7 @@ debug = False
 sentence_symbol_path = os.path.join(pwd_path, 'data/sentence_symbol.txt')
 stop_words_path = os.path.join(pwd_path, 'data/stop_words.txt')
 
-output_dir = os.path.join(pwd_path, "output")  # output dir
+output_dir = os.path.join(pwd_path, "../output")  # output dir
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 word_vocab_path = os.path.join(output_dir, "vocab_{}_{}.txt".format(feature_type, model_type))  # vocab path
