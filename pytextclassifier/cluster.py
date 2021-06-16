@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-@author:XuMing（xuming624@qq.com)
+@author:XuMing(xuming624@qq.com)
 @description: 
 """
 
 import os
 import pickle
 from collections import Counter
-
+from codecs import open
 import jieba
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from config import stop_words_path
+from pytextclassifier.config import stop_words_path
 
 # 自定义停用字词
 CUSTOM_STOP_WORDS = ["地域", "投放", "关键词"]
@@ -77,7 +77,7 @@ def feature(feature_file_path):
         print(terms[:10])
 
         with open(feature_file_path, 'wb') as f:
-            pickle.dump(feature_matrix, f)
+            pickle.dump(feature_matrix, f, protocol=2)
     else:
         with open(feature_file_path, "rb") as f:
             feature_matrix = pickle.load(f)
@@ -113,7 +113,7 @@ def show_plt(feature_matrix, labels):
 if __name__ == "__main__":
     input_file_path = './data/train_seg_sample.txt'
     output_file = 'out.txt'
-    feature_file_path = input_file_path + '_feature.pkl'
+    feature_file_path = 'cluster_feature.pkl'
 
     feature_matrix = feature(feature_file_path)
     labels = kmeans_train(feature_matrix, output_file)

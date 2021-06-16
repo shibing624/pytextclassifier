@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-# Author: XuMing <xuming624@qq.com>
-# Brief: 配置文件
+"""
+@author:XuMing(xuming624@qq.com)
+@description:
+"""
 
 
 import os
@@ -24,7 +26,7 @@ model_type = "logistic_regression"
 # deep text classification usage: cnn/rnn/fasttext is "vectorize"
 feature_type = 'tf_word'
 
-debug = False
+debug = True
 # default params
 sentence_symbol_path = os.path.join(pwd_path, 'data/sentence_symbol.txt')
 stop_words_path = os.path.join(pwd_path, 'data/stop_words.txt')

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-# Author: XuMing <xuming624@qq.com>
+# Author: XuMing(xuming624@qq.com)
 # Brief: 
 
 from gensim.models import Word2Vec
 from gensim.models.keyedvectors import KeyedVectors
 from gensim.models.word2vec import LineSentence
 
-from utils.data_utils import read_lines, save_pkl
+from pytextclassifier.utils.data_utils import read_lines, save_pkl
 
 
 def get_sentence(sentence_tag, word_sep=' ', pos_sep='/'):

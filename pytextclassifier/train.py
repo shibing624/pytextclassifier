@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-# Author: XuMing <xuming624@qq.com>
-# Brief:
+"""
+@author:XuMing(xuming624@qq.com)
+@description:
+"""
 
 import time
 
 from sklearn.model_selection import train_test_split
 
-import config
-from models.classic_model import get_model
-from models.evaluate import eval, plt_history
-from models.feature import Feature
-from models.reader import data_reader
-from models.xgboost_lr_model import XGBLR
-from utils.data_utils import save_pkl, write_vocab, build_vocab, load_vocab, save_dict
-from utils.logger import get_logger
-
-logger = get_logger(__name__)
+from pytextclassifier import config
+from pytextclassifier.models.classic_model import get_model
+from pytextclassifier.models.evaluate import eval, plt_history
+from pytextclassifier.models.feature import Feature
+from pytextclassifier.models.reader import data_reader
+from pytextclassifier.models.xgboost_lr_model import XGBLR
+from pytextclassifier.utils.data_utils import save_pkl, write_vocab, build_vocab, load_vocab, save_dict
+from pytextclassifier.utils.log import logger
 
 
 def train_classic(model_type='logistic_regression',
@@ -102,7 +102,7 @@ def train_deep_model(model_type='cnn',
     from keras.callbacks import ModelCheckpoint
     from keras.utils import to_categorical
 
-    from models.deep_model import fasttext_model, cnn_model, rnn_model, han_model
+    from pytextclassifier.models.deep_model import fasttext_model, cnn_model, rnn_model, han_model
     logger.info("train deep model, model_type:{}, data_path:{}".format(model_type, data_path))
     # data reader
     data_content, data_lbl = data_reader(data_path, col_sep)

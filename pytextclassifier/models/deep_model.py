@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@author:XuMing（xuming624@qq.com)
+@author:XuMing(xuming624@qq.com)
 @description: 
 """
 from keras.layers import Dense, Dropout, Flatten, Input, MaxPooling1D, Convolution1D

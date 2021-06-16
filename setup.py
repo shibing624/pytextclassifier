@@ -11,9 +11,6 @@ from setuptools import setup, find_packages
 
 from pytextclassifier import __version__
 
-if sys.version_info < (3,):
-    sys.exit('Sorry, Python3 is required for dialogbot.')
-
 with open('README.md', 'r', encoding='utf-8') as f:
     readme = f.read()
 
@@ -39,6 +36,7 @@ setup(
         'Natural Language :: Chinese (Simplified)',
         'Natural Language :: Chinese (Traditional)',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Topic :: Text Processing',
         'Topic :: Text Processing :: Indexing',

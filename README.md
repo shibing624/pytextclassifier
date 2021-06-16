@@ -12,7 +12,7 @@
 Python Text Classifier. It can be applied to the fields of sentiment polarity analysis, text risk classification and so on, 
 and it supports multiple classification algorithms and clustering algorithms.
 
-文本分类器，提供多种文本分类和聚类算法，支持文本极性情感分类，文本风险类型分类。
+文本分类器，提供多种文本分类和聚类算法，支持文本极性情感分类，文本风险类型分类等文本分类和聚类应用。兼容python2.7和python3。
 
 
 **Guide**
@@ -28,7 +28,9 @@ and it supports multiple classification algorithms and clustering algorithms.
 # Feature
 
 **pytextclassifier** is a python Open Source Toolkit for text classification. The goal is to implement
-text analysis algorithm, so as to achieve the use in the production environment. **pytextclassifier** has the characteristics 
+text analysis algorithm, so as to achieve the use in the production environment.
+
+**pytextclassifier** has the characteristics
 of clear algorithm, high performance and customizable corpus.
 
 **pytextclassifier** provides the following functions：
@@ -62,8 +64,6 @@ of clear algorithm, high performance and customizable corpus.
   - [x] MiniBatchKmeans
 
 While providing rich functions, **pytextclassifier** internal modules adhere to low coupling, model adherence to inert loading, dictionary publication, and easy to use.
-
-------
 
 # Install
 - Requirements and Installation

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-# Author: XuMing <xuming624@qq.com>
-# Brief: 
+"""
+@author:XuMing(xuming624@qq.com)
+@description:
+"""
 from codecs import open
 
 import jieba
@@ -44,7 +46,7 @@ def seg_data(in_file, out_file, col_sep='\t', stop_words_path=''):
 
 
 if __name__ == '__main__':
-    import config
+    from pytextclassifier import config
     from time import time
 
     start_time = time()

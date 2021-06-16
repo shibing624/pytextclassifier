@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-# Author: XuMing <xuming624@qq.com>
-# Brief: read train and test data
-
+"""
+@author:XuMing(xuming624@qq.com)
+@description: read train and test data
+"""
 from codecs import open
 
 

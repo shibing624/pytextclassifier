@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-# Author: XuMing <xuming624@qq.com>
-# Brief:
+"""
+@author:XuMing(xuming624@qq.com)
+@description:
+"""
 import time
 
 from sklearn.metrics import classification_report, confusion_matrix
 
-import config
-from models.evaluate import cal_multiclass_lr_predict
-from models.feature import Feature
-from models.reader import data_reader
-from models.xgboost_lr_model import XGBLR
-from utils.data_utils import load_pkl, load_vocab, save_predict_result, load_dict
-from utils.logger import get_logger
-
-logger = get_logger(__name__)
+from pytextclassifier import config
+from pytextclassifier.models.evaluate import cal_multiclass_lr_predict
+from pytextclassifier.models.feature import Feature
+from pytextclassifier.models.reader import data_reader
+from pytextclassifier.models.xgboost_lr_model import XGBLR
+from pytextclassifier.utils.data_utils import load_pkl, load_vocab, save_predict_result, load_dict
+from pytextclassifier.utils.log import logger
 
 
 def infer_classic(model_type='xgboost_lr',
