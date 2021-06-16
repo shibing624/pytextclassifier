@@ -19,12 +19,12 @@ col_sep = '\t'  # separate label and content of train data
 
 # one of "logistic_regression, random_forest, bayes, decision_tree, svm, knn, xgboost, xgboost_lr,
 # mlp, ensemble, stack, fasttext, cnn, rnn, han"
-model_type = "logistic_regression"
+model_type = "cnn"
 
 # feature type
 # classic text classification usage:  one of "tfidf_char, tfidf_word, tf_word",
 # deep text classification usage: cnn/rnn/fasttext is "vectorize"
-feature_type = 'tf_word'
+feature_type = 'vectorize'
 
 debug = False
 # default params

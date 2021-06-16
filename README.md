@@ -73,9 +73,110 @@ pip3 install -r requirements.txt
 ```
 
 # Usage
+### 文本分类，模型训练，保存，预测，测试
 
-1. Preprocess with segment
+示例[base_demo.py](examples/base_demo.py)
+
+
+```python
+from pytextclassifier import TextClassifier
+
+m = TextClassifier()
+data = [
+    ('education', 'Student debt to cost Britain billions within decades'),
+    ('education', 'Chinese education for TV experiment'),
+    ('sports', 'Middle East and Asia boost investment in top level sports'),
+    ('sports', 'Summit Series look launches HBO Canada sports doc series: Mudhar')
+]
+m.train(data)
+r = m.predict(['Abbott government spends $8 million on higher education media blitz',
+               'Middle East and Asia boost investment in top level sports'])
+print(r)  # ['education' 'sports']
+m.save()
+del m
+
+new_m = TextClassifier()
+new_m.load()
+predict_label = new_m.predict(['Abbott government spends $8 million on higher education media blitz'])
+print(predict_label)  # ['education']
+
+predict_label = new_m.predict(['Abbott government spends $8 million on higher education media blitz',
+                               'Middle East and Asia boost investment in top level sports'])
+print(predict_label)  # ['education', 'sports']
+
+test_data = [
+    ('education', 'Abbott government spends $8 million on higher education media blitz'),
+    ('sports', 'Middle East and Asia boost investment in top level sports'),
+]
+f1 = new_m.test(test_data)
+print(f1)  # 1.0
 ```
+
+output:
+
+```
+['education' 'sports']
+save output/vectorizer.pkl ok.
+save output/model.pkl ok.
+['education']
+['education' 'sports']
+1.0
+```
+
+兼容中英文语料的文本分类，中文语料分类示例[chinese_text_demo.py](examples/chinese_text_demo.py)
+
+```python
+from pytextclassifier import TextClassifier
+
+m = TextClassifier()
+data = [
+    ('education', '名师指导托福语法技巧：名词的复数形式'),
+    ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
+    ('sports', '图文：法网孟菲尔斯苦战进16强 孟菲尔斯怒吼'),
+    ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
+    ('sports', '米兰客场8战不败国米10年连胜')
+]
+m.train(data)
+
+r = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
+               '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
+print(r)  # ['education' 'sports']
+m.save()
+del m
+
+new_m = TextClassifier()
+new_m.load()
+predict_label = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试'])
+print(predict_label)  # ['education']
+
+predict_label = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
+                               '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
+print(predict_label)  # ['education', 'sports']
+
+test_data = [
+    ('education', '福建春季公务员考试报名18日截止 2月6日考试'),
+    ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
+]
+res = new_m.test(test_data)
+print(res)  # 1.0
+```
+
+output:
+
+```
+['education' 'sports']
+save vectorizer.pkl ok.
+save model.pkl ok.
+['education']
+['education' 'sports']
+1.0
+```
+
+### 自定义训练深度模型
+
+1. Preprocess with segment(optional)
+```
+cd pytextclassifier
 python3 preprocess.py
 ```
 
