@@ -7,4 +7,5 @@ mlxtend
 xgboost
 tensorflow>=1.2.1
 keras
+pandas
 numpy

@@ -1,8 +1,5 @@
 colorlog
 jieba
-gensim
 scikit-learn
-matplotlib
-mlxtend
-xgboost
+pandas
 numpy
