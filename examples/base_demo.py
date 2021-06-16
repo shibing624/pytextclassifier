@@ -17,12 +17,15 @@ if __name__ == '__main__':
         ('sports', 'Summit Series look launches HBO Canada sports doc series: Mudhar')
     ]
     m.train(data)
-    m.save(model_path='model.pkl')
+    r = m.predict(['Abbott government spends $8 million on higher education media blitz',
+                   'Middle East and Asia boost investment in top level sports'])
+    print(r)
+    m.save()
     del m
 
     new_m = TextClassifier()
-    new_m.load(model_path='model.pkl')
-    predict_label = new_m.predict('Abbott government spends $8 million on higher education media blitz')
+    new_m.load()
+    predict_label = new_m.predict(['Abbott government spends $8 million on higher education media blitz'])
     print(predict_label)  # ['education']
 
     predict_label = new_m.predict(['Abbott government spends $8 million on higher education media blitz',

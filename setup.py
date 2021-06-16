@@ -5,8 +5,6 @@
 """
 from __future__ import print_function
 
-import sys
-
 from setuptools import setup, find_packages
 
 from pytextclassifier import __version__

@@ -9,7 +9,7 @@
 [![Wechat Group](http://vlog.sfyc.ltd/wechat_everyday/wxgroup_logo.png?imageView2/0/w/60/h/20)](#Contact)
 
 
-Python Text Classifier. It can be applied to the fields of sentiment polarity analysis, text risk classification and so on, 
+pytextclassifier, Python Text Classifier. It can be applied to the fields of sentiment polarity analysis, text risk classification and so on,
 and it supports multiple classification algorithms and clustering algorithms.
 
 文本分类器，提供多种文本分类和聚类算法，支持文本极性情感分类，文本风险类型分类等文本分类和聚类应用。兼容python2.7和python3。
@@ -33,7 +33,7 @@ text analysis algorithm, so as to achieve the use in the production environment.
 **pytextclassifier** has the characteristics
 of clear algorithm, high performance and customizable corpus.
 
-**pytextclassifier** provides the following functions：
+Functions：
 ### Classifier
   - [x] LogisticRegression
   - [x] Random Forest

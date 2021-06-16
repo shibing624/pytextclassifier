@@ -12,7 +12,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 
 def get_model(model_type):
-    if model_type == "logistic_regression":
+    if model_type in ["lr", "logistic_regression"]:
         model = LogisticRegression(solver='lbfgs', fit_intercept=False)  # 快，准确率一般。val mean acc:0.91
     elif model_type == "random_forest":
         model = RandomForestClassifier(n_estimators=300)  # 速度还行，准确率一般。val mean acc:0.93125
@@ -21,7 +21,7 @@ def get_model(model_type):
     elif model_type == "knn":
         model = KNeighborsClassifier()  # 速度一般，准确率低。val mean acc:0.675
     elif model_type == "bayes":
-        model = MultinomialNB()  # 速度快，准确率低。val mean acc:0.62
+        model = MultinomialNB(alpha=0.1, fit_prior=False)  # 速度快，准确率低。val mean acc:0.62
     elif model_type == "xgboost":
         from xgboost import XGBClassifier
         model = XGBClassifier()  # 速度慢，准确率高。val mean acc:0.95
