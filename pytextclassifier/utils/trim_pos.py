@@ -14,6 +14,7 @@ def trim_pos(line):
         print('err', e, line)
     return data
 
+
 if __name__ == "__main__":
     seg_data = []
     with open('training_new_seg.txt', 'r', encoding='utf-8') as f:
