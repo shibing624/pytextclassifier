@@ -66,11 +66,22 @@ Functions：
 While providing rich functions, **pytextclassifier** internal modules adhere to low coupling, model adherence to inert loading, dictionary publication, and easy to use.
 
 # Install
+
 - Requirements and Installation
+
+
+```
+pip3 install pytextclassifier
+```
+
+or
+
 ```
 git clone https://github.com/shibing624/pytextclassifier.git
-pip3 install -r requirements.txt
+cd pytextclassifier
+python3 setup.py install
 ```
+
 
 # Usage
 ### 文本分类，模型训练，保存，预测，测试
