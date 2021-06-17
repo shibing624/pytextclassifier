@@ -205,7 +205,7 @@ data = [
     'Middle East and Asia boost investment in top level sports',
     'Summit Series look launches HBO Canada sports doc series: Mudhar'
 ]
-model, X_vec, labels = m.train(data)
+model, X_vec, labels = m.train(data, n_clusters=2)
 r = m.predict(['Abbott government spends $8 million on higher education media blitz',
                'Middle East and Asia boost investment in top level sports'])
 print(r)
@@ -222,7 +222,7 @@ print(r)
 # load train data from file
 tc = TextCluster()
 data = tc.load_file_data('train_seg_sample.txt')
-_, X_vec, labels = tc.train(data)
+_, X_vec, labels = tc.train(data, n_clusters=3)
 tc.show_clusters(X_vec, labels, 'cluster_train_seg_samples.png')
 r = tc.predict(data[:5])
 print(r)
@@ -231,9 +231,9 @@ print(r)
 output:
 
 ```
-[0 2]
-[0 2]
-[1 2 1 1 0]
+[1 1]
+[1 1]
+[2 2 2 2 1]
 ```
 clustering plot image:
 
