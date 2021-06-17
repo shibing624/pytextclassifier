@@ -7,7 +7,7 @@ import os
 import pickle
 from codecs import open
 from collections import defaultdict
-
+from pytextclassifier.utils.log import logger
 import numpy as np
 
 
@@ -54,7 +54,7 @@ def save_dict(dict_data, dict_path):
             v_str = map(str, v)
             f.write(k + '\t' + ' '.join(v_str) + '\n')
             count += 1
-        print('save dict size:', count, 'dict_path:', dict_path)
+        logger.info('save dict size:{}, dict_path: {}'.format(count, dict_path))
 
 
 def load_reverse_dict(dict_path):
@@ -123,14 +123,13 @@ def write_vocab(vocab, filename):
         write a word per line
 
     """
-    print("Writing vocab...")
     with open(filename, "w", encoding='utf-8') as f:
         for i, word in enumerate(vocab):
             if i != len(vocab) - 1:
                 f.write(word + '\n')
             else:
                 f.write(word)
-    print("- write to {} done. {} tokens".format(filename, len(vocab)))
+    logger.info("- write to {} done. {} tokens".format(filename, len(vocab)))
 
 
 def load_vocab(filename):
@@ -179,7 +178,7 @@ def save_pkl(vocab, pkl_path, overwrite=True):
         with open(pkl_path, 'wb') as f:
             # pickle.dump(vocab, f, protocol=pickle.HIGHEST_PROTOCOL)
             pickle.dump(vocab, f, protocol=0)
-        print("save %s ok." % pkl_path)
+        logger.info("save %s ok." % pkl_path)
 
 
 def get_word_segment_data(contents, word_sep=' ', pos_sep='/'):
@@ -228,4 +227,4 @@ def save_predict_result(pred_labels, ture_labels=None, pred_save_path=None, data
                         f.write(pred_labels[i] + '\t' + data_set[i] + '\n')
                     else:
                         f.write(pred_labels[i] + '\n')
-        print("pred_save_path:", pred_save_path)
+        logger.debug("pred_save_path:", pred_save_path)

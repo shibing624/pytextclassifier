@@ -6,10 +6,34 @@
 
 import unittest
 
+import sys
 
-class MyTestCase(unittest.TestCase):
-    def test_something(self):
-        self.assertEqual(True, True)
+sys.path.append('..')
+from pytextclassifier import TextClassifier
+
+
+class BaseTestCase(unittest.TestCase):
+    def test_classifier(self):
+        m = TextClassifier()
+        data = [
+            ('education', 'Student debt to cost Britain billions within decades'),
+            ('education', 'Chinese education for TV experiment'),
+            ('sports', 'Middle East and Asia boost investment in top level sports'),
+            ('sports', 'Summit Series look launches HBO Canada sports doc series: Mudhar')
+        ]
+        m.train(data)
+        r = m.predict(['Abbott government spends $8 million on higher education media blitz',
+                       'Middle East and Asia boost investment in top level sports'])
+        print(r)
+        self.assertEqual(r[0], 'education')
+        self.assertEqual(r[1], 'sports')
+        test_data = [
+            ('education', 'Abbott government spends $8 million on higher education media blitz'),
+            ('sports', 'Middle East and Asia boost investment in top level sports'),
+        ]
+        acc_score = m.test(test_data)
+        print(acc_score)  # 1.0
+        self.assertEqual(acc_score, 1.0)
 
 
 if __name__ == '__main__':

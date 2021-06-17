@@ -24,14 +24,14 @@ def simple_evaluate(y_true, y_pred):
     overall_accuracy = metrics.accuracy_score(y_true, y_pred)
     acc_for_each_class = metrics.precision_score(y_true, y_pred, average=None)
     average_accuracy = np.mean(acc_for_each_class)
-    score = metrics.accuracy_score(y_true, y_pred)
+    accuracy_score = metrics.accuracy_score(y_true, y_pred)
     print('classify_report : \n', classify_report)
     print('confusion_matrix : \n', confusion_matrix)
     print('acc_for_each_class : \n', acc_for_each_class)
-    print('average_accuracy: {0:f}'.format(average_accuracy))
-    print('overall_accuracy: {0:f}'.format(overall_accuracy))
-    print('score: {0:f}'.format(score))
-    return score
+    print('average_accuracy: {0:.4f}'.format(average_accuracy))
+    print('overall_accuracy: {0:.4f}'.format(overall_accuracy))
+    print('accuracy_score: {0:.4f}'.format(accuracy_score))
+    return accuracy_score
 
 
 def eval(model, test_data, test_label, thresholds=0.5, num_classes=2, pr_figure_path=None, pred_save_path=None):

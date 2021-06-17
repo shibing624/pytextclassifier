@@ -36,5 +36,5 @@ if __name__ == '__main__':
         ('education', 'Abbott government spends $8 million on higher education media blitz'),
         ('sports', 'Middle East and Asia boost investment in top level sports'),
     ]
-    f1 = new_m.test(test_data)
-    print(f1)  # 1.0
+    acc_score = new_m.test(test_data)
+    print(acc_score)  # 1.0

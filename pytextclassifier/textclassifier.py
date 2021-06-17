@@ -9,6 +9,7 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 from pytextclassifier.models.classic_model import get_model
+from pytextclassifier.models.evaluate import simple_evaluate
 from pytextclassifier.utils.data_utils import save_pkl, load_pkl
 from pytextclassifier.utils.log import logger
 from pytextclassifier.utils.tokenizer import Tokenizer
@@ -23,31 +24,49 @@ class TextClassifier(object):
     def __repr__(self):
         return 'TextClassifier instance ({}, {})'.format(self.model_name, self.tokenizer)
 
-    def _load_file_data(self, file_path, delimiter=','):
-        if os.path.exists(file_path):
-            data = pd.read_csv(file_path, header=None, encoding='utf-8', names=['label', 'text'], delimiter=delimiter)
-            logger.info('load file done. path: {}, size: {}'.format(file_path, len(data)))
-        else:
-            data = None
-            logger.error('file not found. path: {}'.format(file_path))
+    @staticmethod
+    def load_file_data(file_path, delimiter=','):
+        """
+        Load text file, format(csv): label, text
+        :param file_path: str
+        :param delimiter: ,
+        :return: pd.DataFrame
+        """
+        if not os.path.exists(file_path):
+            raise ValueError('file not found. path: {}'.format(file_path))
+        data = pd.read_csv(file_path, header=None, encoding='utf-8', names=['label', 'text'], delimiter=delimiter)
+        logger.info('load file done. path: {}, size: {}'.format(file_path, len(data)))
         return data
 
-    def train(self, data, delimiter=','):
-        logger.debug('train model')
-        if isinstance(data, str):
-            data = self._load_file_data(data, delimiter)
-        elif isinstance(data, list):
-            data = pd.DataFrame(data, columns=['label', 'text'])
-        else:
-            raise TypeError('data should be list or str(file path)')
+    def _encode_data(self, data_list):
+        """
+        Encoding data_list text
+        :param data_list: list of (label, text), eg: [(label, text), (label, text) ...]
+        :return: X, X_tokens, Y
+        """
+        try:
+            data_list = pd.DataFrame(data_list, columns=['label', 'text'])
+        except Exception as e:
+            logger.error(e)
+            raise TypeError('data_list should be list')
 
-        X_train, Y_train = data['text'], data['label']
-        logger.info('num_classes:%d' % len(set(Y_train)))
-        logger.info('data size:%d' % len(X_train))
-        logger.info('label size:%d' % len(Y_train))
-        # encode train data text
-        X_train_token = [' '.join(self.tokenizer.tokenize(i)) for i in X_train]
-        logger.debug('train tokens top 3: {}'.format(X_train_token[:3]))
+        X, Y = data_list['text'], data_list['label']
+        logger.debug('load data_list, X size: {}, label size: {}'.format(len(X), len(Y)))
+        assert len(X) == len(Y)
+        logger.debug('num_classes:%d' % len(set(Y)))
+        # tokenize text
+        X_tokens = [' '.join(self.tokenizer.tokenize(i)) for i in X]
+        logger.debug('train tokens top 3: {}'.format(X_tokens[:3]))
+        return X, X_tokens, Y
+
+    def train(self, data_list):
+        """
+        Train model
+        :param data_list: list of (label, text), eg: [(label, text), (label, text) ...]
+        :return: model
+        """
+        logger.debug('train model')
+        X_train, X_train_token, Y_train = self._encode_data(data_list)
         vectorizer = TfidfVectorizer(smooth_idf=True, sublinear_tf=True, use_idf=True, norm='l1')
         X_train_vec = vectorizer.fit_transform(X_train_token)
         self.vectorizer = vectorizer
@@ -58,28 +77,49 @@ class TextClassifier(object):
         self.model = model
         return model
 
-    def test(self, data, delimiter=','):
-        if isinstance(data, str):
-            data = self._load_file_data(data, delimiter)
-        elif isinstance(data, list):
-            data = pd.DataFrame(data, columns=['label', 'text'])
-        else:
-            raise TypeError('data should be list or str(file path)')
-
-        X_test, Y_test = data['text'], data['label']
-        logger.debug('load test data, X size: {}, Y_test size: {}'.format(len(X_test), len(Y_test)))
-        assert len(X_test) == len(Y_test)
-
-        X_test_token = [' '.join(self.tokenizer.tokenize(i)) for i in X_test]
+    def test(self, data_list):
+        """
+        Test model with data
+        :param data_list: list of (label, text), eg: [(label, text), (label, text) ...]
+        :return: acc score
+        """
+        logger.debug('test model')
+        X_test, X_test_token, Y_test = self._encode_data(data_list)
         X_test_vec = self.vectorizer.transform(X_test_token)
-        return self.model.score(X_test_vec, Y_test)
+        Y_predict = self.model.predict(X_test_vec)
+        acc_score = simple_evaluate(Y_test, Y_predict)
+        return acc_score
+
+    def predict_proba(self, X):
+        """
+        Predict proba
+        :param X: list, input text list, eg: [text1, text2, ...]
+        :return: list, accuracy score
+        """
+        # tokenize text
+        X_tokens = [' '.join(self.tokenizer.tokenize(i)) for i in X]
+        # transform
+        X_vec = self.vectorizer.transform(X_tokens)
+        return self.model.predict_proba(X_vec)
 
     def predict(self, X):
-        pd.Series(X)
-        X_vec = self.vectorizer.transform(X)
+        """
+        Predict label
+        :param X: list, input text list, eg: [text1, text2, ...]
+        :return: list, label name
+        """
+        # tokenize text
+        X_tokens = [' '.join(self.tokenizer.tokenize(i)) for i in X]
+        # transform
+        X_vec = self.vectorizer.transform(X_tokens)
         return self.model.predict(X_vec)
 
     def save(self, model_dir=''):
+        """
+        Save model to model_dir
+        :param model_dir: path
+        :return: None
+        """
         if self.model is None:
             raise ValueError('model is None, run train first.')
         if model_dir and not os.path.exists(model_dir):
@@ -88,8 +128,14 @@ class TextClassifier(object):
         save_pkl(self.vectorizer, vectorizer_path)
         model_path = os.path.join(model_dir, 'model.pkl')
         save_pkl(self.model, model_path)
+        logger.info('save done. vec path: {}, model path: {}'.format(vectorizer_path, model_path))
 
     def load(self, model_dir=''):
+        """
+        Load model from model_dir
+        :param model_dir: path
+        :return: None
+        """
         model_path = os.path.join(model_dir, 'model.pkl')
         if not os.path.exists(model_path):
             raise ValueError("model is not found. please train and save model first.")

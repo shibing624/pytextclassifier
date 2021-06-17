@@ -44,7 +44,7 @@ def get_model(model_type):
         clf1 = XGBClassifier(random_state=0)
         clf2 = SVC(random_state=0, kernel='linear', probability=True)
         clf3 = MLPClassifier(random_state=0)
-        lr = LogisticRegression()
+        lr = LogisticRegression(solver='lbfgs', fit_intercept=False)
         model = StackingClassifier(classifiers=[clf1, clf2, clf3],
                                    use_probas=True,
                                    average_probas=False,
