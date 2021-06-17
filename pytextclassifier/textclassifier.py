@@ -17,6 +17,11 @@ from pytextclassifier.utils.tokenizer import Tokenizer
 
 class TextClassifier(object):
     def __init__(self, model_name='lr', tokenizer=None):
+        """
+        Init instance
+        :param model_name: str, support lr, random_forest, xgboost, svm, mlp, ensemble, stack
+        :param tokenizer: word segmentation
+        """
         self.model_name = model_name
         self.tokenizer = tokenizer if tokenizer else Tokenizer()
         self.model = None

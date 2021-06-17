@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-# Author: XuMing(xuming624@qq.com)
-# Brief:
+"""
+@author:XuMing(xuming624@qq.com)
+@description: 分类模型，支持lr, random_forest, xgboost, svm, mlp, ensemble, stack
+"""
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression

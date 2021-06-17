@@ -6,8 +6,4 @@
 
 from pytextclassifier.textclassifier import TextClassifier
 
-
 __version__ = "0.0.3"
-
-
-
