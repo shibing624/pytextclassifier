@@ -20,6 +20,7 @@ class TextClassifier(object):
         self.model_name = model_name
         self.tokenizer = tokenizer if tokenizer else Tokenizer()
         self.model = None
+        self.vectorizer = None
 
     def __repr__(self):
         return 'TextClassifier instance ({}, {})'.format(self.model_name, self.tokenizer)
@@ -56,7 +57,7 @@ class TextClassifier(object):
         logger.debug('num_classes:%d' % len(set(Y)))
         # tokenize text
         X_tokens = [' '.join(self.tokenizer.tokenize(i)) for i in X]
-        logger.debug('train tokens top 3: {}'.format(X_tokens[:3]))
+        logger.debug('data tokens top 3: {}'.format(X_tokens[:3]))
         return X, X_tokens, Y
 
     def train(self, data_list):
@@ -67,7 +68,8 @@ class TextClassifier(object):
         """
         logger.debug('train model')
         X_train, X_train_token, Y_train = self._encode_data(data_list)
-        vectorizer = TfidfVectorizer(smooth_idf=True, sublinear_tf=True, use_idf=True, norm='l1')
+        vectorizer = TfidfVectorizer(analyzer='word', ngram_range=(1, 2),
+                                     smooth_idf=True, sublinear_tf=True)
         X_train_vec = vectorizer.fit_transform(X_train_token)
         self.vectorizer = vectorizer
         # build model
@@ -84,6 +86,8 @@ class TextClassifier(object):
         :return: acc score
         """
         logger.debug('test model')
+        if self.model is None:
+            raise ValueError('model is None, run train first.')
         X_test, X_test_token, Y_test = self._encode_data(data_list)
         X_test_vec = self.vectorizer.transform(X_test_token)
         Y_predict = self.model.predict(X_test_vec)
@@ -96,6 +100,8 @@ class TextClassifier(object):
         :param X: list, input text list, eg: [text1, text2, ...]
         :return: list, accuracy score
         """
+        if self.model is None:
+            raise ValueError('model is None, run train first.')
         # tokenize text
         X_tokens = [' '.join(self.tokenizer.tokenize(i)) for i in X]
         # transform
@@ -108,6 +114,8 @@ class TextClassifier(object):
         :param X: list, input text list, eg: [text1, text2, ...]
         :return: list, label name
         """
+        if self.model is None:
+            raise ValueError('model is None, run train first.')
         # tokenize text
         X_tokens = [' '.join(self.tokenizer.tokenize(i)) for i in X]
         # transform
@@ -124,9 +132,9 @@ class TextClassifier(object):
             raise ValueError('model is None, run train first.')
         if model_dir and not os.path.exists(model_dir):
             os.makedirs(model_dir)
-        vectorizer_path = os.path.join(model_dir, 'vectorizer.pkl')
+        vectorizer_path = os.path.join(model_dir, 'classifier_vectorizer.pkl')
         save_pkl(self.vectorizer, vectorizer_path)
-        model_path = os.path.join(model_dir, 'model.pkl')
+        model_path = os.path.join(model_dir, 'classifier_model.pkl')
         save_pkl(self.model, model_path)
         logger.info('save done. vec path: {}, model path: {}'.format(vectorizer_path, model_path))
 
@@ -136,10 +144,10 @@ class TextClassifier(object):
         :param model_dir: path
         :return: None
         """
-        model_path = os.path.join(model_dir, 'model.pkl')
+        model_path = os.path.join(model_dir, 'classifier_model.pkl')
         if not os.path.exists(model_path):
             raise ValueError("model is not found. please train and save model first.")
         self.model = load_pkl(model_path)
-        vectorizer_path = os.path.join(model_dir, 'vectorizer.pkl')
+        vectorizer_path = os.path.join(model_dir, 'classifier_vectorizer.pkl')
         self.vectorizer = load_pkl(vectorizer_path)
         logger.info('model loaded from {}'.format(model_dir))

@@ -7,8 +7,10 @@ import os
 import pickle
 from codecs import open
 from collections import defaultdict
-from pytextclassifier.utils.log import logger
+
 import numpy as np
+
+from pytextclassifier.utils.log import logger
 
 
 def build_vocab(items, sort=True, min_count=0, lower=False):
@@ -177,7 +179,7 @@ def save_pkl(vocab, pkl_path, overwrite=True):
     if pkl_path:
         with open(pkl_path, 'wb') as f:
             # pickle.dump(vocab, f, protocol=pickle.HIGHEST_PROTOCOL)
-            pickle.dump(vocab, f, protocol=0)
+            pickle.dump(vocab, f, protocol=2)  # 兼容python2和python3
         logger.info("save %s ok." % pkl_path)
 
 

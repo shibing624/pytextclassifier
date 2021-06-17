@@ -10,6 +10,7 @@ from pytextclassifier import TextClassifier
 
 if __name__ == '__main__':
     m = TextClassifier()
+    print(m)
     data = [
         ('education', 'Student debt to cost Britain billions within decades'),
         ('education', 'Chinese education for TV experiment'),

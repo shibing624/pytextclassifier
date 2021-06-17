@@ -8,7 +8,6 @@ import os
 import pickle
 from collections import Counter
 from codecs import open
-import jieba
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -48,6 +47,7 @@ def trim_stopwords(words, stop_words_set):
 
 
 def segment(file_path, stopwords):
+    import jieba
     word_set = set()
     docs = []
     with open(file_path, 'r', encoding='utf-8')as f:
@@ -55,7 +55,7 @@ def segment(file_path, stopwords):
             line = line.strip()
             cols = line.split("\t")
             content = " ".join(cols[CONTENT_START_INDEX:])
-            content = content.lower().replace("", "").replace("{}", "")
+            content = content.lower().replace("{}", "")
             words = jieba.lcut(content)
             doc = trim_stopwords(words, stopwords)
             docs.append(" ".join(doc))
@@ -101,12 +101,21 @@ def kmeans_train(feature_matrix, output_file):
     return labels
 
 
-def show_plt(feature_matrix, labels):
+def show_plt(feature_matrix, labels, image_file='cluster.png'):
+    """
+    Show cluster plt
+    :param feature_matrix:
+    :param labels:
+    :param image_file:
+    :return:
+    """
     from sklearn.decomposition import TruncatedSVD
     import matplotlib.pyplot as plt
     svd = TruncatedSVD()
     plot_columns = svd.fit_transform(feature_matrix)
     plt.scatter(x=plot_columns[:, 0], y=plot_columns[:, 1], c=labels)
+    if image_file:
+        plt.savefig(image_file)
     plt.show()
 
 

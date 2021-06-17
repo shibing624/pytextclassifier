@@ -84,9 +84,11 @@ python3 setup.py install
 
 
 # Usage
-### 文本分类，模型训练，保存，预测，测试
+### Text Classifier
 
-示例[base_demo.py](examples/base_demo.py)
+- English Text Classifier
+
+Including model training, saving, predict, test, for example [base_demo.py](examples/base_demo.py):
 
 
 ```python
@@ -119,8 +121,8 @@ test_data = [
     ('education', 'Abbott government spends $8 million on higher education media blitz'),
     ('sports', 'Middle East and Asia boost investment in top level sports'),
 ]
-f1 = new_m.test(test_data)
-print(f1)  # 1.0
+acc_score = new_m.test(test_data)
+print(acc_score)  # 1.0
 ```
 
 output:
@@ -134,7 +136,9 @@ save output/model.pkl ok.
 1.0
 ```
 
-兼容中英文语料的文本分类，中文语料分类示例[chinese_text_demo.py](examples/chinese_text_demo.py)
+- Chinese Text Classifier
+
+Text classification compatible with Chinese and English corpora, for example [chinese_text_demo.py](examples/chinese_text_demo.py)
 
 ```python
 from pytextclassifier import TextClassifier
@@ -168,8 +172,8 @@ test_data = [
     ('education', '福建春季公务员考试报名18日截止 2月6日考试'),
     ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
 ]
-res = new_m.test(test_data)
-print(res)  # 1.0
+acc_score = new_m.test(test_data)
+print(acc_score)  # 1.0
 ```
 
 output:
@@ -182,8 +186,60 @@ save model.pkl ok.
 ['education' 'sports']
 1.0
 ```
+### Text Cluster
 
-### 自定义训练深度模型
+
+Text clustering, for example [cluster_demo.py](examples/cluster_demo.py)
+```python
+
+import sys
+
+sys.path.append('..')
+from pytextclassifier.textcluster import TextCluster
+
+m = TextCluster()
+data = [
+    'Student debt to cost Britain billions within decades',
+    'Chinese education for TV experiment',
+    'Abbott government spends $8 million on higher education',
+    'Middle East and Asia boost investment in top level sports',
+    'Summit Series look launches HBO Canada sports doc series: Mudhar'
+]
+model, X_vec, labels = m.train(data)
+r = m.predict(['Abbott government spends $8 million on higher education media blitz',
+               'Middle East and Asia boost investment in top level sports'])
+print(r)
+m.show_clusters(X_vec, labels, image_file='cluster.png')
+m.save()
+del m
+
+new_m = TextCluster()
+new_m.load()
+r = new_m.predict(['Abbott government spends $8 million on higher education media blitz',
+                   'Middle East and Asia boost investment in top level sports'])
+print(r)
+
+# load train data from file
+tc = TextCluster()
+data = tc.load_file_data('train_seg_sample.txt')
+_, X_vec, labels = tc.train(data)
+tc.show_clusters(X_vec, labels, 'cluster_train_seg_samples.png')
+r = tc.predict(data[:5])
+print(r)
+```
+
+output:
+
+```
+[0 2]
+[0 2]
+[1 2 1 1 0]
+```
+clustering plot image:
+
+![cluster_image](docs/cluster_train_seg_samples.png)
+
+### Train your Text Classification Deep Model
 
 1. Preprocess with segment(optional)
 ```
