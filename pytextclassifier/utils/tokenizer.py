@@ -13,7 +13,7 @@ def tokenize_words(text):
     output = []
     sentences = split_2_short_text(text, include_symbol=True)
     for sentence, idx in sentences:
-        if is_chinese_string(sentence):
+        if is_any_chinese_string(sentence):
             import jieba
             output.extend(jieba.lcut(sentence))
         else:
@@ -68,9 +68,14 @@ def is_chinese(uchar):
     return '\u4e00' <= uchar <= '\u9fa5'
 
 
-def is_chinese_string(string):
+def is_all_chinese_string(string):
     """判断是否全为汉字"""
     return all(is_chinese(c) for c in string)
+
+
+def is_any_chinese_string(string):
+    """判断是否有中文汉字"""
+    return any(is_chinese(c) for c in string)
 
 
 def whitespace_tokenize(text):
