@@ -12,9 +12,6 @@ from pytextclassifier import __version__
 with open('README.md', 'r', encoding='utf-8') as f:
     readme = f.read()
 
-with open('LICENSE', 'r', encoding='utf-8') as f:
-    license = f.read()
-
 with open('requirements.txt', 'r', encoding='utf-8') as f:
     reqs = f.read()
 
