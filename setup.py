@@ -42,7 +42,7 @@ setup(
     packages=find_packages(exclude=['tests']),
     package_dir={'pytextclassifier': 'pytextclassifier'},
     package_data={
-        'pytextclassifier': ['*.*', 'LICENSE', 'README.*', 'data/*', 'utils/*',
+        'pytextclassifier': ['*.*', '../LICENSE', '../README.*', '../*.txt', 'data/*', 'utils/*',
                              'models/*', ],
     },
     test_suite='tests',
