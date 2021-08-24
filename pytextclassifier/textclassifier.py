@@ -54,7 +54,7 @@ class TextClassifier(object):
             data_list = pd.DataFrame(data_list, columns=['label', 'text'])
         except Exception as e:
             logger.error(e)
-            raise TypeError('data_list should be list')
+            raise TypeError('data_list should be list, eg: [(label, text), ... ]')
 
         X, Y = data_list['text'], data_list['label']
         logger.debug('load data_list, X size: {}, label size: {}'.format(len(X), len(Y)))
@@ -65,7 +65,7 @@ class TextClassifier(object):
         logger.debug('data tokens top 3: {}'.format(X_tokens[:3]))
         return X, X_tokens, Y
 
-    def train(self, data_list):
+    def train(self, data_list, **kwargs):
         """
         Train model
         :param data_list: list of (label, text), eg: [(label, text), (label, text) ...]
@@ -73,8 +73,8 @@ class TextClassifier(object):
         """
         logger.debug('train model')
         X_train, X_train_token, Y_train = self._encode_data(data_list)
-        vectorizer = TfidfVectorizer(analyzer='word', ngram_range=(1, 2),
-                                     smooth_idf=True, sublinear_tf=True)
+        vectorizer = TfidfVectorizer(ngram_range=(1, 2),
+                                     smooth_idf=True, sublinear_tf=True, **kwargs)
         X_train_vec = vectorizer.fit_transform(X_train_token)
         self.vectorizer = vectorizer
         # build model
@@ -105,6 +105,8 @@ class TextClassifier(object):
         :param X: list, input text list, eg: [text1, text2, ...]
         :return: list, accuracy score
         """
+        if isinstance(X, str) or not hasattr(X, '__len__'):
+            raise ValueError('input X should be list, eg: [text1, text2, ...]')
         if self.model is None:
             raise ValueError('model is None, run train first.')
         # tokenize text
@@ -119,6 +121,8 @@ class TextClassifier(object):
         :param X: list, input text list, eg: [text1, text2, ...]
         :return: list, label name
         """
+        if isinstance(X, str) or not hasattr(X, '__len__'):
+            raise ValueError('input X should be list, eg: [text1, text2, ...]')
         if self.model is None:
             raise ValueError('model is None, run train first.')
         # tokenize text

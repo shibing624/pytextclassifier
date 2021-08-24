@@ -27,8 +27,8 @@ if __name__ == '__main__':
 
     new_m = TextClassifier()
     new_m.load()
-    predict_label = new_m.predict(['Abbott government spends $8 million on higher education media blitz'])
-    print(predict_label)  # ['education']
+    predict_label_prob = new_m.predict_proba(['Abbott government spends $8 million on higher education media blitz'])
+    print(predict_label_prob)  # [[0.53337174 0.46662826]]
 
     predict_label = new_m.predict(['Abbott government spends $8 million on higher education media blitz',
                                    'Middle East and Asia boost investment in top level sports'])
