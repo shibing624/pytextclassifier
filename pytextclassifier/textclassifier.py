@@ -73,8 +73,7 @@ class TextClassifier(object):
         """
         logger.debug('train model')
         X_train, X_train_token, Y_train = self._encode_data(data_list)
-        vectorizer = TfidfVectorizer(ngram_range=(1, 2),
-                                     smooth_idf=True, sublinear_tf=True, **kwargs)
+        vectorizer = TfidfVectorizer(ngram_range=(1, 2), smooth_idf=True, sublinear_tf=True, **kwargs)
         X_train_vec = vectorizer.fit_transform(X_train_token)
         self.vectorizer = vectorizer
         # build model
