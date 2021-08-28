@@ -110,6 +110,7 @@ class TextClassifier(object):
             raise ValueError('model is None, run train first.')
         # tokenize text
         X_tokens = [' '.join(self.tokenizer.tokenize(i)) for i in X]
+        # logger.debug('data tokens top 1: {}'.format(X_tokens[:1]))
         # transform
         X_vec = self.vectorizer.transform(X_tokens)
         return self.model.predict_proba(X_vec)
@@ -126,6 +127,7 @@ class TextClassifier(object):
             raise ValueError('model is None, run train first.')
         # tokenize text
         X_tokens = [' '.join(self.tokenizer.tokenize(i)) for i in X]
+        # logger.debug('data tokens top 1: {}'.format(X_tokens[:1]))
         # transform
         X_vec = self.vectorizer.transform(X_tokens)
         return self.model.predict(X_vec)
@@ -158,4 +160,4 @@ class TextClassifier(object):
         self.model = load_pkl(model_path)
         vectorizer_path = os.path.join(model_dir, 'classifier_vectorizer.pkl')
         self.vectorizer = load_pkl(vectorizer_path)
-        logger.info('model loaded from {}'.format(model_dir))
+        logger.info('model loaded {}'.format(model_dir))
