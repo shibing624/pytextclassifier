@@ -19,6 +19,7 @@ if __name__ == '__main__':
         ('sports', 'Summit Series look launches HBO Canada sports doc series: Mudhar')
     ]
     m.train(data)
+
     r = m.predict(['Abbott government spends $8 million on higher education media blitz',
                    'Middle East and Asia boost investment in top level sports'])
     print(r)
@@ -29,6 +30,7 @@ if __name__ == '__main__':
     new_m.load()
     predict_label_prob = new_m.predict_proba(['Abbott government spends $8 million on higher education media blitz'])
     print(predict_label_prob)  # [[0.53337174 0.46662826]]
+    print('classes_: ', new_m.model.classes_)  # the classes ordered as prob
 
     predict_label = new_m.predict(['Abbott government spends $8 million on higher education media blitz',
                                    'Middle East and Asia boost investment in top level sports'])

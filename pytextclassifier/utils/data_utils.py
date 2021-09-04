@@ -229,4 +229,4 @@ def save_predict_result(pred_labels, ture_labels=None, pred_save_path=None, data
                         f.write(pred_labels[i] + '\t' + data_set[i] + '\n')
                     else:
                         f.write(pred_labels[i] + '\n')
-        logger.debug("pred_save_path:", pred_save_path)
+        logger.debug("pred_save_path:%s" % pred_save_path)

@@ -132,6 +132,8 @@ def cal_multiclass_lr_predict(data_set, feature_weight_dict, id_label):
             val = "%.4f" % (v / total)
             if float(val) < 0.03:
                 continue
-            label_list.append((k, id_label[k], float(val)))
+            val = (k, id_label[k], float(val))
+            if val not in label_list:
+                label_list.append(val)
         result.append(label_list)
     return result
