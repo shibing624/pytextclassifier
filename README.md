@@ -188,6 +188,37 @@ save model.pkl ok.
 ['education' 'sports']
 1.0
 ```
+
+- Visual Feature Importance
+
+Show feature weights of model, and prediction word weight, for example [visual_feature_importance.ipynb](examples/visual_feature_importance.ipynb)
+```jupyterpython
+import sys
+
+sys.path.append('..')
+from pytextclassifier import TextClassifier
+import jieba
+
+tc = TextClassifier(model_name='lr')
+# model_name 是选择分类器，支持lr, random_forest, xgboost, svm, mlp, ensemble, stack
+data = [
+    ('education', '名师指导托福语法技巧：名词的复数形式'),
+    ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
+    ('sports', '图文：法网孟菲尔斯苦战进16强 孟菲尔斯怒吼'),
+    ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
+    ('sports', '米兰客场8战不败国米10年连胜')
+]
+tc.train(data)
+import eli5
+infer_data = ['高考指导托福语法技巧国际认可',
+              '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜']
+eli5.show_weights(tc.model, vec=tc.vectorizer)
+seg_infer_data = [' '.join(jieba.lcut(i)) for i in infer_data]
+eli5.show_prediction(tc.model, seg_infer_data[0], vec=tc.vectorizer)
+```
+
+![img.png](docs/img.png)
+
 ### Text Cluster
 
 
