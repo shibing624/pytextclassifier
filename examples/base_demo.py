@@ -9,7 +9,7 @@ sys.path.append('..')
 from pytextclassifier import TextClassifier
 
 if __name__ == '__main__':
-    m = TextClassifier(model_name='lr')
+    m = TextClassifier()
     # model_name is choose classifier, support lr, random_forest, xgboost, svm, mlp, ensemble, stack
     print(m)
     data = [

@@ -8,34 +8,36 @@ import sys
 sys.path.append('..')
 from pytextclassifier.textcluster import TextCluster
 
-if __name__ == '__main__':
-    m = TextCluster()
-    print(m)
-    data = [
-        'Student debt to cost Britain billions within decades',
-        'Chinese education for TV experiment',
-        'Abbott government spends $8 million on higher education',
-        'Middle East and Asia boost investment in top level sports',
-        'Summit Series look launches HBO Canada sports doc series: Mudhar'
-    ]
-    model, X_vec, labels = m.train(data, n_clusters=2)
-    r = m.predict(['Abbott government spends $8 million on higher education media blitz',
+m = TextCluster(n_clusters=2)
+print(m)
+data = [
+    'Student debt to cost Britain billions within decades',
+    'Chinese education for TV experiment',
+    'Abbott government spends $8 million on higher education',
+    'Middle East and Asia boost investment in top level sports',
+    'Summit Series look launches HBO Canada sports doc series: Mudhar'
+]
+X_vec, labels = m.train(data)
+r = m.predict(['Abbott government spends $8 million on higher education media blitz',
+               'Middle East and Asia boost investment in top level sports'])
+print(r)
+m.show_clusters(X_vec, labels, image_file='cluster.png')
+m.save()
+del m
+
+new_m = TextCluster(n_clusters=2)
+new_m.load()
+r = new_m.predict(['Abbott government spends $8 million on higher education media blitz',
                    'Middle East and Asia boost investment in top level sports'])
-    print(r)
-    m.show_clusters(X_vec, labels, image_file='cluster.png')
-    m.save()
-    del m
+print(r)
 
-    new_m = TextCluster()
-    new_m.load()
-    r = new_m.predict(['Abbott government spends $8 million on higher education media blitz',
-                       'Middle East and Asia boost investment in top level sports'])
-    print(r)
+########### load chinese train data from file
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-    # load train data from file
-    tc = TextCluster()
-    data = tc.load_file_data('train_seg_sample.txt')
-    _, X_vec, labels = tc.train(data, n_clusters=3)
-    tc.show_clusters(X_vec, labels, 'cluster_train_seg_samples.png')
-    r = tc.predict(data[:5])
-    print(r)
+vec = TfidfVectorizer(ngram_range=(1, 2), max_df=0.9, min_df=0.1, sublinear_tf=True)
+tcluster = TextCluster(vectorizer=vec, n_clusters=3)
+data = tcluster.load_file_data('train_seg_sample.txt')
+X_vec, labels = tcluster.train(data)
+tcluster.show_clusters(X_vec, labels, 'cluster_train_seg_samples.png')
+r = tcluster.predict(data[:5])
+print(r)

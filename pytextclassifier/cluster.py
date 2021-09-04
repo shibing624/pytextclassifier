@@ -10,7 +10,7 @@ from collections import Counter
 from codecs import open
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
-
+from pytextclassifier.preprocess import read_stopwords
 from pytextclassifier.config import stop_words_path
 
 # 自定义停用字词
@@ -20,15 +20,6 @@ CONTENT_START_INDEX = 1
 # 输出聚类中心数
 N_CLUSTERS = 3
 
-
-def read_words(file_path):
-    words = set()
-    with open(file_path, "r", encoding='utf-8') as f:
-        for line in f:
-            line = line.strip()
-            words.add(line)
-    words |= set(CUSTOM_STOP_WORDS)
-    return words
 
 
 def trim_stopwords(words, stop_words_set):
@@ -66,7 +57,8 @@ def segment(file_path, stopwords):
 
 def feature(feature_file_path):
     if not os.path.exists(feature_file_path):
-        stopwords = read_words(stop_words_path)
+        stopwords = read_stopwords(stop_words_path)
+        stopwords = stopwords | set(CUSTOM_STOP_WORDS)
         word_set, docs = segment(input_file_path, stopwords=stopwords)
         tfidf_vectorizer = TfidfVectorizer(max_df=0.9, min_df=0.1, analyzer='word', ngram_range=(1, 2),
                                            vocabulary=list(word_set))

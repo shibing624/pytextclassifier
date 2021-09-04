@@ -28,7 +28,7 @@ feature_type = 'tfidf_word'
 debug = True
 # default params
 sentence_symbol_path = os.path.join(pwd_path, 'data/sentence_symbol.txt')
-stop_words_path = os.path.join(pwd_path, 'data/stop_words.txt')
+stop_words_path = os.path.join(pwd_path, 'data/stopwords.txt')
 
 output_dir = os.path.join(pwd_path, "../examples")  # output dir
 if not os.path.exists(output_dir):

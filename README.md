@@ -192,7 +192,7 @@ save model.pkl ok.
 - Visual Feature Importance
 
 Show feature weights of model, and prediction word weight, for example [visual_feature_importance.ipynb](examples/visual_feature_importance.ipynb)
-```jupyterpython
+```python
 import sys
 
 sys.path.append('..')
@@ -216,6 +216,8 @@ eli5.show_weights(tc.model, vec=tc.vectorizer)
 seg_infer_data = [' '.join(jieba.lcut(i)) for i in infer_data]
 eli5.show_prediction(tc.model, seg_infer_data[0], vec=tc.vectorizer)
 ```
+
+output:
 
 ![img.png](docs/img.png)
 

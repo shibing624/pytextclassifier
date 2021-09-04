@@ -9,8 +9,7 @@ sys.path.append('..')
 from pytextclassifier import TextClassifier
 
 if __name__ == '__main__':
-    m = TextClassifier(model_name='lr')
-    # model_name 是选择分类器，支持lr, random_forest, xgboost, svm, mlp, ensemble, stack
+    m = TextClassifier()
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
@@ -24,6 +23,7 @@ if __name__ == '__main__':
                    '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
     print(r)
     m.save()
+    print(m)
     del m
 
     new_m = TextClassifier()
