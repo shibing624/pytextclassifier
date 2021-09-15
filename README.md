@@ -92,48 +92,73 @@ Including model training, saving, predict, test, for example [base_demo.py](exam
 
 
 ```python
+import sys
+
+sys.path.append('..')
 from pytextclassifier import TextClassifier
 
-m = TextClassifier(model_name='lr')
-# model_name is choose classifier, support lr, random_forest, xgboost, svm, mlp, ensemble, stack
-data = [
-    ('education', 'Student debt to cost Britain billions within decades'),
-    ('education', 'Chinese education for TV experiment'),
-    ('sports', 'Middle East and Asia boost investment in top level sports'),
-    ('sports', 'Summit Series look launches HBO Canada sports doc series: Mudhar')
-]
-m.train(data)
-r = m.predict(['Abbott government spends $8 million on higher education media blitz',
-               'Middle East and Asia boost investment in top level sports'])
-print(r)  # ['education' 'sports']
-m.save()
-del m
+if __name__ == '__main__':
+    m = TextClassifier()
+    # model_name is choose classifier, support lr, random_forest, xgboost, svm, mlp, ensemble, stack
+    print(m)
+    data = [
+        ('education', 'Student debt to cost Britain billions within decades'),
+        ('education', 'Chinese education for TV experiment'),
+        ('sports', 'Middle East and Asia boost investment in top level sports'),
+        ('sports', 'Summit Series look launches HBO Canada sports doc series: Mudhar')
+    ]
+    m.train(data)
 
-new_m = TextClassifier()
-new_m.load()
-predict_label = new_m.predict(['Abbott government spends $8 million on higher education media blitz'])
-print(predict_label)  # ['education']
+    r = m.predict(['Abbott government spends $8 million on higher education media blitz',
+                   'Middle East and Asia boost investment in top level sports'])
+    print(r)
+    m.save()
+    del m
 
-predict_label = new_m.predict(['Abbott government spends $8 million on higher education media blitz',
-                               'Middle East and Asia boost investment in top level sports'])
-print(predict_label)  # ['education', 'sports']
+    new_m = TextClassifier()
+    new_m.load()
+    predict_label_prob = new_m.predict_proba(['Abbott government spends $8 million on higher education media blitz'])
+    print(predict_label_prob)  # [[0.53337174 0.46662826]]
+    print('classes_: ', new_m.model.classes_)  # the classes ordered as prob
 
-test_data = [
-    ('education', 'Abbott government spends $8 million on higher education media blitz'),
-    ('sports', 'Middle East and Asia boost investment in top level sports'),
-]
-acc_score = new_m.test(test_data)
-print(acc_score)  # 1.0
+    predict_label = new_m.predict(['Abbott government spends $8 million on higher education media blitz',
+                                   'Middle East and Asia boost investment in top level sports'])
+    print(predict_label)  # ['education', 'sports']
+
+    test_data = [
+        ('education', 'Abbott government spends $8 million on higher education media blitz'),
+        ('sports', 'Middle East and Asia boost investment in top level sports'),
+    ]
+    acc_score = new_m.test(test_data)
+    print(acc_score)  # 1.0
 ```
 
 output:
 
 ```
+TextClassifier instance (LogisticRegression(fit_intercept=False), <pytextclassifier.utils.tokenizer.Tokenizer object at 0x7fde504682b0>, TfidfVectorizer(ngram_range=(1, 2)))
 ['education' 'sports']
-save output/vectorizer.pkl ok.
-save output/model.pkl ok.
-['education']
+[[0.53782393 0.46217607]]
+classes_:  ['education' 'sports']
 ['education' 'sports']
+classify_report : 
+               precision    recall  f1-score   support
+
+   education       1.00      1.00      1.00         1
+      sports       1.00      1.00      1.00         1
+
+    accuracy                           1.00         2
+   macro avg       1.00      1.00      1.00         2
+weighted avg       1.00      1.00      1.00         2
+
+confusion_matrix : 
+ [[1 0]
+ [0 1]]
+acc_for_each_class : 
+ [1. 1.]
+average_accuracy: 1.0000
+overall_accuracy: 1.0000
+accuracy_score: 1.0000
 1.0
 ```
 
@@ -142,50 +167,73 @@ save output/model.pkl ok.
 Text classification compatible with Chinese and English corpora, for example [chinese_text_demo.py](examples/chinese_text_demo.py)
 
 ```python
+import sys
+
+sys.path.append('..')
 from pytextclassifier import TextClassifier
 
-m = TextClassifier(model_name='lr')
-# model_name 是选择分类器，支持lr, random_forest, xgboost, svm, mlp, ensemble, stack
-data = [
-    ('education', '名师指导托福语法技巧：名词的复数形式'),
-    ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
-    ('sports', '图文：法网孟菲尔斯苦战进16强 孟菲尔斯怒吼'),
-    ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
-    ('sports', '米兰客场8战不败国米10年连胜')
-]
-m.train(data)
+if __name__ == '__main__':
+    m = TextClassifier()
+    data = [
+        ('education', '名师指导托福语法技巧：名词的复数形式'),
+        ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
+        ('sports', '图文：法网孟菲尔斯苦战进16强 孟菲尔斯怒吼'),
+        ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
+        ('sports', '米兰客场8战不败国米10年连胜')
+    ]
+    m.train(data)
 
-r = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
-               '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
-print(r)  # ['education' 'sports']
-m.save()
-del m
+    r = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
+                   '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
+    print(r)
+    m.save()
+    print(m)
+    del m
 
-new_m = TextClassifier()
-new_m.load()
-predict_label = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试'])
-print(predict_label)  # ['education']
+    new_m = TextClassifier()
+    new_m.load()
+    predict_label_prob = new_m.predict_proba(['福建春季公务员考试报名18日截止 2月6日考试'])
+    print(predict_label_prob)  # [[0.53337174 0.46662826]]
+    print('classes_: ', new_m.model.classes_)  # the classes ordered as prob
 
-predict_label = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
-                               '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
-print(predict_label)  # ['education', 'sports']
+    predict_label = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
+                                   '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
+    print(predict_label)  # ['education', 'sports']
 
-test_data = [
-    ('education', '福建春季公务员考试报名18日截止 2月6日考试'),
-    ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
-]
-acc_score = new_m.test(test_data)
-print(acc_score)  # 1.0
+    test_data = [
+        ('education', '福建春季公务员考试报名18日截止 2月6日考试'),
+        ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
+    ]
+    acc_score = new_m.test(test_data)
+    print(acc_score)  # 1.0
 ```
 
 output:
 
 ```
 ['education' 'sports']
-save vectorizer.pkl ok.
-save model.pkl ok.
-['education']
+TextClassifier instance (LogisticRegression(fit_intercept=False), <pytextclassifier.utils.tokenizer.Tokenizer object at 0x7fbac86632b0>, TfidfVectorizer(ngram_range=(1, 2)))
+[[0.5 0.5]]
+classes_:  ['education' 'sports']
 ['education' 'sports']
+classify_report : 
+               precision    recall  f1-score   support
+
+   education       1.00      1.00      1.00         1
+      sports       1.00      1.00      1.00         1
+
+    accuracy                           1.00         2
+   macro avg       1.00      1.00      1.00         2
+weighted avg       1.00      1.00      1.00         2
+
+confusion_matrix : 
+ [[1 0]
+ [0 1]]
+acc_for_each_class : 
+ [1. 1.]
+average_accuracy: 1.0000
+overall_accuracy: 1.0000
+accuracy_score: 1.0000
 1.0
 ```
 
@@ -199,8 +247,7 @@ sys.path.append('..')
 from pytextclassifier import TextClassifier
 import jieba
 
-tc = TextClassifier(model_name='lr')
-# model_name 是选择分类器，支持lr, random_forest, xgboost, svm, mlp, ensemble, stack
+tc = TextClassifier()
 data = [
     ('education', '名师指导托福语法技巧：名词的复数形式'),
     ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
@@ -226,13 +273,13 @@ output:
 
 Text clustering, for example [cluster_demo.py](examples/cluster_demo.py)
 ```python
-
 import sys
 
 sys.path.append('..')
 from pytextclassifier.textcluster import TextCluster
 
-m = TextCluster()
+m = TextCluster(n_clusters=2)
+print(m)
 data = [
     'Student debt to cost Britain billions within decades',
     'Chinese education for TV experiment',
@@ -240,7 +287,7 @@ data = [
     'Middle East and Asia boost investment in top level sports',
     'Summit Series look launches HBO Canada sports doc series: Mudhar'
 ]
-model, X_vec, labels = m.train(data, n_clusters=2)
+X_vec, labels = m.train(data)
 r = m.predict(['Abbott government spends $8 million on higher education media blitz',
                'Middle East and Asia boost investment in top level sports'])
 print(r)
@@ -248,27 +295,19 @@ m.show_clusters(X_vec, labels, image_file='cluster.png')
 m.save()
 del m
 
-new_m = TextCluster()
+new_m = TextCluster(n_clusters=2)
 new_m.load()
 r = new_m.predict(['Abbott government spends $8 million on higher education media blitz',
                    'Middle East and Asia boost investment in top level sports'])
-print(r)
-
-# load train data from file
-tc = TextCluster()
-data = tc.load_file_data('train_seg_sample.txt')
-_, X_vec, labels = tc.train(data, n_clusters=3)
-tc.show_clusters(X_vec, labels, 'cluster_train_seg_samples.png')
-r = tc.predict(data[:5])
 print(r)
 ```
 
 output:
 
 ```
-[1 1]
-[1 1]
-[2 2 2 2 1]
+TextCluster instance (MiniBatchKMeans(n_clusters=2, n_init=10), <pytextclassifier.utils.tokenizer.Tokenizer object at 0x7f80bd4682b0>, TfidfVectorizer(ngram_range=(1, 2)))
+[1 0]
+[1 0]
 ```
 clustering plot image:
 
@@ -299,10 +338,9 @@ python3 infer.py
 
 - Issue(建议)：[![GitHub issues](https://img.shields.io/github/issues/shibing624/pytextclassifier.svg)](https://github.com/shibing624/pytextclassifier/issues)
 - 邮件我：xuming: xuming624@qq.com
-- 微信我：
-加我*微信号：xuming624, 备注：个人名称-NLP* 进NLP交流群。
+- 微信我：加我*微信号：xuming624*, 进Python-NLP交流群，备注：*姓名-公司名-NLP*
 
-<img src="docs/wechat.jpeg" width="200" />
+<img src="http://42.193.145.218/github_data/nlp_wechatgroup_erweima1.png" width="200" /><img src="http://42.193.145.218/github_data/xm_wechat_erweima.png" width="200" />
 
 
 # Cite

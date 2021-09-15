@@ -21,7 +21,6 @@ CONTENT_START_INDEX = 1
 N_CLUSTERS = 3
 
 
-
 def trim_stopwords(words, stop_words_set):
     """
     去除切词文本中的停用词
@@ -41,7 +40,7 @@ def segment(file_path, stopwords):
     import jieba
     word_set = set()
     docs = []
-    with open(file_path, 'r', encoding='utf-8')as f:
+    with open(file_path, 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip()
             cols = line.split("\t")
