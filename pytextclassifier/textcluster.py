@@ -8,7 +8,9 @@ from codecs import open
 
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
+import sys
 
+sys.path.append('..')
 from pytextclassifier.cluster import show_plt
 from pytextclassifier.utils.data_utils import save_pkl, load_pkl
 from pytextclassifier.utils.log import logger

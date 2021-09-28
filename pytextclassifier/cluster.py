@@ -10,6 +10,9 @@ from collections import Counter
 from codecs import open
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
+import sys
+
+sys.path.append('..')
 from pytextclassifier.preprocess import read_stopwords
 from pytextclassifier.config import stop_words_path
 

@@ -8,6 +8,9 @@ import os
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
+import sys
+
+sys.path.append('..')
 from pytextclassifier.utils.data_utils import save_pkl, load_pkl
 from pytextclassifier.utils.log import logger
 from pytextclassifier.utils.tokenizer import Tokenizer

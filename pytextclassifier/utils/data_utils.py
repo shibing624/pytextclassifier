@@ -9,7 +9,9 @@ from codecs import open
 from collections import defaultdict
 
 import numpy as np
+import sys
 
+sys.path.append('../..')
 from pytextclassifier.utils.log import logger
 
 
@@ -230,3 +232,23 @@ def save_predict_result(pred_labels, ture_labels=None, pred_save_path=None, data
                     else:
                         f.write(pred_labels[i] + '\n')
         logger.debug("pred_save_path:%s" % pred_save_path)
+
+
+def data_reader(path, col_sep='\t'):
+    contents, labels = [], []
+    with open(path, mode='r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if col_sep in line:
+                index = line.index(col_sep)
+                label = line[:index].strip()
+                content = line[index + 1:].strip()
+                if not content:
+                    print('error, ', line)
+                    continue
+                if not label:
+                    print('error, ', line)
+                    continue
+                labels.append(label)
+                contents.append(content)
+    return contents, labels

@@ -7,14 +7,15 @@
 import time
 
 from sklearn.model_selection import train_test_split
+import sys
 
+sys.path.append('..')
 from pytextclassifier import config
 from pytextclassifier.models.classic_model import get_model
 from pytextclassifier.utils.evaluate import eval, plt_history
 from pytextclassifier.feature import Feature
-from pytextclassifier.reader import data_reader
 from pytextclassifier.models.xgboost_lr_model import XGBLR
-from pytextclassifier.utils.data_utils import save_pkl, write_vocab, build_vocab, load_vocab, save_dict
+from pytextclassifier.utils.data_utils import save_pkl, write_vocab, build_vocab, load_vocab, save_dict, data_reader
 from pytextclassifier.utils.log import logger
 
 

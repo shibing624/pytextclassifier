@@ -6,13 +6,14 @@
 import time
 
 from sklearn.metrics import classification_report, confusion_matrix
+import sys
 
+sys.path.append('..')
 from pytextclassifier import config
 from pytextclassifier.utils.evaluate import cal_multiclass_lr_predict
 from pytextclassifier.feature import Feature
-from pytextclassifier.reader import data_reader
 from pytextclassifier.models.xgboost_lr_model import XGBLR
-from pytextclassifier.utils.data_utils import load_pkl, load_vocab, save_predict_result, load_dict
+from pytextclassifier.utils.data_utils import load_pkl, load_vocab, save_predict_result, load_dict, data_reader
 from pytextclassifier.utils.log import logger
 
 

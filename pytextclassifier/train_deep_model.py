@@ -7,12 +7,16 @@ import time
 from importlib import import_module
 import numpy as np
 import torch
+import sys
+
+sys.path.append('..')
 from pytextclassifier.utils.log import logger
 from pytextclassifier.utils.nn_utils import get_time_dif
 import argparse
 
 parser = argparse.ArgumentParser(description='Chinese Text Classification')
-parser.add_argument('--model', type=str, required=True, help='choose a model: textcnn, textrnn, fasttext, bilstm_att, bert_fc')
+parser.add_argument('--model', type=str, required=True,
+                    help='choose a model: textcnn, textrnn, fasttext, bilstm_att, bert_fc')
 parser.add_argument('--embedding', default='random', type=str, help='random or pre_trained')
 parser.add_argument('--word', default=False, type=bool, help='True for word, False for char')
 args = parser.parse_args()
@@ -24,7 +28,7 @@ if __name__ == '__main__':
         embedding = 'random'
     model_name = args.model  # TextCNN, FastText, TextRNN_Att
     if model_name == 'fasttext':
-        #from pytextclassifier.utils.fasttext_utils import build_dataset, build_iterator
+        # from pytextclassifier.utils.fasttext_utils import build_dataset, build_iterator
 
         embedding = 'random'
     else:

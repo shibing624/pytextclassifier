@@ -11,6 +11,9 @@ from sklearn import metrics
 import time
 from transformers.optimization import AdamW
 from transformers.optimization import get_linear_schedule_with_warmup
+import sys
+
+sys.path.append('..')
 from pytextclassifier.utils.nn_utils import get_time_dif
 
 

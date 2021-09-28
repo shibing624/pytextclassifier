@@ -6,6 +6,9 @@
 import torch
 import torch.nn as nn
 from transformers import BertModel, BertTokenizer
+import sys
+
+sys.path.append('../..')
 from pytextclassifier.utils.bert_utils import build_dataset, build_iterator
 from pytextclassifier.bert_train_eval import init_network, train
 

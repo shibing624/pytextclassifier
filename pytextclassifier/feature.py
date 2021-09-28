@@ -10,7 +10,9 @@ import numpy as np
 from sklearn import preprocessing
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.feature_selection import SelectKBest, chi2
+import sys
 
+sys.path.append('..')
 from pytextclassifier import config
 from pytextclassifier.utils.data_utils import save_pkl, load_pkl, get_word_segment_data, get_char_segment_data, load_list
 from pytextclassifier.utils.log import logger

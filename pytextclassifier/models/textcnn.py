@@ -7,6 +7,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
+import sys
+
+sys.path.append('../..')
 from pytextclassifier.utils.nn_utils import build_dataset, build_iterator
 from pytextclassifier.train_eval import init_network, train
 

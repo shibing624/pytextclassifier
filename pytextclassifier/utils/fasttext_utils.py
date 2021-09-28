@@ -7,7 +7,9 @@ import os
 import torch
 import pickle as pkl
 from tqdm import tqdm
+import sys
 
+sys.path.append('../..')
 from pytextclassifier.utils.nn_utils import build_vocab, MAX_VOCAB_SIZE, PAD, UNK
 from pytextclassifier.utils.log import logger
 

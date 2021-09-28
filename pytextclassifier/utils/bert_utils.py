@@ -39,7 +39,7 @@ def build_dataset(config, ues_word=False):
     train = load_dataset(config.train_path, config.pad_size)
     dev = load_dataset(config.dev_path, config.pad_size)
     test = load_dataset(config.test_path, config.pad_size)
-    vocab = dict() # 为了保持格式一致，4个参数
+    vocab = dict()  # 为了保持格式一致，4个参数
     return vocab, train, dev, test
 
 

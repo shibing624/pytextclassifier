@@ -5,7 +5,9 @@
 from gensim.models import Word2Vec
 from gensim.models.keyedvectors import KeyedVectors
 from gensim.models.word2vec import LineSentence
+import sys
 
+sys.path.append('../..')
 from pytextclassifier.utils.data_utils import read_lines, save_pkl
 
 
