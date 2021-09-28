@@ -58,7 +58,6 @@ def train(config, model, train_iter, dev_iter, test_iter):
     last_improve = 0  # 记录上次验证集loss下降的batch数
     flag = False  # 记录是否很久没有效果提升
     # empty list to save model predictions
-    total_preds = []
     model.train()
     for epoch in range(config.num_epochs):
         print('Epoch [{}/{}]'.format(epoch + 1, config.num_epochs))
@@ -73,14 +72,11 @@ def train(config, model, train_iter, dev_iter, test_iter):
 
             optimizer.step()
             scheduler.step()
-            preds = outputs.detach().cpu().numpy()
-            total_preds.append(preds)
 
             if total_batch % 100 == 0:
                 # 每多少轮输出在训练集和验证集上的效果
                 y_true = label_ids.data.cpu()
-                total_preds = np.concatenate(total_preds, axis=0)
-                y_pred = np.argmax(total_preds, axis=1)
+                y_pred = torch.max(outputs.data, 1)[1].cpu()
                 train_acc = metrics.accuracy_score(y_true, y_pred)
                 dev_acc, dev_loss = evaluate(config, model, dev_iter)
                 if dev_loss < dev_best_loss:
@@ -94,7 +90,6 @@ def train(config, model, train_iter, dev_iter, test_iter):
                 msg = 'Iter: {0:>6},  Train Loss: {1:>5.2},  Train Acc: {2:>6.2%},  Val Loss: {3:>5.2},  Val Acc: {4:>6.2%},  Time: {5} {6}'
                 print(msg.format(total_batch, loss.item(), train_acc, dev_loss, dev_acc, time_dif, improve))
                 model.train()
-                total_preds = []
             total_batch += 1
             if total_batch - last_improve > config.require_improvement:
                 # 验证集loss超过1000batch没下降，结束训练
@@ -135,13 +130,10 @@ def evaluate(config, model, data_iter, test=False):
             outputs = model(data)
             loss = F.cross_entropy(outputs, label_ids)
             loss_total += loss
-            labels = label_ids.data.cpu().numpy()
-            # predic = torch.max(outputs.data, 1)[1].cpu().numpy()
-            preds = outputs.detach().cpu().numpy()
-            preds = np.argmax(preds, axis=1)
+            labels = label_ids.data.cpu()
+            preds = torch.max(outputs.data, 1)[1].cpu()
             labels_all = np.append(labels_all, labels)
             predict_all = np.append(predict_all, preds)
-
     acc = metrics.accuracy_score(labels_all, predict_all)
     if test:
         report = metrics.classification_report(labels_all, predict_all,
