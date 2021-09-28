@@ -20,10 +20,13 @@ parser.add_argument('--model', type=str, required=True,
 parser.add_argument('--embedding', default='random', type=str, help='random or pre_trained')
 parser.add_argument('--word', default=False, type=bool, help='True for word, False for char')
 args = parser.parse_args()
+print(args)
 
 if __name__ == '__main__':
     dataset = 'THUCNews'  # 数据集
     model_name = args.model  # TextCNN, FastText, TextRNN_Att
+    embedding = args.embedding
+    use_word = args.word
     if model_name == 'fasttext':
         embedding = 'random'
     x = import_module('models.' + model_name)
@@ -37,7 +40,7 @@ if __name__ == '__main__':
 
     start_time = time.time()
     logger.debug("Loading data...")
-    vocab, train_data, dev_data, test_data = x.build_dataset(config, args.word)
+    vocab, train_data, dev_data, test_data = x.build_dataset(config, use_word)
     train_iter = x.build_iterator(train_data, config)
     dev_iter = x.build_iterator(dev_data, config)
     test_iter = x.build_iterator(test_data, config)
