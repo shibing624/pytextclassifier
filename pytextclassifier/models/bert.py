@@ -50,16 +50,16 @@ class Model(nn.Module):
         for param in self.bert.parameters():
             param.requires_grad = True
         # dropout layer
-        self.dropout = nn.Dropout(self.dropout_rate)
+        self.dropout = nn.Dropout(p=config.dropout_rate)
         # relu activation function
         self.relu = nn.ReLU()
         # dense layer 1
-        self.fc1 = nn.Linear(self.bert_hidden, self.hidden_size)
+        self.fc1 = nn.Linear(config.bert_hidden, config.hidden_size)
         # dense layer 2 (Output layer)
-        self.fc2 = nn.Linear(self.hidden_size, config.num_classes)
+        self.fc2 = nn.Linear(config.hidden_size, config.num_classes)
         # softmax activation function
         self.softmax = nn.LogSoftmax(dim=1)
-        self.fc = nn.Linear(config.bert_hidden, config.num_classes)
+        # self.fc = nn.Linear(config.bert_hidden, config.num_classes)
 
     def forward(self, x):
         # (x, seq_len, mask), y
