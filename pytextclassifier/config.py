@@ -17,7 +17,7 @@ test_seg_path = os.path.join(pwd_path, "../examples/test_seg_sample.txt")  # seg
 col_sep = '\t'  # separate label and content of train data
 
 # one of "logistic_regression, random_forest, bayes, decision_tree, svm, knn, xgboost, xgboost_lr,
-# mlp, ensemble, stack, fasttext, cnn, rnn, han"
+# fasttext, cnn, rnn, han"
 model_type = "logistic_regression"
 
 # feature type

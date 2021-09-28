@@ -8,7 +8,6 @@ import os
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-from pytextclassifier.models.evaluate import simple_evaluate
 from pytextclassifier.utils.data_utils import save_pkl, load_pkl
 from pytextclassifier.utils.log import logger
 from pytextclassifier.utils.tokenizer import Tokenizer
@@ -18,7 +17,7 @@ pwd_path = os.path.abspath(os.path.dirname(__file__))
 default_stopwords_path = os.path.join(pwd_path, 'data/stopwords.txt')
 
 
-class TextClassifier(object):
+class TextClassifier:
     def __init__(self, model=None, tokenizer=None, vectorizer=None, stopwords_path=None,
                  solver='lbfgs', fit_intercept=False, ngram_range=(1, 2), **kwargs):
         """
@@ -36,12 +35,14 @@ class TextClassifier(object):
     def __repr__(self):
         return 'TextClassifier instance ({}, {}, {})'.format(self.model, self.tokenizer, self.vectorizer)
 
-    def encode_data(self, data_list_or_filepath, header=None, delimiter=',', names=['label', 'text'], **kwargs):
+    def encode_data(self, data_list_or_filepath, header=None, names=None, delimiter=',', **kwargs):
         """
         Encoding data_list text
         data_list_or_filepath: list of (label, text), eg: [(label, text), (label, text) ...]
         return: X, X_tokens, Y
         """
+        if names is None:
+            names = ['label', 'text']
         if isinstance(data_list_or_filepath, list):
             data_df = pd.DataFrame(data_list_or_filepath, columns=names)
         elif isinstance(data_list_or_filepath, str) and os.path.exists(data_list_or_filepath):

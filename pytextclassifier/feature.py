@@ -49,48 +49,8 @@ class Feature(object):
             data_feature = self.tf_word_feature(self.data_set)
         elif self.feature_type == 'tfidf_char_language':
             data_feature = self.tfidf_char_lang_feature(self.data_set)
-        elif self.feature_type == 'vectorize':
-            data_feature = self.vec_feature(self.data_set)
-        elif self.feature_type == 'doc_vectorize':
-            data_feature = self.doc_vec_feature(self.data_set)
         else:
             raise ValueError('not found feature type.')
-        return data_feature
-
-    def vec_feature(self, data_set):
-        from keras.preprocessing.sequence import pad_sequences
-        from keras.preprocessing.text import Tokenizer
-        tokenizer = Tokenizer()
-        tokenizer.fit_on_texts(data_set)
-        sequences = tokenizer.texts_to_sequences(data_set)
-
-        word_index = tokenizer.word_index
-        logger.info('Number of Unique Tokens: %d' % len(word_index))
-        data_feature = pad_sequences(sequences, maxlen=self.max_len)
-        print('Shape of Data Tensor:', data_feature.shape)
-        return data_feature
-
-    def doc_vec_feature(self, data_set, max_sentences=16):
-        from keras.preprocessing.text import Tokenizer, text_to_word_sequence
-        tokenizer = Tokenizer()
-        tokenizer.fit_on_texts(data_set)
-        data_feature = np.zeros((len(data_set), max_sentences, self.max_len), dtype='int32')
-        sentence_symbols = "".join(self.sentence_symbol)
-        split = "[" + sentence_symbols + "]"
-        for i, sentence in enumerate(data_set):
-            short_sents = re.split(split, sentence)
-            for j, sent in enumerate(short_sents):
-                if j < max_sentences and sent.strip():
-                    words = text_to_word_sequence(sent)
-                    k = 0
-                    for w in words:
-                        if k < self.max_len:
-                            if w in tokenizer.word_index:
-                                data_feature[i, j, k] = tokenizer.word_index[w]
-                            k += 1
-        word_index = tokenizer.word_index
-        logger.info('Number of Unique Tokens: %d' % len(word_index))
-        print('Shape of Data Tensor:', data_feature.shape)
         return data_feature
 
     def tfidf_char_feature(self, data_set):
