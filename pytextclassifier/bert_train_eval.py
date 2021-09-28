@@ -75,7 +75,7 @@ def train(config, model, train_iter, dev_iter, test_iter):
 
             if total_batch % 100 == 0:
                 # 每多少轮输出在训练集和验证集上的效果
-                y_true = label_ids.data.cpu().numpy()
+                y_true = label_ids.cpu().numpy()
                 y_pred = torch.max(outputs.data, 1)[1].cpu().numpy()
                 train_acc = metrics.accuracy_score(y_true, y_pred)
                 dev_acc, dev_loss = evaluate(config, model, dev_iter)
@@ -120,8 +120,8 @@ def test(config, model, test_iter):
 def evaluate(config, model, data_iter, test=False):
     model.eval()
     loss_total = 0
-    predict_all = np.array([], dtype=int)
-    labels_all = np.array([], dtype=int)
+    predict_all = np.array([], dtype=float)
+    labels_all = np.array([], dtype=float)
     with torch.no_grad():
         for i, (trains, label_ids) in enumerate(data_iter):
             data = [t.to(config.device) for t in trains]

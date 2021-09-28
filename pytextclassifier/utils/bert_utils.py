@@ -3,7 +3,6 @@
 @author:XuMing(xuming624@qq.com)
 @description: 
 """
-
 import torch
 from tqdm import tqdm
 
@@ -47,7 +46,7 @@ class DatasetIterater:
     def __init__(self, batches, batch_size, device):
         self.batch_size = batch_size
         self.batches = batches
-        self.n_batches = len(batches) // batch_size
+        self.n_batches = len(batches) // batch_size if len(batches) > batch_size else 1
         self.residue = False  # 记录batch数量是否为整数
         if len(batches) % self.n_batches != 0:
             self.residue = True
