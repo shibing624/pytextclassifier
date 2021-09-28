@@ -75,8 +75,8 @@ def train(config, model, train_iter, dev_iter, test_iter):
 
             if total_batch % 100 == 0:
                 # 每多少轮输出在训练集和验证集上的效果
-                y_true = label_ids.data.cpu()
-                y_pred = torch.max(outputs.data, 1)[1].cpu()
+                y_true = label_ids.data.cpu().numpy()
+                y_pred = torch.max(outputs.data, 1)[1].cpu().numpy()
                 train_acc = metrics.accuracy_score(y_true, y_pred)
                 dev_acc, dev_loss = evaluate(config, model, dev_iter)
                 if dev_loss < dev_best_loss:
@@ -130,7 +130,7 @@ def evaluate(config, model, data_iter, test=False):
             outputs = model(data)
             loss = F.cross_entropy(outputs, label_ids)
             loss_total += loss
-            labels = label_ids.data.cpu().numpy()
+            labels = label_ids.cpu().numpy()
             preds = torch.max(outputs.data, 1)[1].cpu().numpy()
             labels_all = np.append(labels_all, labels)
             predict_all = np.append(predict_all, preds)
