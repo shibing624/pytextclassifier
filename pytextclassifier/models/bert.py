@@ -25,20 +25,19 @@ class Config:
             dataset + '/data/class.txt').readlines()]  # 类别名单
         self.save_path = dataset + '/saved_dict/' + self.model_name + '.ckpt'  # 模型训练结果
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # 设备
+
         self.require_improvement = 1000  # 若超过1000batch效果还没提升，则提前结束训练
         self.num_classes = len(self.class_list)  # 类别数
         self.num_epochs = 3  # epoch数
-        self.batch_size = 128  # mini-batch大小
+        self.batch_size = 64  # mini-batch大小
         self.pad_size = 128  # 每句话处理成的长度(短填长切)
-        self.learning_rate = 5e-5  # 学习率
-        self.bert_learning_rate = 5e-5
+        self.bert_learning_rate = 5e-5 # 学习率
         self.other_learning_rate = 1e-3
         self.bert_path = 'bert-base-chinese'
         self.tokenizer = BertTokenizer.from_pretrained(self.bert_path)
         self.hidden_size = 512
         self.bert_hidden = 768
         self.dropout_rate = 0.1
-        self.weight_decay = 0
 
 
 class Model(nn.Module):
@@ -57,9 +56,6 @@ class Model(nn.Module):
         self.fc1 = nn.Linear(config.bert_hidden, config.hidden_size)
         # dense layer 2 (Output layer)
         self.fc2 = nn.Linear(config.hidden_size, config.num_classes)
-        # softmax activation function
-        self.softmax = nn.LogSoftmax(dim=1)
-        # self.fc = nn.Linear(config.bert_hidden, config.num_classes)
 
     def forward(self, x):
         # (x, seq_len, mask), y
@@ -77,6 +73,4 @@ class Model(nn.Module):
         out = self.dropout(out)
         # output layer
         out = self.fc2(out)
-        # apply softmax activation
-        out = self.softmax(out)
         return out

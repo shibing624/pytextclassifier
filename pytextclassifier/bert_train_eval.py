@@ -65,6 +65,7 @@ def train(config, model, train_iter, dev_iter, test_iter):
             label_ids = label_ids.to(config.device)
             outputs = model(data)
             model.zero_grad()
+            # F.cross_entropy combines `log_softmax` and `nll_loss`
             loss = F.cross_entropy(outputs, label_ids)
             loss.backward()
 

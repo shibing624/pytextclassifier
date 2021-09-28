@@ -23,21 +23,12 @@ args = parser.parse_args()
 
 if __name__ == '__main__':
     dataset = 'THUCNews'  # 数据集
-    embedding = 'embedding_SougouNews.npz'
-    if args.embedding == 'random':
-        embedding = 'random'
     model_name = args.model  # TextCNN, FastText, TextRNN_Att
     if model_name == 'fasttext':
-        # from pytextclassifier.utils.fasttext_utils import build_dataset, build_iterator
-
         embedding = 'random'
-    else:
-        # from pytextclassifier.utils.nn_utils import build_dataset, build_iterator
-        pass
-
     x = import_module('models.' + model_name)
     config = x.Config(dataset, embedding)
-
+    logger.debug('use device: {}'.format(config.device))
     SEED = 1
     np.random.seed(SEED)
     torch.manual_seed(SEED)
