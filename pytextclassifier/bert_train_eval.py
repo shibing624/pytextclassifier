@@ -41,23 +41,16 @@ def train(config, model, train_iter, dev_iter, test_iter):
     model.train()
     param_optimizer = list(model.named_parameters())
     # LayerNorm,bias是不需要decay的
+    no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
     optimizer_grouped_parameters = [
-        {'params': [p for n, p in param_optimizer if "bert" in n], "lr": config.bert_learning_rate,
-         'weight_decay': 0.01},
-        {'params': [p for n, p in param_optimizer if "bert" not in n], "lr": config.other_learning_rate,
-         'weight_decay': 0.01},
-    ]
+        {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
+        {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}]
     # To reproduce BertAdam specific behavior set correct_bias=False
-    optimizer = AdamW(optimizer_grouped_parameters, lr=config.bert_learning_rate,
-                      correct_bias=False)
-    scheduler = get_linear_schedule_with_warmup(optimizer,
-                                                num_warmup_steps=0.05,
-                                                num_training_steps=len(train_iter) * config.num_epochs)
+    optimizer = AdamW(model.parameters(), lr=config.learning_rate)
     total_batch = 0  # 记录进行到多少batch
     dev_best_loss = float('inf')
     last_improve = 0  # 记录上次验证集loss下降的batch数
     flag = False  # 记录是否很久没有效果提升
-    # empty list to save model predictions
     model.train()
     for epoch in range(config.num_epochs):
         print('Epoch [{}/{}]'.format(epoch + 1, config.num_epochs))
@@ -69,9 +62,7 @@ def train(config, model, train_iter, dev_iter, test_iter):
             # F.cross_entropy combines `log_softmax` and `nll_loss`
             loss = F.cross_entropy(outputs, label_ids)
             loss.backward()
-
             optimizer.step()
-            scheduler.step()
 
             if total_batch % 100 == 0:
                 # 每多少轮输出在训练集和验证集上的效果
@@ -120,8 +111,8 @@ def test(config, model, test_iter):
 def evaluate(config, model, data_iter, test=False):
     model.eval()
     loss_total = 0
-    predict_all = np.array([], dtype=float)
-    labels_all = np.array([], dtype=float)
+    predict_all = np.array([], dtype=int)
+    labels_all = np.array([], dtype=int)
     with torch.no_grad():
         for i, (trains, label_ids) in enumerate(data_iter):
             data = [t.to(config.device) for t in trains]
@@ -132,6 +123,7 @@ def evaluate(config, model, data_iter, test=False):
             loss_total += loss
             labels = label_ids.cpu().numpy()
             preds = torch.max(outputs.data, 1)[1].cpu().numpy()
+            print('dev, y_true:', labels, ' y_pred:', preds)
             labels_all = np.append(labels_all, labels)
             predict_all = np.append(predict_all, preds)
     acc = metrics.accuracy_score(labels_all, predict_all)
