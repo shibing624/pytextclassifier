@@ -323,6 +323,7 @@ if __name__ == '__main__':
     np.random.seed(SEED)
     torch.manual_seed(SEED)
     torch.cuda.manual_seed_all(SEED)  # 保持结果一致
+    print(f'device: {device}')
     # load data
     X, y = load_data(args.data_path)
     word_vocab_path = os.path.join(model_dir, 'word_vocab.pkl')
