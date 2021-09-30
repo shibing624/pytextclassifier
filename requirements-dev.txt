@@ -4,4 +4,5 @@ scikit-learn
 pandas
 numpy
 transformers
+simpletransformers
 torch
