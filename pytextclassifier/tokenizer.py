@@ -5,8 +5,6 @@
 """
 import re
 
-import six
-
 
 def tokenize_words(text):
     """Word segmentation"""
@@ -85,60 +83,6 @@ def whitespace_tokenize(text):
         return []
     tokens = text.split()
     return tokens
-
-
-def segment(sentence, is_cut2char=False, enable_pos=False):
-    """
-    切词
-    :param sentence:
-    :param is_cut2char: False use jieba.lcut; True use list(sentence)
-    :param enable_pos: bool, enable POS
-    :return: list
-    """
-    import jieba
-    from jieba import posseg
-
-    jieba.setLogLevel(log_level="ERROR")
-    if enable_pos:
-        if not is_cut2char:
-            word_pos_seq = posseg.lcut(sentence)
-            word_seq, pos_seq = [], []
-            for w, p in word_pos_seq:
-                word_seq.append(w)
-                pos_seq.append(p)
-            return word_seq, pos_seq
-        else:
-            word_seq = list(sentence)
-            pos_seq = []
-            for w in word_seq:
-                w_p = posseg.lcut(w)
-                pos_seq.append(w_p[0].flag)
-            return word_seq, pos_seq
-    else:
-        if not is_cut2char:
-            return jieba.lcut(sentence)
-        else:
-            return list(sentence)
-
-
-def convert_to_unicode(text):
-    """Converts `text` to Unicode (if it's not already), assuming utf-8 input."""
-    if six.PY3:
-        if isinstance(text, str):
-            return text
-        elif isinstance(text, bytes):
-            return text.decode("utf-8", "ignore")
-        else:
-            raise ValueError("Unsupported string type: %s" % (type(text)))
-    elif six.PY2:
-        if isinstance(text, str):
-            return text.decode("utf-8", "ignore")
-        elif isinstance(text, unicode):
-            return text
-        else:
-            raise ValueError("Unsupported string type: %s" % (type(text)))
-    else:
-        raise ValueError("Not running on Python2 or Python 3?")
 
 
 if __name__ == '__main__':

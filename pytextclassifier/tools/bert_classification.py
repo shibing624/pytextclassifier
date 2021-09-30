@@ -16,8 +16,16 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
-def load_data(data_filepath, label_vocab_path, header=None, delimiter='\t', names=['labels', 'text'], **kwargs):
+def load_data(data_filepath, header=None, delimiter='\t', names=['labels', 'text'], **kwargs):
     data_df = pd.read_csv(data_filepath, header=header, delimiter=delimiter, names=names, **kwargs)
+    print(data_df.head())
+    X, y = data_df['text'], data_df['labels']
+    print('loaded data list, X size: {}, y size: {}'.format(len(X), len(y)))
+    assert len(X) == len(y)
+    print('num_classes:%d' % len(set(y)))
+    return data_df
+
+def build_dataset(data_df, label_vocab_path):
     X, y = data_df['text'], data_df['labels']
     print('loaded data list, X size: {}, y size: {}'.format(len(X), len(y)))
     assert len(X) == len(y)
@@ -50,7 +58,6 @@ class BertClassificationModel(ClassificationModel):
             "reprocess_input_data": True,
             "overwrite_output_dir": True,
             "output_dir": model_dir,
-            "best_model_dir": f"{model_dir}/best_model",
             "max_seq_length": max_seq_length,
             "num_train_epochs": num_epochs,
             "train_batch_size": batch_size,
@@ -62,9 +69,16 @@ class BertClassificationModel(ClassificationModel):
                                                       use_cuda=use_cuda)
 
 
-def load_model(model, model_path):
-    model.load_state_dict(torch.load(model_path))
-    return model
+def predict(model, data_list, label_id_map):
+    # predict
+    predictions, raw_outputs = model.predict(data_list)
+    # predict proba
+    id_label_map = {v: k for k, v in label_id_map.items()}
+    predict_label = [id_label_map.get(i) for i in predictions]
+    predict_proba = 0.
+    for raw_output, prediction in zip(raw_outputs, predictions):
+        predict_proba = raw_output[prediction]
+    return predict_label, predict_proba
 
 
 def get_args():
@@ -74,7 +88,7 @@ def get_args():
     parser.add_argument('--pretrain_model_name', default='bert-base-chinese', type=str,
                         help='pretrained huggingface model name')
     parser.add_argument('--model_dir', default='bert', type=str, help='save model dir')
-    parser.add_argument('--data_path', default='../../examples/THUCNews/data/train.txt', type=str,
+    parser.add_argument('--data_path', default='../../examples/thucnews_train_10w.txt', type=str,
                         help='sample data file path')
     parser.add_argument('--num_epochs', default=3, type=int, help='train epochs')
     parser.add_argument('--batch_size', default=64, type=int, help='train batch size')
@@ -87,15 +101,15 @@ def get_args():
 if __name__ == '__main__':
     args = get_args()
     model_dir = args.model_dir
-    if model_dir and not os.path.exists(model_dir):
-        os.makedirs(model_dir)
+    os.makedirs(model_dir, exist_ok=True)
     SEED = 1
     np.random.seed(SEED)
     torch.manual_seed(SEED)
     torch.cuda.manual_seed_all(SEED)  # 保持结果一致
     # load data
     label_vocab_path = os.path.join(model_dir, 'label_vocab.pkl')
-    data_df, label_id_map = load_data(args.data_path, label_vocab_path)
+    data_df = load_data(args.data_path)
+    data_df, label_id_map = build_dataset(data_df, label_vocab_path)
     print(data_df.head())
     train_df, dev_df = train_test_split(data_df, test_size=0.1, random_state=SEED)
     # create model
@@ -120,3 +134,16 @@ if __name__ == '__main__':
     # predict
     predictions, raw_outputs = model.predict(["就要性价比 惠普CQ40仅3800元抱回家"])
     print('pred:', predictions, ' raw_output:', raw_outputs)
+    predict_label, predict_proba = predict(model, ["就要性价比 惠普CQ40仅3800元抱回家"], label_id_map)
+    print(f'predict_label:{predict_label}, predict_proba:{predict_proba}')
+    # predict with new model
+    new_model = BertClassificationModel(model_type=args.pretrain_model_type,
+                                        model_name='./bert/best_model/',
+                                        num_classes=len(label_id_map),
+                                        num_epochs=args.num_epochs,
+                                        batch_size=args.batch_size,
+                                        max_seq_length=args.max_seq_length,
+                                        model_dir=args.model_dir,
+                                        use_cuda=use_cuda)
+    predict_label, predict_proba = predict(new_model, ["就要性价比 惠普CQ40仅3800元抱回家"], label_id_map)
+    print(f'predict_label:{predict_label}, predict_proba:{predict_proba}')

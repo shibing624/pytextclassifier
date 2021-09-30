@@ -268,6 +268,21 @@ output:
 
 ![img.png](docs/img.png)
 
+
+- 模型效果
+
+模型|acc|备注
+--|--|--
+LR|88.03%|逻辑回归Logistics Regression
+TextCNN|88.09%|Kim 2014 经典的CNN文本分类
+TextRNN_Att|90.22%|BiLSTM+Attention
+FastText|91.77%|bow+bigram+trigram， 效果出奇的好
+DPCNN|91.25%|深层金字塔CNN
+Transformer|89.91%|效果较差
+BERT|94.83%|bert + fc
+ERNIE|94.61%|比bert略差
+
+
 ### Text Cluster
 
 

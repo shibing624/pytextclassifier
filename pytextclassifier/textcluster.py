@@ -5,29 +5,75 @@
 """
 import os
 from codecs import open
-
+import pickle
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 import sys
 
 sys.path.append('..')
-from pytextclassifier.cluster import show_plt
-from pytextclassifier.utils.data_utils import save_pkl, load_pkl
-from pytextclassifier.utils.log import logger
-from pytextclassifier.utils.tokenizer import Tokenizer
-from pytextclassifier.preprocess import read_stopwords
+from pytextclassifier.log import logger
+from pytextclassifier.tokenizer import Tokenizer
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
 default_stopwords_path = os.path.join(pwd_path, 'data/stopwords.txt')
 
 
+def load_list(path):
+    return [word for word in open(path, 'r', encoding='utf-8').read().split()]
+
+
+def load_pkl(pkl_path):
+    """
+    加载词典文件
+    :param pkl_path:
+    :return:
+    """
+    with open(pkl_path, 'rb') as f:
+        result = pickle.load(f)
+    return result
+
+
+def save_pkl(vocab, pkl_path, overwrite=True):
+    """
+    存储文件
+    :param pkl_path:
+    :param overwrite:
+    :return:
+    """
+    if pkl_path and os.path.exists(pkl_path) and not overwrite:
+        return
+    if pkl_path:
+        with open(pkl_path, 'wb') as f:
+            # pickle.dump(vocab, f, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(vocab, f, protocol=2)  # 兼容python2和python3
+        print("save %s ok." % pkl_path)
+
+
+def show_plt(feature_matrix, labels, image_file='cluster.png'):
+    """
+    Show cluster plt
+    :param feature_matrix:
+    :param labels:
+    :param image_file:
+    :return:
+    """
+    from sklearn.decomposition import TruncatedSVD
+    import matplotlib.pyplot as plt
+    svd = TruncatedSVD()
+    plot_columns = svd.fit_transform(feature_matrix)
+    plt.scatter(x=plot_columns[:, 0], y=plot_columns[:, 1], c=labels)
+    if image_file:
+        plt.savefig(image_file)
+    plt.show()
+
+
 class TextCluster(object):
     def __init__(self, model=None, tokenizer=None, vectorizer=None, stopwords_path=None,
-                 n_clusters=3, n_init=10, ngram_range=(1, 2),  **kwargs):
+                 n_clusters=3, n_init=10, ngram_range=(1, 2), **kwargs):
         self.model = model if model else MiniBatchKMeans(n_clusters=n_clusters, n_init=n_init)
         self.tokenizer = tokenizer if tokenizer else Tokenizer()
         self.vectorizer = vectorizer if vectorizer else TfidfVectorizer(ngram_range=ngram_range, **kwargs)
-        self.stopwords = read_stopwords(stopwords_path) if stopwords_path else read_stopwords(default_stopwords_path)
+        self.stopwords = set(load_list(stopwords_path)) if stopwords_path else set(load_list(default_stopwords_path))
         self.is_trained = False
 
     def __repr__(self):
@@ -134,4 +180,4 @@ class TextCluster(object):
         vectorizer_path = os.path.join(model_dir, 'cluster_vectorizer.pkl')
         self.vectorizer = load_pkl(vectorizer_path)
         self.is_trained = True
-        logger.info('model loaded from {}'.format(model_dir))
+        logger.info('model loaded {}'.format(model_dir))

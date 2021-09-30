@@ -43,7 +43,7 @@ setup(
     package_dir={'pytextclassifier': 'pytextclassifier'},
     package_data={
         'pytextclassifier': ['*.*', '../LICENSE', '../README.*', '../*.txt', 'data/*', 'utils/*',
-                             'models/*', ],
+                             'models/*', '../examples/*.py', '../examples/*.ipynb', '../examples/*.txt'],
     },
     test_suite='tests',
 )

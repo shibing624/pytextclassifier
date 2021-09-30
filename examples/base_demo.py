@@ -9,7 +9,7 @@ sys.path.append('..')
 from pytextclassifier import TextClassifier
 
 if __name__ == '__main__':
-    m = TextClassifier()
+    m = TextClassifier(model_name='textcnn')
     # model_name is choose classifier, support lr, random_forest, xgboost, svm, mlp, ensemble, stack
     print(m)
     data = [
@@ -40,5 +40,5 @@ if __name__ == '__main__':
         ('education', 'Abbott government spends $8 million on higher education media blitz'),
         ('sports', 'Middle East and Asia boost investment in top level sports'),
     ]
-    acc_score = new_m.test(test_data)
+    acc_score = new_m.evaluate(test_data)
     print(acc_score)  # 1.0

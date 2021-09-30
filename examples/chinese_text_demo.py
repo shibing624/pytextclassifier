@@ -40,5 +40,5 @@ if __name__ == '__main__':
         ('education', '福建春季公务员考试报名18日截止 2月6日考试'),
         ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
     ]
-    acc_score = new_m.test(test_data)
+    acc_score = new_m.evaluate(test_data)
     print(acc_score)  # 1.0

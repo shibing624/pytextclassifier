@@ -33,6 +33,7 @@ embed_size = 200  # 字向量维度
 hidden_size = 128  # lstm隐藏层
 num_layers = 2  # lstm层数
 hidden_size2 = 64
+tokenizer = lambda x: [y for y in x]  # char-level
 
 
 def load_data(data_filepath, header=None, delimiter='\t', names=['labels', 'text'], **kwargs):
@@ -223,7 +224,7 @@ def evaluate(model, data_iter):
     return acc, loss_total / len(data_iter)
 
 
-def train(model, train_iter, dev_iter, num_epochs, learning_rate, require_improvement, save_path):
+def train(model, train_iter, dev_iter, num_epochs=10, learning_rate=1e-3, require_improvement=1000, save_path=''):
     # train
     start_time = time.time()
     model.train()
@@ -299,20 +300,24 @@ def predict(model, data_list, label_id_map):
     data_iter = build_iterator(data, test_batch_size, device)
     # predict proba
     predict_all = np.array([], dtype=int)
+    proba_all = np.array([], dtype=float)
     with torch.no_grad():
         for texts, _ in data_iter:
             outputs = model(texts)
-            predic = torch.max(outputs, 1)[1].detach().cpu().numpy()
-            predict_all = np.append(predict_all, predic)
+            pred = torch.max(outputs, 1)[1].detach().cpu().numpy()
+            predict_all = np.append(predict_all, pred)
+            proba = torch.max(outputs, 1)[0].detach().cpu().numpy()
+            proba_all = np.append(proba_all, proba)
     id_label_map = {v: k for k, v in label_id_map.items()}
-    res = [id_label_map.get(i) for i in predict_all]
-    return res
+    predict_label = [id_label_map.get(i) for i in predict_all]
+    predict_proba = proba_all.tolist()
+    return predict_label, predict_proba
 
 
 def get_args():
     parser = argparse.ArgumentParser(description='Text Classification')
     parser.add_argument('--model_dir', default='textrnn_att', type=str, help='save model dir')
-    parser.add_argument('--data_path', default='../../examples/THUCNews/data/train.txt', type=str,
+    parser.add_argument('--data_path', default='../../examples/thucnews_train_10w.txt', type=str,
                         help='sample data file path')
     args = parser.parse_args()
     print(args)
@@ -322,9 +327,7 @@ def get_args():
 if __name__ == '__main__':
     args = get_args()
     model_dir = args.model_dir
-    if model_dir and not os.path.exists(model_dir):
-        os.makedirs(model_dir)
-    tokenizer = lambda x: [y for y in x]  # char-level
+    os.makedirs(model_dir, exist_ok=True)
     SEED = 1
     np.random.seed(SEED)
     torch.manual_seed(SEED)
@@ -348,7 +351,11 @@ if __name__ == '__main__':
     # train model
     train(model, train_iter, dev_iter, num_epochs, learning_rate, require_improvement, save_model_path)
     # predict
+    predict_label, predict_proba = predict(model, X[:10], label_id_map)
+    for text, label, proba in zip(X[:10], predict_label, predict_proba):
+        print(text, label, proba)
+    # load new model and predict
     new_model = load_model(model, save_model_path)
-    preds = predict(new_model, X[:10], label_id_map)
-    for text, pred in zip(X[:10], preds):
-        print(text, pred)
+    predict_label, predict_prob = predict(new_model, X[:10], label_id_map)
+    for text, label, proba in zip(X[:10], predict_label, predict_proba):
+        print(text, label, proba)
