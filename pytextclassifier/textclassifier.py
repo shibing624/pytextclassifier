@@ -32,7 +32,7 @@ def load_data(data_list_or_filepath, header=None, names=None, delimiter='\t', **
         data_df = data_list_or_filepath
     else:
         raise TypeError('should be list or file path, eg: [(label, text), ... ]')
-    X, y = data_df['text'], data_df['label']
+    X, y = data_df['text'], data_df['labels']
     logger.debug('loaded data list, X size: {}, y size: {}'.format(len(X), len(y)))
     assert len(X) == len(y)
     logger.debug('num_classes:%d' % len(set(y)))
@@ -40,7 +40,7 @@ def load_data(data_list_or_filepath, header=None, names=None, delimiter='\t', **
 
 
 class TextClassifier:
-    def __init__(self, model_name='lr', model_dir=''):
+    def __init__(self, model_name='lr', model_dir=None):
         """
         Init instance
         :param model: sklearn model
@@ -49,7 +49,7 @@ class TextClassifier:
         """
         self.model_name = model_name
         self.is_trained = False
-        self.model_dir = model_dir
+        self.model_dir = model_dir if model_dir else model_name
         self.model = None
         self.word_vocab_path = os.path.join(self.model_dir, 'word_vocab.pkl')
         self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab.pkl')
@@ -66,7 +66,8 @@ class TextClassifier:
         """
         logger.debug('train model...')
         logger.debug(f'device: {device}')
-        os.makedirs(self.model_dir, exist_ok=True)
+        if self.model_dir:
+            os.makedirs(self.model_dir, exist_ok=True)
         print(f'device: {device}')
         # load data
         X, y, data_df = load_data(data_list)
@@ -176,21 +177,21 @@ class TextClassifier:
                 build_dataset, build_iterator, evaluate)
             dev_data, word_id_map, label_id_map = build_dataset(X, y, self.word_vocab_path, self.label_vocab_path,
                                                                 **kwargs)
-            dev_iter = build_iterator(dev_data, device, **kwargs)
+            dev_iter = build_iterator(dev_data, device=device, **kwargs)
             acc, dev_loss = evaluate(self.model, dev_iter)
         elif self.model_name == 'textcnn':
             from pytextclassifier.tools.textcnn_classification import (
                 build_dataset, build_iterator, evaluate)
             dev_data, word_id_map, label_id_map = build_dataset(X, y, self.word_vocab_path, self.label_vocab_path,
                                                                 **kwargs)
-            dev_iter = build_iterator(dev_data, device, **kwargs)
+            dev_iter = build_iterator(dev_data, device=device, **kwargs)
             acc, dev_loss = evaluate(self.model, dev_iter)
         elif self.model_name == 'textrnn_att':
             from pytextclassifier.tools.textrnn_att_classification import (
                 build_dataset, build_iterator, evaluate)
             dev_data, word_id_map, label_id_map = build_dataset(X, y, self.word_vocab_path, self.label_vocab_path,
                                                                 **kwargs)
-            dev_iter = build_iterator(dev_data, device, **kwargs)
+            dev_iter = build_iterator(dev_data, device=device, **kwargs)
             acc, dev_loss = evaluate(self.model, dev_iter)
         elif self.model_name == 'bert':
             from pytextclassifier.tools.bert_classification import (
@@ -199,7 +200,7 @@ class TextClassifier:
             # evaluate the model
             result, model_outputs, wrong_predictions = self.model.eval_model(dev_df)
             print('evaluate: ', result, model_outputs, wrong_predictions)
-            acc = result['mcc']
+            acc = result
         else:
             raise ValueError('model_name not found.')
         logger.debug('evaluate model done, accuracy_score: {}'.format(acc))
@@ -220,20 +221,23 @@ class TextClassifier:
             predict_label, predict_proba = predict(input_text_list, model=self.model, vectorizer=self.vectorizer)
         elif self.model_name == 'fasttext':
             from pytextclassifier.tools.fasttext_classification import predict
+            word_id_map = pickle.load(open(self.word_vocab_path, 'rb'))
             label_id_map = pickle.load(open(self.label_vocab_path, 'rb'))
-            predict_label, predict_proba = predict(self.model, input_text_list, label_id_map)
+            predict_label, predict_proba = predict(self.model, input_text_list, word_id_map, label_id_map)
         elif self.model_name == 'textcnn':
             from pytextclassifier.tools.textcnn_classification import predict
+            word_id_map = pickle.load(open(self.word_vocab_path, 'rb'))
             label_id_map = pickle.load(open(self.label_vocab_path, 'rb'))
-            predict_label, predict_proba = predict(self.model, input_text_list, label_id_map)
+            predict_label, predict_proba = predict(self.model, input_text_list, word_id_map, label_id_map)
         elif self.model_name == 'textrnn_att':
             from pytextclassifier.tools.textrnn_att_classification import predict
+            word_id_map = pickle.load(open(self.word_vocab_path, 'rb'))
             label_id_map = pickle.load(open(self.label_vocab_path, 'rb'))
-            predict_label, predict_proba = predict(self.model, input_text_list, label_id_map)
+            predict_label, predict_proba = predict(self.model, input_text_list, word_id_map, label_id_map)
         elif self.model_name == 'bert':
             from pytextclassifier.tools.bert_classification import predict
             label_id_map = pickle.load(open(self.label_vocab_path, 'rb'))
-            predict_label, predict_proba = predict(self.model, input_text_list, label_id_map)
+            predict_label, predict_proba = predict(self.model, input_text_list,  label_id_map)
         else:
             raise ValueError('model_name not found.')
         return predict_label, predict_proba

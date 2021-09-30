@@ -9,8 +9,8 @@ sys.path.append('..')
 from pytextclassifier import TextClassifier
 
 if __name__ == '__main__':
-    m = TextClassifier(model_name='textcnn')
-    # model_name is choose classifier, support lr, random_forest, xgboost, svm, mlp, ensemble, stack
+    m = TextClassifier(model_name='bert')
+    # model_name is choose classifier, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     print(m)
     data = [
         ('education', 'Student debt to cost Britain billions within decades'),
@@ -23,18 +23,13 @@ if __name__ == '__main__':
     r = m.predict(['Abbott government spends $8 million on higher education media blitz',
                    'Middle East and Asia boost investment in top level sports'])
     print(r)
-    m.save()
     del m
 
-    new_m = TextClassifier()
-    new_m.load()
-    predict_label_prob = new_m.predict_proba(['Abbott government spends $8 million on higher education media blitz'])
-    print(predict_label_prob)  # [[0.53337174 0.46662826]]
-    print('classes_: ', new_m.model.classes_)  # the classes ordered as prob
-
-    predict_label = new_m.predict(['Abbott government spends $8 million on higher education media blitz',
-                                   'Middle East and Asia boost investment in top level sports'])
-    print(predict_label)  # ['education', 'sports']
+    new_m = TextClassifier(model_name='textcnn')
+    new_m.load_model()
+    predict_label, predict_proba = new_m.predict(['Abbott government spends $8 million on higher education media blitz'])
+    print(predict_label)
+    print(predict_proba)  # [[0.53337174 0.46662826]]
 
     test_data = [
         ('education', 'Abbott government spends $8 million on higher education media blitz'),

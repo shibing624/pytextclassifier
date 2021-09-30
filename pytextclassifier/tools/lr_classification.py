@@ -115,7 +115,8 @@ def train(X_train, y_train, model_dir='', model=lr, vectorizer=tfidf):
     # fit
     model.fit(X_train_vec, y_train)
     print('train model done')
-    os.makedirs(model_dir, exist_ok=True)
+    if model_dir:
+        os.makedirs(model_dir, exist_ok=True)
     vectorizer_path = os.path.join(model_dir, 'classifier_vectorizer.pkl')
     save_pkl(vectorizer, vectorizer_path)
     model_path = os.path.join(model_dir, 'classifier_model.pkl')
@@ -157,7 +158,7 @@ def load_model(model_dir=''):
     :return: None
     """
     model_path = os.path.join(model_dir, 'classifier_model.pkl')
-    if not os.path.exists(model_path):
+    if model_path and not os.path.exists(model_path):
         raise ValueError("model is not found. please train and save model first.")
     model = load_pkl(model_path)
     vectorizer_path = os.path.join(model_dir, 'classifier_vectorizer.pkl')

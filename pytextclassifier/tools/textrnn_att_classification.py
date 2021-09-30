@@ -275,7 +275,7 @@ def load_model(model, model_path):
     return model
 
 
-def predict(model, data_list, label_id_map):
+def predict(model, data_list, word_id_map, label_id_map):
     model.eval()
 
     def load_dataset(X, pad_size=128):
@@ -351,11 +351,11 @@ if __name__ == '__main__':
     # train model
     train(model, train_iter, dev_iter, num_epochs, learning_rate, require_improvement, save_model_path)
     # predict
-    predict_label, predict_proba = predict(model, X[:10], label_id_map)
+    predict_label, predict_proba = predict(model, X[:10], word_id_map, label_id_map)
     for text, label, proba in zip(X[:10], predict_label, predict_proba):
         print(text, label, proba)
     # load new model and predict
     new_model = load_model(model, save_model_path)
-    predict_label, predict_prob = predict(new_model, X[:10], label_id_map)
+    predict_label, predict_prob = predict(new_model, X[:10], word_id_map, label_id_map)
     for text, label, proba in zip(X[:10], predict_label, predict_proba):
         print(text, label, proba)

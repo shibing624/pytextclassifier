@@ -20,7 +20,7 @@ class CharTokenizer:
 
 vec = TfidfVectorizer(ngram_range=(1, 2), token_pattern=r'\S+')
 
-m = TextClassifier(tokenizer=CharTokenizer(), vectorizer=vec) # 匹配任何非空白字符
+m = TextClassifier()  # 匹配任何非空白字符
 
 data = [
     ('education', '名师指导托福语法技巧：名词的复数形式'),
@@ -33,19 +33,15 @@ m.train(data)
 r = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
 print(r)
-m.save()
 del m
 
-new_m = TextClassifier(tokenizer=CharTokenizer(),vectorizer=vec)
-new_m.load()
-predict_label_prob = new_m.predict_proba(['福建春季公务员考试报名18日截止 2月6日考试'])
+new_m = TextClassifier('lr')
+new_m.load_model()
+predict_label, predict_label_prob = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试'])
+print(predict_label)
 print(predict_label_prob)  # [[0.53337174 0.46662826]]
 print('classes_: ', new_m.model.classes_)  # the classes ordered as prob
 print('sport prob: ', predict_label_prob[0][np.where(np.array(new_m.model.classes_) == 'sports')])
-
-predict_label = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
-                               '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
-print(predict_label)  # ['education', 'sports']
 
 test_data = [
     ('education', '福建春季公务员考试报名18日截止 2月6日考试'),

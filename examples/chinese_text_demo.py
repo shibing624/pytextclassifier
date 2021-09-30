@@ -22,19 +22,15 @@ if __name__ == '__main__':
     r = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                    '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
     print(r)
-    m.save()
     print(m)
     del m
 
     new_m = TextClassifier()
-    new_m.load()
-    predict_label_prob = new_m.predict_proba(['福建春季公务员考试报名18日截止 2月6日考试'])
-    print(predict_label_prob)  # [[0.53337174 0.46662826]]
-    print('classes_: ', new_m.model.classes_)  # the classes ordered as prob
-
-    predict_label = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
+    new_m.load_model()
+    predict_label, predict_proba = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                                    '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
     print(predict_label)  # ['education', 'sports']
+    print(predict_proba)
 
     test_data = [
         ('education', '福建春季公务员考试报名18日截止 2月6日考试'),
