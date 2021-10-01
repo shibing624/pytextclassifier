@@ -4,7 +4,6 @@
 @description: 
 """
 import sys
-import os
 
 sys.path.append('..')
 from pytextclassifier import TextClassifier

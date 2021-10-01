@@ -39,8 +39,8 @@ n_gram_vocab = 250499  # ngram 词表大小
 tokenizer = lambda x: [y for y in x]  # char-level
 
 
-def load_data(data_filepath, header=None, delimiter='\t', names=['labels', 'text'], **kwargs):
-    data_df = pd.read_csv(data_filepath, header=header, delimiter=delimiter, names=names, **kwargs)
+def load_data(data_filepath, header=None, delimiter='\t', names=['labels', 'text']):
+    data_df = pd.read_csv(data_filepath, header=header, delimiter=delimiter, names=names)
     logger.debug(data_df.head())
     X, y = data_df['text'], data_df['labels']
     return X, y
@@ -238,7 +238,6 @@ def evaluate(model, data_iter):
         logger.debug(f"evaluate, last batch, y_true: {labels}, y_pred: {predic}")
     acc = metrics.accuracy_score(labels_all, predict_all)
     return acc, loss_total / len(data_iter)
-
 
 def train(model, train_iter, dev_iter, num_epochs=10, learning_rate=1e-3, require_improvement=1000, save_path=''):
     # train

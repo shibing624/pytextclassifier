@@ -22,8 +22,8 @@ class BaseTestCase(unittest.TestCase):
             ('sports', 'Summit Series look launches HBO Canada sports doc series: Mudhar')
         ]
         m.train(data)
-        r = m.predict(['Abbott government spends $8 million on higher education media blitz',
-                       'Middle East and Asia boost investment in top level sports'])
+        r, _ = m.predict(['Abbott government spends $8 million on higher education media blitz',
+                          'Middle East and Asia boost investment in top level sports'])
         print(r)
         self.assertEqual(r[0], 'education')
         self.assertEqual(r[1], 'sports')
@@ -31,7 +31,7 @@ class BaseTestCase(unittest.TestCase):
             ('education', 'Abbott government spends $8 million on higher education media blitz'),
             ('sports', 'Middle East and Asia boost investment in top level sports'),
         ]
-        acc_score = m.test(test_data)
+        acc_score = m.evaluate(test_data)
         print(acc_score)  # 1.0
         self.assertEqual(acc_score, 1.0)
 

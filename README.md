@@ -99,7 +99,7 @@ from pytextclassifier import TextClassifier
 
 if __name__ == '__main__':
     m = TextClassifier()
-    # model_name is choose classifier, support lr, random_forest, xgboost, svm, mlp, ensemble, stack
+    # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     print(m)
     data = [
         ('education', 'Student debt to cost Britain billions within decades'),
@@ -109,57 +109,33 @@ if __name__ == '__main__':
     ]
     m.train(data)
 
-    r = m.predict(['Abbott government spends $8 million on higher education media blitz',
-                   'Middle East and Asia boost investment in top level sports'])
-    print(r)
-    m.save()
+    predict_label, predict_proba = m.predict(
+        ['Abbott government spends $8 million on higher education media blitz',
+         'Middle East and Asia boost investment in top level sports'])
+    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
     del m
 
     new_m = TextClassifier()
-    new_m.load()
-    predict_label_prob = new_m.predict_proba(['Abbott government spends $8 million on higher education media blitz'])
-    print(predict_label_prob)  # [[0.53337174 0.46662826]]
-    print('classes_: ', new_m.model.classes_)  # the classes ordered as prob
-
-    predict_label = new_m.predict(['Abbott government spends $8 million on higher education media blitz',
-                                   'Middle East and Asia boost investment in top level sports'])
-    print(predict_label)  # ['education', 'sports']
+    new_m.load_model()
+    predict_label, predict_proba = new_m.predict([
+        'Abbott government spends $8 million on higher education media blitz'])
+    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
 
     test_data = [
         ('education', 'Abbott government spends $8 million on higher education media blitz'),
         ('sports', 'Middle East and Asia boost investment in top level sports'),
     ]
-    acc_score = new_m.test(test_data)
-    print(acc_score)  # 1.0
+    acc_score = new_m.evaluate(test_data)
+    print(f'acc_score: {acc_score}')  # 1.0
 ```
 
 output:
 
 ```
-TextClassifier instance (LogisticRegression(fit_intercept=False), <pytextclassifier.utils.tokenizer.Tokenizer object at 0x7fde504682b0>, TfidfVectorizer(ngram_range=(1, 2)))
-['education' 'sports']
-[[0.53782393 0.46217607]]
-classes_:  ['education' 'sports']
-['education' 'sports']
-classify_report : 
-               precision    recall  f1-score   support
-
-   education       1.00      1.00      1.00         1
-      sports       1.00      1.00      1.00         1
-
-    accuracy                           1.00         2
-   macro avg       1.00      1.00      1.00         2
-weighted avg       1.00      1.00      1.00         2
-
-confusion_matrix : 
- [[1 0]
- [0 1]]
-acc_for_each_class : 
- [1. 1.]
-average_accuracy: 1.0000
-overall_accuracy: 1.0000
-accuracy_score: 1.0000
-1.0
+TextClassifier instance (lr)
+predict_label: ['education' 'sports'], predict_proba: [0.5378236358492112, 0.5989408491490308]
+predict_label: ['education'], predict_proba: [0.5378236358492112]
+acc_score: 1.0
 ```
 
 - Chinese Text Classifier
@@ -174,6 +150,7 @@ from pytextclassifier import TextClassifier
 
 if __name__ == '__main__':
     m = TextClassifier()
+    # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
@@ -182,59 +159,46 @@ if __name__ == '__main__':
         ('sports', '米兰客场8战不败国米10年连胜')
     ]
     m.train(data)
-
-    r = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
-                   '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
-    print(r)
-    m.save()
     print(m)
+    predict_label, predict_proba = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
+                                              '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
+    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
     del m
 
     new_m = TextClassifier()
-    new_m.load()
-    predict_label_prob = new_m.predict_proba(['福建春季公务员考试报名18日截止 2月6日考试'])
-    print(predict_label_prob)  # [[0.53337174 0.46662826]]
-    print('classes_: ', new_m.model.classes_)  # the classes ordered as prob
-
-    predict_label = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
-                                   '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
-    print(predict_label)  # ['education', 'sports']
+    new_m.load_model()
+    predict_label, predict_proba = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
+                                                  '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
+    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
 
     test_data = [
         ('education', '福建春季公务员考试报名18日截止 2月6日考试'),
         ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
     ]
-    acc_score = new_m.test(test_data)
-    print(acc_score)  # 1.0
+    acc_score = new_m.evaluate(test_data)
+    print(f'acc_score: {acc_score}')  # 1.0
+
+    #### load data from file
+    print('-' * 42)
+    m = TextClassifier()
+    data_file = 'thucnews_train_10w.txt'
+    m.train(data_file)
+
+    predict_label, predict_proba = m.predict(
+        ['顺义北京苏活88平米起精装房在售',
+         '美EB-5项目“15日快速移民”将推迟'])
+    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
 ```
 
 output:
 
 ```
-['education' 'sports']
-TextClassifier instance (LogisticRegression(fit_intercept=False), <pytextclassifier.utils.tokenizer.Tokenizer object at 0x7fbac86632b0>, TfidfVectorizer(ngram_range=(1, 2)))
-[[0.5 0.5]]
-classes_:  ['education' 'sports']
-['education' 'sports']
-classify_report : 
-               precision    recall  f1-score   support
-
-   education       1.00      1.00      1.00         1
-      sports       1.00      1.00      1.00         1
-
-    accuracy                           1.00         2
-   macro avg       1.00      1.00      1.00         2
-weighted avg       1.00      1.00      1.00         2
-
-confusion_matrix : 
- [[1 0]
- [0 1]]
-acc_for_each_class : 
- [1. 1.]
-average_accuracy: 1.0000
-overall_accuracy: 1.0000
-accuracy_score: 1.0000
-1.0
+TextClassifier instance (lr)
+predict_label: ['education' 'sports'], predict_proba: [0.5, 0.5989415812731275]
+predict_label: ['education' 'sports'], predict_proba: [0.5, 0.5989415812731275]
+acc_score: 1.0
+------------------------------------------
+predict_label: ['realty' 'education'], predict_proba: [0.9746881260530019, 0.5150055067574651]
 ```
 
 - Visual Feature Importance
@@ -268,8 +232,64 @@ output:
 
 ![img.png](docs/img.png)
 
+- FastText model
 
-- 模型效果
+工具支持多种常用分类模型，包括fasttext、textcnn、textrnn_att、bert分类模型。
+训练fasttext模型示例[fasttext_classification_demo.py](examples/fasttext_classification_demo.py)
+
+```python
+import sys
+
+sys.path.append('..')
+from pytextclassifier import TextClassifier
+
+if __name__ == '__main__':
+    model_name = 'fasttext'
+    m = TextClassifier(model_name)
+    # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
+    data = [
+        ('education', '名师指导托福语法技巧：名词的复数形式'),
+        ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
+        ('sports', '图文：法网孟菲尔斯苦战进16强 孟菲尔斯怒吼'),
+        ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
+        ('sports', '米兰客场8战不败国米10年连胜')
+    ]
+    m.train(data)
+    print(m)
+    predict_label, predict_proba = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
+                                              '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
+    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
+    del m
+
+    new_m = TextClassifier(model_name)
+    new_m.load_model()
+    predict_label, predict_proba = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
+                                                  '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
+    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
+
+    test_data = [
+        ('education', '福建春季公务员考试报名18日截止 2月6日考试'),
+        ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
+    ]
+    acc_score = new_m.evaluate(test_data)
+    print(f'acc_score: {acc_score}')  # 1.0
+```
+
+output:
+
+```
+TextClassifier instance (fasttext)
+predict_label: ['education', 'sports'], predict_proba: [0.5926638841629028, 0.5340359807014465]
+predict_label: ['education', 'education'], predict_proba: [0.18393290042877197, 0.19611379504203796]
+acc_score: 0.5
+```
+
+- 模型效果比对
+
+1. THUCNews中文文本数据集（1.56GB）：官方[下载地址](http://thuctc.thunlp.org/)。
+2. 抽样的THUCNews中文文本10分类数据集（6.2MB），地址：[examples/thucnews_train_10w.txt](examples/thucnews_train_10w.txt)。
+
+各模型在THUCNews中文文本10分类数据集评估，模型效果如下：
 
 模型|acc|备注
 --|--|--
@@ -327,26 +347,6 @@ TextCluster instance (MiniBatchKMeans(n_clusters=2, n_init=10), <pytextclassifie
 clustering plot image:
 
 ![cluster_image](docs/cluster_train_seg_samples.png)
-
-### Train your Text Classification Deep Model
-
-1. Preprocess with segment(optional)
-```
-cd pytextclassifier
-python3 preprocess.py
-```
-
-2. Train model
-
-you can change model with edit `config.py` and train model.
-```
-python3 train.py
-```
-
-3. Predict with test data
-```
-python3 infer.py
-```
 
 
 # Contact

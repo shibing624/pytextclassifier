@@ -3,13 +3,10 @@
 @author:XuMing(xuming624@qq.com)
 @description: 
 """
-import os
 import sys
 
 sys.path.append('..')
 from pytextclassifier import TextClassifier
-
-pwd_path = os.path.abspath(os.path.dirname(__file__))
 
 if __name__ == '__main__':
     m = TextClassifier()
@@ -40,5 +37,4 @@ if __name__ == '__main__':
         ('sports', 'Middle East and Asia boost investment in top level sports'),
     ]
     acc_score = new_m.evaluate(test_data)
-    print(f'acc_score: {acc_score}')  # 1.0
-
+    print(f'acc_score: {acc_score}')

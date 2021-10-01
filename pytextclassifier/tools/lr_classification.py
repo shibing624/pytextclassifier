@@ -112,6 +112,8 @@ def train(X_train, y_train, model_dir='', model=None, vectorizer=None):
     if model is None:
         model = lr
     X_train_tokens = _encode_data(X_train)
+    logger.debug(f"X_train size: {len(X_train)}, y_train size: {len(y_train)}")
+    logger.debug(f'X_train:{X_train[:1]}, X_train_tokens:{X_train_tokens[:1]}, y_train:{y_train[:1]}')
     X_train_vec = vectorizer.fit_transform(X_train_tokens)
     # fit
     model.fit(X_train_vec, y_train)
@@ -188,8 +190,6 @@ if __name__ == '__main__':
     assert len(X) == len(y)
     print(f'num_classes:{len(set(y))}')
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=SEED)
-    print(f"X_train size: {len(X_train)}, y_train size: {len(y_train)}")
-    print(f'X_train:{X_train[:1]}, y_train:{y_train[:1]}')
     model, vectorizer = train(X_train, y_train, model_dir, model=lr, vectorizer=tfidf)
 
     # evaluate model
