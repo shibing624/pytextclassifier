@@ -72,7 +72,7 @@ python3 setup.py install
 # Usage
 ## Text Classifier
 
-#### English Text Classifier
+### English Text Classifier
 
 Including model training, saving, predict, test, for example [examples/base_demo.py](examples/base_demo.py):
 
@@ -124,7 +124,7 @@ predict_label: ['education'], predict_proba: [0.5378236358492112]
 acc_score: 1.0
 ```
 
-#### Chinese Text Classifier(中文文本分类)
+### Chinese Text Classifier(中文文本分类)
 
 Text classification compatible with Chinese and English corpora, for example [examples/chinese_text_demo.py](examples/chinese_text_demo.py)
 
@@ -187,7 +187,7 @@ acc_score: 1.0
 predict_label: ['realty' 'education'], predict_proba: [0.9746881260530019, 0.5150055067574651]
 ```
 
-#### Visual Feature Importance
+### Visual Feature Importance
 
 Show feature weights of model, and prediction word weight, for example [examples/visual_feature_importance.ipynb](examples/visual_feature_importance.ipynb)
 ```python
@@ -218,7 +218,7 @@ output:
 
 ![img.png](docs/img.png)
 
-#### Deep Classification model
+### Deep Classification model
 
 工具支持多种常用深度分类模型，包括Fasttext、TextCNN、RextRNN_Att、Bert分类模型。
 
@@ -296,7 +296,7 @@ if __name__ == '__main__':
 ```
 
 
-#### 模型效果
+### 模型效果
 
 1. THUCNews中文文本数据集（1.56GB）：官方[下载地址](http://thuctc.thunlp.org/)。
 2. 抽样的THUCNews中文文本10分类数据集（6MB），地址：[examples/thucnews_train_10w.txt](examples/thucnews_train_10w.txt)。
@@ -314,7 +314,7 @@ Transformer|89.91%|效果较差
 BERT|94.83%|bert + fc
 ERNIE|94.61%|比bert略差
 
-#### 模型调研
+### 模型调研
 
 提供分类模型快速调研工具tools，文件树：
 ```bash
@@ -328,7 +328,7 @@ pytextclassifier/tools
 
 每个文件对应一个模型，各模型完全独立，可以直接运行，也方便修改，支持通过`argparse` 修改`--data_path`等参数。
 
-### Text Cluster
+## Text Cluster
 
 
 Text clustering, for example [cluster_demo.py](examples/cluster_demo.py)
