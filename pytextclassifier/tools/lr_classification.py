@@ -7,6 +7,7 @@ import argparse
 import os
 import pickle
 import pandas as pd
+import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import metrics
 from sklearn.ensemble import RandomForestClassifier
@@ -17,6 +18,10 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 import jieba
+import sys
+
+sys.path.append('../..')
+from pytextclassifier.log import logger
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
 default_stopwords_path = os.path.join(pwd_path, '../data/stopwords.txt')
@@ -55,13 +60,9 @@ def load_list(path):
 stopwords = set(load_list(default_stopwords_path))
 
 
-def load_data(data_filepath, header=None, delimiter='\t', names=['labels', 'text'], **kwargs):
-    data_df = pd.read_csv(data_filepath, header=header, delimiter=delimiter, names=names, **kwargs)
-    print(data_df.head())
+def load_data(data_filepath, header=None, delimiter='\t', names=['labels', 'text']):
+    data_df = pd.read_csv(data_filepath, header=header, delimiter=delimiter, names=names)
     X, y = data_df['text'], data_df['labels']
-    print('loaded data list, X size: {}, y size: {}'.format(len(X), len(y)))
-    assert len(X) == len(y)
-    print('num_classes:%d' % len(set(y)))
     return X, y
 
 
@@ -100,32 +101,31 @@ def save_pkl(vocab, pkl_path, overwrite=True):
         with open(pkl_path, 'wb') as f:
             # pickle.dump(vocab, f, protocol=pickle.HIGHEST_PROTOCOL)
             pickle.dump(vocab, f, protocol=2)  # 兼容python2和python3
-        print("save %s ok." % pkl_path)
 
 
-def train(X_train, y_train, model_dir='', model=lr, vectorizer=tfidf):
+def train(X_train, y_train, model_dir='', model=None, vectorizer=None):
     """
     Train model
     """
-    print('train model...')
+    if vectorizer is None:
+        vectorizer = tfidf
+    if model is None:
+        model = lr
     X_train_tokens = _encode_data(X_train)
-    print(f"X_train size: {len(X_train)}, y_train size: {len(y_train)}")
-    print(f'data sample: X_tokens:{X_train_tokens[:1]}, y:{y_train[:1]}')
     X_train_vec = vectorizer.fit_transform(X_train_tokens)
     # fit
     model.fit(X_train_vec, y_train)
-    print('train model done')
     if model_dir:
         os.makedirs(model_dir, exist_ok=True)
     vectorizer_path = os.path.join(model_dir, 'classifier_vectorizer.pkl')
     save_pkl(vectorizer, vectorizer_path)
     model_path = os.path.join(model_dir, 'classifier_model.pkl')
     save_pkl(model, model_path)
-    print('save done. vec path: {}, model path: {}'.format(vectorizer_path, model_path))
+    logger.debug(f'Saved model: {model_path}, vectorizer_path: {vectorizer_path}')
     return model, vectorizer
 
 
-def predict(input_text_list, model=lr, vectorizer=tfidf):
+def predict(input_text_list, model, vectorizer):
     """
     Predict label
     :param input_text_list: list, input text list, eg: [text1, text2, ...]
@@ -135,20 +135,20 @@ def predict(input_text_list, model=lr, vectorizer=tfidf):
     X_tokens = _encode_data(input_text_list)
     # transform
     X_vec = vectorizer.transform(X_tokens)
-    return model.predict(X_vec), model.predict_proba(X_vec)
+    predict_label = model.predict(X_vec)
+    probas = model.predict_proba(X_vec)
+    predict_proba = [prob[np.where(model.classes_ == label)][0] for label, prob in zip(predict_label, probas)]
+    return predict_label, predict_proba
 
 
-def evaluate(X_test, y_test, model=lr, vectorizer=tfidf):
+def evaluate(X_test, y_test, model, vectorizer):
     """
     Evaluate model with data
     :param data_list: list of (label, text), eg: [(label, text), (label, text) ...]
     :return: acc score
     """
-    print('evaluate model...')
-    print(f"X_test size: {len(X_test)}")
     y_pred, _ = predict(X_test, model, vectorizer)
     acc_score = metrics.accuracy_score(y_test, y_pred)
-    print('evaluate model done, accuracy_score: {}'.format(acc_score))
     return acc_score
 
 
@@ -163,35 +163,46 @@ def load_model(model_dir=''):
     model = load_pkl(model_path)
     vectorizer_path = os.path.join(model_dir, 'classifier_vectorizer.pkl')
     vectorizer = load_pkl(vectorizer_path)
-    print('model loaded {}'.format(model_dir))
+
     return model, vectorizer
 
 
 def get_args():
     parser = argparse.ArgumentParser(description='Text Classification')
     parser.add_argument('--model_dir', default='lr', type=str, help='save model dir')
-    parser.add_argument('--data_path', default='../../examples/thucnews_train_10w.txt', type=str,
-                        help='sample data file path')
+    parser.add_argument('--data_path', default=os.path.join(pwd_path, '../../examples/thucnews_train_10w.txt'),
+                        type=str, help='sample data file path')
     args = parser.parse_args()
-    print(args)
     return args
 
 
 if __name__ == '__main__':
     args = get_args()
+    print(args)
     model_dir = args.model_dir
     os.makedirs(model_dir, exist_ok=True)
     SEED = 1  # 保持结果一致
     # load data
     X, y = load_data(args.data_path)
+    print(f'loaded data list, X size: {len(X)}, y size: {len(y)}')
+    assert len(X) == len(y)
+    print(f'num_classes:{len(set(y))}')
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=SEED)
-    train(X_train, y_train, model_dir, model=lr, vectorizer=tfidf)
-    evaluate(X_test, y_test)
-    predict_label, predict_proba = predict(X_train[:3])
+    print(f"X_train size: {len(X_train)}, y_train size: {len(y_train)}")
+    print(f'X_train:{X_train[:1]}, y_train:{y_train[:1]}')
+    model, vectorizer = train(X_train, y_train, model_dir, model=lr, vectorizer=tfidf)
+
+    # evaluate model
+    print(f"X_test size: {len(X_test)}")
+    acc_score = evaluate(X_test, y_test, model, vectorizer)
+    print(f'evaluate model done, accuracy_score: {acc_score}')
+    # predict
+    predict_label, predict_proba = predict(X_train[:3], model, vectorizer)
     for text, pred_label, pred_proba in zip(X_train[:3], predict_label, predict_proba):
         print(text, pred_label, pred_proba)
     # load new model and predict
     new_model, new_vec = load_model(model_dir)
-    predict_label, predict_proba = predict(X_train[:3], model=new_model, vectorizer=new_vec)
+    print('model loaded {}'.format(model_dir))
+    predict_label, predict_proba = predict(X_train[:3], new_model, new_vec)
     for text, pred_label, pred_proba in zip(X_train[:3], predict_label, predict_proba):
         print(text, pred_label, pred_proba)

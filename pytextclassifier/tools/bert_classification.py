@@ -11,34 +11,37 @@ import pickle
 import torch
 from sklearn.model_selection import train_test_split
 from simpletransformers.classification import ClassificationModel
+import sys
 
+sys.path.append('../..')
+from pytextclassifier.log import logger
+
+pwd_path = os.path.abspath(os.path.dirname(__file__))
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
 def load_data(data_filepath, header=None, delimiter='\t', names=['labels', 'text'], **kwargs):
     data_df = pd.read_csv(data_filepath, header=header, delimiter=delimiter, names=names, **kwargs)
-    print(data_df.head())
     X, y = data_df['text'], data_df['labels']
-    print('loaded data list, X size: {}, y size: {}'.format(len(X), len(y)))
+    logger.debug(f'loaded data list, X size: {len(X)}, y size: {len(y)}')
     assert len(X) == len(y)
-    print('num_classes:%d' % len(set(y)))
+    logger.debug(f'num_classes:{len(set(y))}')
     return data_df
+
 
 def build_dataset(data_df, label_vocab_path):
     X, y = data_df['text'], data_df['labels']
-    print('loaded data list, X size: {}, y size: {}'.format(len(X), len(y)))
-    assert len(X) == len(y)
-    print('num_classes:%d' % len(set(y)))
     if os.path.exists(label_vocab_path):
         label_id_map = pickle.load(open(label_vocab_path, 'rb'))
     else:
         id_label_map = {id: v for id, v in enumerate(set(y.tolist()))}
         label_id_map = {v: k for k, v in id_label_map.items()}
         pickle.dump(label_id_map, open(label_vocab_path, 'wb'))
-    print(f"label vocab size: {len(label_id_map)}")
-    data_df['text'] = data_df['text'].astype(str)
-    data_df['labels'] = data_df['labels'].map(lambda x: label_id_map.get(x))
+    logger.debug(f"label vocab size: {len(label_id_map)}")
+    df = data_df.copy()
+    df.loc[:, 'labels'] = df.loc[:, 'labels'].map(lambda x: label_id_map.get(x))
+    data_df = df
     return data_df, label_id_map
 
 
@@ -75,9 +78,7 @@ def predict(model, data_list, label_id_map):
     # predict proba
     id_label_map = {v: k for k, v in label_id_map.items()}
     predict_label = [id_label_map.get(i) for i in predictions]
-    predict_proba = 0.
-    for raw_output, prediction in zip(raw_outputs, predictions):
-        predict_proba = raw_output[prediction]
+    predict_proba = [np.exp(-raw_output[prediction]) for raw_output, prediction in zip(raw_outputs, predictions)]
     return predict_label, predict_proba
 
 
@@ -88,18 +89,19 @@ def get_args():
     parser.add_argument('--pretrain_model_name', default='bert-base-chinese', type=str,
                         help='pretrained huggingface model name')
     parser.add_argument('--model_dir', default='bert', type=str, help='save model dir')
-    parser.add_argument('--data_path', default='../../examples/thucnews_train_10w.txt', type=str,
-                        help='sample data file path')
+    parser.add_argument('--data_path', default=os.path.join(pwd_path, '../../examples/thucnews_train_10w.txt'),
+                        type=str, help='sample data file path')
     parser.add_argument('--num_epochs', default=3, type=int, help='train epochs')
     parser.add_argument('--batch_size', default=64, type=int, help='train batch size')
     parser.add_argument('--max_seq_length', default=128, type=int, help='max seq length, trim longer sentence.')
     args = parser.parse_args()
-    print(args)
+
     return args
 
 
 if __name__ == '__main__':
     args = get_args()
+    print(args)
     model_dir = args.model_dir
     os.makedirs(model_dir, exist_ok=True)
     SEED = 1

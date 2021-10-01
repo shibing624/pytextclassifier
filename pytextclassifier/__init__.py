@@ -5,5 +5,5 @@
 """
 __version__ = "1.0.0"
 
-from pytextclassifier.textclassifier import TextClassifier
+from pytextclassifier.textclassifier import TextClassifier, load_data
 from pytextclassifier.textcluster import TextCluster

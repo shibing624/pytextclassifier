@@ -3,16 +3,14 @@
 @author:XuMing(xuming624@qq.com)
 @description: 
 """
-import os
 import sys
 
 sys.path.append('..')
 from pytextclassifier import TextClassifier
 
-pwd_path = os.path.abspath(os.path.dirname(__file__))
-
 if __name__ == '__main__':
-    m = TextClassifier()
+    model_name = 'random_forest'
+    m = TextClassifier(model_name)
     # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     print(m)
     data = [
@@ -29,7 +27,7 @@ if __name__ == '__main__':
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
     del m
 
-    new_m = TextClassifier()
+    new_m = TextClassifier(model_name)
     new_m.load_model()
     predict_label, predict_proba = new_m.predict([
         'Abbott government spends $8 million on higher education media blitz'])
@@ -41,4 +39,3 @@ if __name__ == '__main__':
     ]
     acc_score = new_m.evaluate(test_data)
     print(f'acc_score: {acc_score}')  # 1.0
-

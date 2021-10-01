@@ -16,7 +16,12 @@ from datetime import timedelta
 from sklearn.model_selection import train_test_split
 import pickle
 from tqdm import tqdm
+import sys
 
+sys.path.append('../..')
+from pytextclassifier.log import logger
+
+pwd_path = os.path.abspath(os.path.dirname(__file__))
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 MAX_VOCAB_SIZE = 10000  # 词表长度限制
 UNK = '[UNK]',  # 未知字
@@ -36,11 +41,8 @@ tokenizer = lambda x: [y for y in x]  # char-level
 
 def load_data(data_filepath, header=None, delimiter='\t', names=['labels', 'text'], **kwargs):
     data_df = pd.read_csv(data_filepath, header=header, delimiter=delimiter, names=names, **kwargs)
-    print(data_df.head())
+    logger.debug(data_df.head())
     X, y = data_df['text'], data_df['labels']
-    print('loaded data list, X size: {}, y size: {}'.format(len(X), len(y)))
-    assert len(X) == len(y)
-    print('num_classes:%d' % len(set(y)))
     return X, y
 
 
@@ -66,7 +68,7 @@ def build_dataset(X, y, vocab_path, label_vocab_path, pad_size=128):
     else:
         word_id_map = build_vocab(X, tokenizer=tokenizer, max_size=MAX_VOCAB_SIZE, min_freq=1)
         pickle.dump(word_id_map, open(vocab_path, 'wb'))
-    print(f"word vocab size: {len(word_id_map)}")
+    logger.debug(f"word vocab size: {len(word_id_map)}, word_vocab_path: {vocab_path}")
 
     if os.path.exists(label_vocab_path):
         label_id_map = pickle.load(open(label_vocab_path, 'rb'))
@@ -74,7 +76,7 @@ def build_dataset(X, y, vocab_path, label_vocab_path, pad_size=128):
         id_label_map = {id: v for id, v in enumerate(set(y.tolist()))}
         label_id_map = {v: k for k, v in id_label_map.items()}
         pickle.dump(label_id_map, open(label_vocab_path, 'wb'))
-    print(f"label vocab size: {len(label_id_map)}")
+    logger.debug(f"label vocab size: {len(label_id_map)}, label_vocab_path: {label_vocab_path}")
 
     def biGramHash(sequence, t, buckets):
         t1 = sequence[t - 1] if t - 1 >= 0 else 0
@@ -164,7 +166,7 @@ class DatasetIterater:
             return self.n_batches
 
 
-def build_iterator(dataset, batch_size, device):
+def build_iterator(dataset, batch_size=batch_size, device=device):
     iter = DatasetIterater(dataset, batch_size, device)
     return iter
 
@@ -233,7 +235,7 @@ def evaluate(model, data_iter):
             predic = torch.max(outputs, 1)[1].cpu().numpy()
             labels_all = np.append(labels_all, labels)
             predict_all = np.append(predict_all, predic)
-        print(f"evaluate, last batch, y_true: {labels}, y_pred: {predic}")
+        logger.debug(f"evaluate, last batch, y_true: {labels}, y_pred: {predic}")
     acc = metrics.accuracy_score(labels_all, predict_all)
     return acc, loss_total / len(data_iter)
 
@@ -249,7 +251,7 @@ def train(model, train_iter, dev_iter, num_epochs=10, learning_rate=1e-3, requir
     last_improve = 0  # 记录上次验证集loss下降的batch数
     flag = False  # 记录是否很久没有效果提升
     for epoch in range(num_epochs):
-        print('Epoch [{}/{}]'.format(epoch + 1, num_epochs))
+        logger.debug('Epoch [{}/{}]'.format(epoch + 1, num_epochs))
         # scheduler.step() # 学习率衰减
         for i, (trains, labels) in enumerate(train_iter):
             outputs = model(trains)
@@ -266,18 +268,19 @@ def train(model, train_iter, dev_iter, num_epochs=10, learning_rate=1e-3, requir
                 if dev_loss < dev_best_loss:
                     dev_best_loss = dev_loss
                     torch.save(model.state_dict(), save_path)
+                    logger.debug(f'Saved model: {save_path}')
                     improve = '*'
                     last_improve = total_batch
                 else:
                     improve = ''
                 time_dif = get_time_dif(start_time)
                 msg = 'Iter: {0:>6},  Train Loss: {1:>5.2},  Train Acc: {2:>6.2%},  Val Loss: {3:>5.2},  Val Acc: {4:>6.2%},  Time: {5} {6}'
-                print(msg.format(total_batch, loss.item(), train_acc, dev_loss, dev_acc, time_dif, improve))
+                logger.debug(msg.format(total_batch, loss.item(), train_acc, dev_loss, dev_acc, time_dif, improve))
                 model.train()
             total_batch += 1
             if total_batch - last_improve > require_improvement:
                 # 验证集loss超过1000batch没下降，结束训练
-                print("No optimization for a long time, auto-stopping...")
+                logger.debug("No optimization for a long time, auto-stopping...")
                 flag = True
                 break
         if flag:
@@ -338,25 +341,28 @@ def predict(model, data_list, word_id_map, label_id_map):
             outputs = model(texts)
             pred = torch.max(outputs, 1)[1].detach().cpu().numpy()
             predict_all = np.append(predict_all, pred)
-            proba = torch.max(outputs, 1)[0].detach().cpu().numpy()
+            log_proba = torch.max(outputs, 1)[0].detach().cpu().numpy()
+            proba = np.exp(-log_proba)
             proba_all = np.append(proba_all, proba)
     id_label_map = {v: k for k, v in label_id_map.items()}
     predict_label = [id_label_map.get(i) for i in predict_all]
     predict_proba = proba_all.tolist()
     return predict_label, predict_proba
 
+
 def get_args():
     parser = argparse.ArgumentParser(description='Text Classification')
     parser.add_argument('--model_dir', default='fasttext', type=str, help='save model dir')
-    parser.add_argument('--data_path', default='../../examples/thucnews_train_10w.txt', type=str,
-                        help='sample data file path')
+    parser.add_argument('--data_path', default=os.path.join(pwd_path, '../../examples/thucnews_train_10w.txt'),
+                        type=str, help='sample data file path')
     args = parser.parse_args()
-    print(args)
+
     return args
 
 
 if __name__ == '__main__':
     args = get_args()
+    print(args)
     model_dir = args.model_dir
     os.makedirs(model_dir, exist_ok=True)
     SEED = 1
@@ -366,6 +372,9 @@ if __name__ == '__main__':
     print(f'device: {device}')
     # load data
     X, y = load_data(args.data_path)
+    print(f'loaded data list, X size: {len(X)}, y size: {len(y)}')
+    assert len(X) == len(y)
+    print(f'num_classes:{len(set(y))}')
     word_vocab_path = os.path.join(model_dir, 'word_vocab.pkl')
     label_vocab_path = os.path.join(model_dir, 'label_vocab.pkl')
     save_model_path = os.path.join(model_dir, 'model.pth')
@@ -387,6 +396,6 @@ if __name__ == '__main__':
         print(text, label, proba)
     # load new model and predict
     new_model = load_model(model, save_model_path)
-    predict_label, predict_prob = predict(new_model, X[:10],word_id_map, label_id_map)
+    predict_label, predict_prob = predict(new_model, X[:10], word_id_map, label_id_map)
     for text, label, proba in zip(X[:10], predict_label, predict_proba):
         print(text, label, proba)

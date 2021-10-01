@@ -8,19 +8,12 @@ import sys
 sys.path.append('..')
 from pytextclassifier import TextClassifier
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 
 
-class CharTokenizer:
-    def tokenize(self, text):
-        """Tokenizes a piece of text."""
-        # Char seg Chinese
-        return list(text.lower())
+vec = CountVectorizer(ngram_range=(1, 3))
 
-
-vec = TfidfVectorizer(ngram_range=(1, 2), token_pattern=r'\S+')
-
-m = TextClassifier()  # 匹配任何非空白字符
+m = TextClassifier(model_name='lr')
 
 data = [
     ('education', '名师指导托福语法技巧：名词的复数形式'),
@@ -30,9 +23,9 @@ data = [
     ('sports', '米兰客场8战不败国米10年连胜')
 ]
 m.train(data)
-r = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
+predict_label, predict_proba = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
-print(r)
+print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
 del m
 
 new_m = TextClassifier('lr')

@@ -35,9 +35,9 @@ print(r)
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 vec = TfidfVectorizer(ngram_range=(1, 2), max_df=0.9, min_df=0.1, sublinear_tf=True)
-tcluster = TextCluster(vectorizer=vec, n_clusters=3)
-data = tcluster.load_file_data('train_seg_sample.txt')
-X_vec, labels = tcluster.train(data)
+tcluster = TextCluster(vectorizer=vec, n_clusters=20)
+data = tcluster.load_file_data('thucnews_train_10w.txt')
+X_vec, labels = tcluster.train(data[:5000])
 tcluster.show_clusters(X_vec, labels, 'cluster_train_seg_samples.png')
-r = tcluster.predict(data[:5])
+r = tcluster.predict(data[:30])
 print(r)

@@ -4,12 +4,14 @@
 @description: 
 """
 import sys
+import os
 
 sys.path.append('..')
 from pytextclassifier import TextClassifier
 
 if __name__ == '__main__':
-    m = TextClassifier()
+    model_name = 'bert'
+    m = TextClassifier(model_name)
     # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
@@ -25,7 +27,7 @@ if __name__ == '__main__':
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
     del m
 
-    new_m = TextClassifier()
+    new_m = TextClassifier(model_name)
     new_m.load_model()
     predict_label, predict_proba = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                                                   '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
@@ -40,9 +42,9 @@ if __name__ == '__main__':
 
     #### load data from file
     print('-' * 42)
-    m = TextClassifier()
+    m = TextClassifier(model_name)
     data_file = 'thucnews_train_10w.txt'
-    m.train(data_file)
+    m.train(data_file, num_epochs=2)  # finetune 2 轮
 
     predict_label, predict_proba = m.predict(
         ['顺义北京苏活88平米起精装房在售',
