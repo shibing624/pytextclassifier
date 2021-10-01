@@ -12,7 +12,7 @@
 pytextclassifier, Python Text Classifier. It can be applied to the fields of sentiment polarity analysis, text risk classification and so on,
 and it supports multiple classification algorithms and clustering algorithms.
 
-文本分类器，提供多种文本分类和聚类算法，支持文本极性情感分类，文本风险类型分类等文本分类和聚类应用。兼容python2.7和python3。
+文本分类器，提供多种文本分类和聚类算法，支持文本极性情感分类，文本风险类型分类等文本分类和聚类应用，开箱即用。兼容python2.7和python3。
 
 
 **Guide**
@@ -42,24 +42,11 @@ Functions：
   - [x] Naive bayes
   - [x] Xgboost
   - [x] Support Vector Machine(SVM)
-  - [x] Xgboost
-  - [x] Xgboost_lr
-  - [x] MLP
-  - [x] Ensemble
-  - [x] Stack
   - [x] TextCNN
-  - [x] TextRNN
+  - [x] TextRNN_Att
   - [x] Fasttext
+  - [x] Bert
 
-### Evaluate
-  - [x] Precision
-  - [x] Recall
-  - [x] F1
-
-  
-### Test
-  - [x] Chi-square test
-  
 ### Cluster
   - [x] MiniBatchKmeans
 
@@ -68,7 +55,6 @@ While providing rich functions, **pytextclassifier** internal modules adhere to 
 # Install
 
 - Requirements and Installation
-
 
 ```
 pip3 install pytextclassifier
@@ -84,11 +70,11 @@ python3 setup.py install
 
 
 # Usage
-### Text Classifier
+## Text Classifier
 
-- English Text Classifier
+#### English Text Classifier
 
-Including model training, saving, predict, test, for example [base_demo.py](examples/base_demo.py):
+Including model training, saving, predict, test, for example [examples/base_demo.py](examples/base_demo.py):
 
 
 ```python
@@ -126,7 +112,7 @@ if __name__ == '__main__':
         ('sports', 'Middle East and Asia boost investment in top level sports'),
     ]
     acc_score = new_m.evaluate(test_data)
-    print(f'acc_score: {acc_score}')  # 1.0
+    print(f'acc_score: {acc_score}')
 ```
 
 output:
@@ -138,9 +124,9 @@ predict_label: ['education'], predict_proba: [0.5378236358492112]
 acc_score: 1.0
 ```
 
-- Chinese Text Classifier
+#### Chinese Text Classifier(中文文本分类)
 
-Text classification compatible with Chinese and English corpora, for example [chinese_text_demo.py](examples/chinese_text_demo.py)
+Text classification compatible with Chinese and English corpora, for example [examples/chinese_text_demo.py](examples/chinese_text_demo.py)
 
 ```python
 import sys
@@ -201,9 +187,9 @@ acc_score: 1.0
 predict_label: ['realty' 'education'], predict_proba: [0.9746881260530019, 0.5150055067574651]
 ```
 
-- Visual Feature Importance
+#### Visual Feature Importance
 
-Show feature weights of model, and prediction word weight, for example [visual_feature_importance.ipynb](examples/visual_feature_importance.ipynb)
+Show feature weights of model, and prediction word weight, for example [examples/visual_feature_importance.ipynb](examples/visual_feature_importance.ipynb)
 ```python
 import sys
 
@@ -232,10 +218,11 @@ output:
 
 ![img.png](docs/img.png)
 
-- FastText model
+#### Deep Classification model
 
-工具支持多种常用分类模型，包括fasttext、textcnn、textrnn_att、bert分类模型。
-训练fasttext模型示例[fasttext_classification_demo.py](examples/fasttext_classification_demo.py)
+工具支持多种常用深度分类模型，包括Fasttext、TextCNN、RextRNN_Att、Bert分类模型。
+
+训练和预测`Fasttext`模型示例[examples/fasttext_classification_demo.py](examples/fasttext_classification_demo.py)
 
 ```python
 import sys
@@ -272,22 +259,47 @@ if __name__ == '__main__':
         ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
     ]
     acc_score = new_m.evaluate(test_data)
-    print(f'acc_score: {acc_score}')  # 1.0
+    print(f'acc_score: {acc_score}')
 ```
 
-output:
+训练样本也支持文件加载，示例[examples/data_file_classfication_demo.py](examples/data_file_classfication_demo.py)
 
-```
-TextClassifier instance (fasttext)
-predict_label: ['education', 'sports'], predict_proba: [0.5926638841629028, 0.5340359807014465]
-predict_label: ['education', 'education'], predict_proba: [0.18393290042877197, 0.19611379504203796]
-acc_score: 0.5
+```python
+import sys
+
+sys.path.append('..')
+from pytextclassifier import TextClassifier, load_data
+
+if __name__ == '__main__':
+    model_name = 'fasttext'  # or lr, textcnn, bert
+    m = TextClassifier(model_name)
+    # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
+    data_file = 'thucnews_train_10w.txt'
+    m.train(data_file)
+
+    predict_label, predict_proba = m.predict(
+        ['顺义北京苏活88平米起精装房在售',
+         '美EB-5项目“15日快速移民”将推迟'])
+    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
+    del m
+
+    new_m = TextClassifier(model_name)
+    new_m.load_model()
+    predict_label, predict_proba = new_m.predict(
+        ['顺义北京苏活88平米起精装房在售',
+         '美EB-5项目“15日快速移民”将推迟'])
+    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
+    x, y, df = load_data(data_file)
+    test_data = df[:100]
+    acc_score = new_m.evaluate(test_data)
+    print(f'acc_score: {acc_score}')
 ```
 
-- 模型效果比对
+
+#### 模型效果
 
 1. THUCNews中文文本数据集（1.56GB）：官方[下载地址](http://thuctc.thunlp.org/)。
-2. 抽样的THUCNews中文文本10分类数据集（6.2MB），地址：[examples/thucnews_train_10w.txt](examples/thucnews_train_10w.txt)。
+2. 抽样的THUCNews中文文本10分类数据集（6MB），地址：[examples/thucnews_train_10w.txt](examples/thucnews_train_10w.txt)。
 
 各模型在THUCNews中文文本10分类数据集评估，模型效果如下：
 
@@ -302,6 +314,19 @@ Transformer|89.91%|效果较差
 BERT|94.83%|bert + fc
 ERNIE|94.61%|比bert略差
 
+#### 模型调研
+
+提供分类模型快速调研工具tools，文件树：
+```bash
+pytextclassifier/tools
+├── bert_classification.py
+├── fasttext_classification.py
+├── lr_classification.py
+├── textcnn_classification.py
+└── textrnn_att_classification.py
+```
+
+每个文件对应一个模型，各模型完全独立，可以直接运行，也方便修改，支持通过`argparse` 修改`--data_path`等参数。
 
 ### Text Cluster
 
