@@ -88,7 +88,7 @@ class TextClassifier:
             from pytextclassifier.tools.lr_classification import train, evaluate, get_model
             model = get_model(self.model_name)
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=1)
-            # train model
+            # train model and save model
             model, vectorizer = train(X_train, y_train, self.model_dir, model=model, vectorizer=vectorizer)
             # evaluate the model
             test_acc = evaluate(X_test, y_test, model, vectorizer)

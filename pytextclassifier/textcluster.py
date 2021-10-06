@@ -19,6 +19,11 @@ default_stopwords_path = os.path.join(pwd_path, 'data/stopwords.txt')
 
 
 def load_list(path):
+    """
+    加载停用词
+    :param path:
+    :return: list
+    """
     return [word for word in open(path, 'r', encoding='utf-8').read().split()]
 
 
@@ -80,10 +85,12 @@ class TextCluster(object):
         return 'TextCluster instance ({}, {}, {})'.format(self.model, self.tokenizer, self.vectorizer)
 
     @staticmethod
-    def load_file_data(file_path):
+    def load_file_data(file_path, sep='\t', use_col=1):
         """
         Load text file, format(txt): text
         :param file_path: str
+        :param sep: \t
+        :param use_col: int
         :return: list, text list
         """
         contents = []
@@ -92,7 +99,9 @@ class TextCluster(object):
         with open(file_path, "r", encoding='utf-8') as f:
             for line in f:
                 line = line.strip()
-                if line:
+                if use_col:
+                    contents.append(line.split(sep)[use_col])
+                else:
                     contents.append(line)
         logger.info('load file done. path: {}, size: {}'.format(file_path, len(contents)))
         return contents
@@ -108,9 +117,9 @@ class TextCluster(object):
         logger.debug('data tokens top 1: {}'.format(X_tokens[:1]))
         return X_tokens
 
-    def train(self, X):
+    def train(self, X, model_dir=''):
         """
-        Train model
+        Train model and save model
         :param X: list of text, eg: [text1, text2, ...]
         :param n_clusters: int
         :return: model
@@ -122,6 +131,14 @@ class TextCluster(object):
         self.model.fit(X_vec)
         labels = self.model.labels_
         logger.debug('cluster labels:{}'.format(labels))
+        if model_dir:
+            os.makedirs(model_dir, exist_ok=True)
+        vectorizer_path = os.path.join(model_dir, 'cluster_vectorizer.pkl')
+        save_pkl(self.vectorizer, vectorizer_path)
+        model_path = os.path.join(model_dir, 'cluster_model.pkl')
+        save_pkl(self.model, model_path)
+        logger.info('save done. vec path: {}, model path: {}'.format(vectorizer_path, model_path))
+
         self.is_trained = True
         return X_vec, labels
 
@@ -151,23 +168,7 @@ class TextCluster(object):
             raise ValueError('model is None, run train first.')
         show_plt(feature_matrix, labels, image_file)
 
-    def save(self, model_dir=''):
-        """
-        Save model to model_dir
-        :param model_dir: path
-        :return: None
-        """
-        if not self.is_trained:
-            raise ValueError('model is None, run train first.')
-        if model_dir and not os.path.exists(model_dir):
-            os.makedirs(model_dir)
-        vectorizer_path = os.path.join(model_dir, 'cluster_vectorizer.pkl')
-        save_pkl(self.vectorizer, vectorizer_path)
-        model_path = os.path.join(model_dir, 'cluster_model.pkl')
-        save_pkl(self.model, model_path)
-        logger.info('save done. vec path: {}, model path: {}'.format(vectorizer_path, model_path))
-
-    def load(self, model_dir=''):
+    def load_model(self, model_dir=''):
         """
         Load model from model_dir
         :param model_dir: path

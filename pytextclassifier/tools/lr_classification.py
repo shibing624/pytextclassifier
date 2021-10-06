@@ -105,7 +105,7 @@ def save_pkl(vocab, pkl_path, overwrite=True):
 
 def train(X_train, y_train, model_dir='', model=None, vectorizer=None):
     """
-    Train model
+    Train model and save model
     """
     if vectorizer is None:
         vectorizer = tfidf
@@ -117,6 +117,7 @@ def train(X_train, y_train, model_dir='', model=None, vectorizer=None):
     X_train_vec = vectorizer.fit_transform(X_train_tokens)
     # fit
     model.fit(X_train_vec, y_train)
+    # save model
     if model_dir:
         os.makedirs(model_dir, exist_ok=True)
     vectorizer_path = os.path.join(model_dir, 'classifier_vectorizer.pkl')
