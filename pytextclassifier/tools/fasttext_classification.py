@@ -239,6 +239,7 @@ def evaluate(model, data_iter):
     acc = metrics.accuracy_score(labels_all, predict_all)
     return acc, loss_total / len(data_iter)
 
+
 def train(model, train_iter, dev_iter, num_epochs=10, learning_rate=1e-3, require_improvement=1000, save_path=''):
     # train
     start_time = time.time()
@@ -340,9 +341,9 @@ def predict(model, data_list, word_id_map, label_id_map):
             outputs = model(texts)
             pred = torch.max(outputs, 1)[1].detach().cpu().numpy()
             predict_all = np.append(predict_all, pred)
-            proba = torch.max(outputs, 1)[0].detach().cpu().numpy()
-            #proba = np.exp(-log_proba)
-            #print(f'texts: {texts}, outputs: {outputs} log_p: {log_proba} p:{proba}')
+            log_proba = torch.max(outputs, 1)[0].detach().cpu().numpy()
+            proba = 1 - np.exp(-log_proba)
+            # print(f'outputs: {outputs} log_p: {log_proba} p:{proba}')
             proba_all = np.append(proba_all, proba)
     id_label_map = {v: k for k, v in label_id_map.items()}
     predict_label = [id_label_map.get(i) for i in predict_all]
@@ -389,11 +390,11 @@ if __name__ == '__main__':
     init_network(model)
     print(model.parameters)
     # train model
-    #train(model, train_iter, dev_iter, num_epochs, learning_rate, require_improvement, save_model_path)
+    train(model, train_iter, dev_iter, num_epochs, learning_rate, require_improvement, save_model_path)
     # predict
-    #predict_label, predict_proba = predict(model, X[:10], word_id_map, label_id_map)
-    #for text, label, proba in zip(X[:10], predict_label, predict_proba):
-    #    print(text, label, proba)
+    predict_label, predict_proba = predict(model, X[:10], word_id_map, label_id_map)
+    for text, label, proba in zip(X[:10], predict_label, predict_proba):
+        print(text, label, proba)
     # load new model and predict
     new_model = load_model(model, save_model_path)
     predict_label, predict_proba = predict(new_model, X[:10], word_id_map, label_id_map)
