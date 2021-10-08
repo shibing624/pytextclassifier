@@ -7,7 +7,7 @@ from __future__ import print_function
 
 from setuptools import setup, find_packages
 
-from pytextclassifier import __version__
+__version__ = "1.0.2"
 
 with open('README.md', 'r', encoding='utf-8') as f:
     readme = f.read()
@@ -43,7 +43,7 @@ setup(
     package_dir={'pytextclassifier': 'pytextclassifier'},
     package_data={
         'pytextclassifier': ['*.*', '../LICENSE', '../README.*', '../*.txt', 'data/*',
-                             'tools/*',  '../examples/thucnews_train_10w.txt'],
+                             'tools/*', '../examples/thucnews_train_10w.txt'],
     },
     test_suite='tests',
 )
