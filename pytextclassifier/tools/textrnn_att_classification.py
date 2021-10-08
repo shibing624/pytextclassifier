@@ -14,7 +14,7 @@ import torch.nn.functional as F
 from sklearn import metrics
 from datetime import timedelta
 from sklearn.model_selection import train_test_split
-import pickle
+import json
 from tqdm import tqdm
 import sys
 
@@ -24,7 +24,7 @@ from pytextclassifier.log import logger
 pwd_path = os.path.abspath(os.path.dirname(__file__))
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 MAX_VOCAB_SIZE = 10000  # 词表长度限制
-UNK = '[UNK]',  # 未知字
+UNK = '[UNK]'  # 未知字
 PAD = '[PAD]'  # padding符号
 
 dropout = 0.5  # 随机失活
@@ -65,18 +65,18 @@ def build_vocab(contents, tokenizer, max_size, min_freq):
 
 def build_dataset(X, y, vocab_path, label_vocab_path, pad_size=128):
     if os.path.exists(vocab_path):
-        word_id_map = pickle.load(open(vocab_path, 'rb'))
+        word_id_map = json.load(open(vocab_path, 'r', encoding='utf-8'))
     else:
         word_id_map = build_vocab(X, tokenizer=tokenizer, max_size=MAX_VOCAB_SIZE, min_freq=1)
-        pickle.dump(word_id_map, open(vocab_path, 'wb'))
+        json.dump(word_id_map, open(vocab_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=4)
     logger.debug(f"word vocab size: {len(word_id_map)}, word_vocab_path: {vocab_path}")
 
     if os.path.exists(label_vocab_path):
-        label_id_map = pickle.load(open(label_vocab_path, 'rb'))
+        label_id_map = json.load(open(label_vocab_path, 'r', encoding='utf-8'))
     else:
         id_label_map = {id: v for id, v in enumerate(set(y.tolist()))}
         label_id_map = {v: k for k, v in id_label_map.items()}
-        pickle.dump(label_id_map, open(label_vocab_path, 'wb'))
+        json.dump(label_id_map, open(label_vocab_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=4)
     logger.debug(f"label vocab size: {len(label_id_map)}, label_vocab_path: {label_vocab_path}")
 
     def load_dataset(X, y, pad_size=128):
@@ -342,8 +342,8 @@ if __name__ == '__main__':
     print(f'loaded data list, X size: {len(X)}, y size: {len(y)}')
     assert len(X) == len(y)
     print(f'num_classes:{len(set(y))}')
-    word_vocab_path = os.path.join(model_dir, 'word_vocab.pkl')
-    label_vocab_path = os.path.join(model_dir, 'label_vocab.pkl')
+    word_vocab_path = os.path.join(model_dir, 'word_vocab.json')
+    label_vocab_path = os.path.join(model_dir, 'label_vocab.json')
     save_model_path = os.path.join(model_dir, 'model.pth')
     data, word_id_map, label_id_map = build_dataset(X, y, word_vocab_path, label_vocab_path, pad_size)
     train_data, dev_data = train_test_split(data, test_size=0.1, random_state=SEED)

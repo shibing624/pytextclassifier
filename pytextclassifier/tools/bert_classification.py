@@ -7,7 +7,7 @@ import argparse
 import pandas as pd
 import os
 import numpy as np
-import pickle
+import json
 import torch
 from sklearn.model_selection import train_test_split
 from simpletransformers.classification import ClassificationModel
@@ -33,11 +33,11 @@ def load_data(data_filepath, header=None, delimiter='\t', names=('labels', 'text
 def build_dataset(data_df, label_vocab_path):
     X, y = data_df['text'], data_df['labels']
     if os.path.exists(label_vocab_path):
-        label_id_map = pickle.load(open(label_vocab_path, 'rb'))
+        label_id_map = json.load(open(label_vocab_path, 'r', encoding='utf-8'))
     else:
         id_label_map = {id: v for id, v in enumerate(set(y.tolist()))}
         label_id_map = {v: k for k, v in id_label_map.items()}
-        pickle.dump(label_id_map, open(label_vocab_path, 'wb'))
+        json.dump(label_id_map, open(label_vocab_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=4)
     logger.debug(f"label vocab size: {len(label_id_map)}")
     df = data_df.copy()
     df.loc[:, 'labels'] = df.loc[:, 'labels'].map(lambda x: label_id_map.get(x))
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     torch.manual_seed(SEED)
     torch.cuda.manual_seed_all(SEED)  # 保持结果一致
     # load data
-    label_vocab_path = os.path.join(model_dir, 'label_vocab.pkl')
+    label_vocab_path = os.path.join(model_dir, 'label_vocab.json')
     data_df = load_data(args.data_path)
     data_df, label_id_map = build_dataset(data_df, label_vocab_path)
     print(data_df.head())

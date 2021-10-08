@@ -5,7 +5,7 @@
 """
 import os
 import torch
-import pickle
+import json
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import sys
@@ -50,14 +50,14 @@ class TextClassifier:
         self.is_trained = False
         self.model_dir = model_dir if model_dir else model_name
         self.model = None
-        self.word_vocab_path = os.path.join(self.model_dir, 'word_vocab.pkl')
-        self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab.pkl')
+        self.word_vocab_path = os.path.join(self.model_dir, 'word_vocab..json')
+        self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab..json')
         self.save_model_path = os.path.join(self.model_dir, f'{model_name}_model.pth')
 
     def __repr__(self):
         return 'TextClassifier instance ({})'.format(self.model_name)
 
-    def train(self, data_list_or_filepath, header=None, names=None, delimiter='\t', vectorizer=None,
+    def train(self, data_list_or_filepath, header=None, names=('labels', 'text'), delimiter='\t', vectorizer=None,
               pad_size=128, test_size=0.1, batch_size=64, num_epochs=10, learning_rate=1e-3,
               require_improvement=1000, hf_model_type='bert', hf_model_name='bert-base-chinese'):
         """
@@ -183,7 +183,7 @@ class TextClassifier:
         self.is_trained = True
         logger.debug('train model done')
 
-    def evaluate(self, data_list_or_filepath, header=None, names=None, delimiter='\t',
+    def evaluate(self, data_list_or_filepath, header=None, names=('labels', 'text'), delimiter='\t',
                  pad_size=128, batch_size=64):
         """
         Evaluate model
@@ -254,22 +254,22 @@ class TextClassifier:
             predict_label, predict_proba = predict(input_text_list, self.model, self.vectorizer)
         elif self.model_name == 'fasttext':
             from pytextclassifier.tools.fasttext_classification import predict
-            word_id_map = pickle.load(open(self.word_vocab_path, 'rb'))
-            label_id_map = pickle.load(open(self.label_vocab_path, 'rb'))
+            word_id_map = json.load(open(self.word_vocab_path, 'r', encoding='utf-8'))
+            label_id_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
             predict_label, predict_proba = predict(self.model, input_text_list, word_id_map, label_id_map)
         elif self.model_name == 'textcnn':
             from pytextclassifier.tools.textcnn_classification import predict
-            word_id_map = pickle.load(open(self.word_vocab_path, 'rb'))
-            label_id_map = pickle.load(open(self.label_vocab_path, 'rb'))
+            word_id_map = json.load(open(self.word_vocab_path, 'r', encoding='utf-8'))
+            label_id_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
             predict_label, predict_proba = predict(self.model, input_text_list, word_id_map, label_id_map)
         elif self.model_name == 'textrnn_att':
             from pytextclassifier.tools.textrnn_att_classification import predict
-            word_id_map = pickle.load(open(self.word_vocab_path, 'rb'))
-            label_id_map = pickle.load(open(self.label_vocab_path, 'rb'))
+            word_id_map = json.load(open(self.word_vocab_path, 'r', encoding='utf-8'))
+            label_id_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
             predict_label, predict_proba = predict(self.model, input_text_list, word_id_map, label_id_map)
         elif self.model_name in ['bert', 'albert', 'roberta', 'xlnet']:
             from pytextclassifier.tools.bert_classification import predict
-            label_id_map = pickle.load(open(self.label_vocab_path, 'rb'))
+            label_id_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
             predict_label, predict_proba = predict(self.model, input_text_list, label_id_map)
         else:
             raise ValueError('model_name not found.')
@@ -285,25 +285,25 @@ class TextClassifier:
             self.model, self.vectorizer = load_model(model_dir=self.model_dir)
         elif self.model_name == 'fasttext':
             from pytextclassifier.tools.fasttext_classification import load_model, FastTextModel
-            word_id_map = pickle.load(open(self.word_vocab_path, 'rb'))
-            label_id_map = pickle.load(open(self.label_vocab_path, 'rb'))
+            word_id_map = json.load(open(self.word_vocab_path, 'r', encoding='utf-8'))
+            label_id_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
             model = FastTextModel(len(word_id_map), len(label_id_map)).to(device)
             self.model = load_model(model, self.save_model_path)
         elif self.model_name == 'textcnn':
             from pytextclassifier.tools.textcnn_classification import load_model, TextCNNModel
-            word_id_map = pickle.load(open(self.word_vocab_path, 'rb'))
-            label_id_map = pickle.load(open(self.label_vocab_path, 'rb'))
+            word_id_map = json.load(open(self.word_vocab_path, 'r', encoding='utf-8'))
+            label_id_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
             model = TextCNNModel(len(word_id_map), len(label_id_map)).to(device)
             self.model = load_model(model, self.save_model_path)
         elif self.model_name == 'textrnn_att':
             from pytextclassifier.tools.textrnn_att_classification import load_model, TextRNNAttModel
-            word_id_map = pickle.load(open(self.word_vocab_path, 'rb'))
-            label_id_map = pickle.load(open(self.label_vocab_path, 'rb'))
+            word_id_map = json.load(open(self.word_vocab_path, 'r', encoding='utf-8'))
+            label_id_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
             model = TextRNNAttModel(len(word_id_map), len(label_id_map)).to(device)
             self.model = load_model(model, self.save_model_path)
         elif self.model_name in ['bert', 'albert', 'roberta', 'xlnet']:
             from pytextclassifier.tools.bert_classification import BertClassificationModel
-            label_id_map = pickle.load(open(self.label_vocab_path, 'rb'))
+            label_id_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
             use_cuda = False if device == torch.device('cpu') else True
             self.model = BertClassificationModel(model_type=self.model_name,
                                                  model_name=self.model_dir,
