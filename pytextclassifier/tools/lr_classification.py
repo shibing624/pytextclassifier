@@ -60,7 +60,7 @@ def load_list(path):
 stopwords = set(load_list(default_stopwords_path))
 
 
-def load_data(data_filepath, header=None, delimiter='\t', names=['labels', 'text']):
+def load_data(data_filepath, header=None, delimiter='\t', names=('labels', 'text')):
     data_df = pd.read_csv(data_filepath, header=header, delimiter=delimiter, names=names)
     X, y = data_df['text'], data_df['labels']
     return X, y

@@ -21,7 +21,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
-def load_data(data_filepath, header=None, delimiter='\t', names=['labels', 'text'], **kwargs):
+def load_data(data_filepath, header=None, delimiter='\t', names=('labels', 'text'), **kwargs):
     data_df = pd.read_csv(data_filepath, header=header, delimiter=delimiter, names=names, **kwargs)
     X, y = data_df['text'], data_df['labels']
     logger.debug(f'loaded data list, X size: {len(X)}, y size: {len(y)}')

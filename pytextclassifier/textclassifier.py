@@ -16,14 +16,15 @@ from pytextclassifier.log import logger
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def load_data(data_list_or_filepath, header=None, names=None, delimiter='\t'):
+def load_data(data_list_or_filepath, header=None, names=('labels', 'text'), delimiter='\t'):
     """
     Encoding data_list text
-    data_list_or_filepath: list of (label, text), eg: [(label, text), (label, text) ...]
-    return: X, X_tokens, Y
+    @param data_list_or_filepath: list of (label, text), eg: [(label, text), (label, text) ...]
+    @param header: read_csv header
+    @param names: read_csv names
+    @param delimiter: read_csv sep
+    @return: X, X_tokens, Y
     """
-    if names is None:
-        names = ['labels', 'text']
     if isinstance(data_list_or_filepath, list):
         data_df = pd.DataFrame(data_list_or_filepath, columns=names)
     elif isinstance(data_list_or_filepath, str) and os.path.exists(data_list_or_filepath):

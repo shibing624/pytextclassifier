@@ -39,7 +39,7 @@ num_filters = 256  # 卷积核数量(channels数)
 tokenizer = lambda x: [y for y in x]  # char-level
 
 
-def load_data(data_filepath, header=None, delimiter='\t', names=['labels', 'text'], **kwargs):
+def load_data(data_filepath, header=None, delimiter='\t', names=('labels', 'text'), **kwargs):
     data_df = pd.read_csv(data_filepath, header=header, delimiter=delimiter, names=names, **kwargs)
     X, y = data_df['text'], data_df['labels']
     return X, y
@@ -301,8 +301,7 @@ def predict(model, data_list, word_id_map, label_id_map):
             outputs = model(texts)
             pred = torch.max(outputs, 1)[1].detach().cpu().numpy()
             predict_all = np.append(predict_all, pred)
-            log_proba = torch.max(outputs, 1)[0].detach().cpu().numpy()
-            proba = np.exp(-log_proba)
+            proba = torch.max(outputs, 1)[0].detach().cpu().numpy()
             proba_all = np.append(proba_all, proba)
     id_label_map = {v: k for k, v in label_id_map.items()}
     predict_label = [id_label_map.get(i) for i in predict_all]
