@@ -396,7 +396,10 @@ if __name__ == '__main__':
     for text, label, proba in zip(X[:10], predict_label, predict_proba):
         print(text, label, proba)
     # load new model and predict
+    model = FastTextModel(vocab_size, num_classes).to(device)
+    init_network(model)
     new_model = load_model(model, save_model_path)
+    print('new model loaded from file, and predict')
     predict_label, predict_proba = predict(new_model, X[:10], word_id_map, label_id_map)
     for text, label, proba in zip(X[:10], predict_label, predict_proba):
         print(text, label, proba)

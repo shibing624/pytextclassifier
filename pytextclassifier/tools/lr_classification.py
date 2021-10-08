@@ -203,7 +203,7 @@ if __name__ == '__main__':
         print(text, pred_label, pred_proba)
     # load new model and predict
     new_model, new_vec = load_model(model_dir)
-    print('model loaded {}'.format(model_dir))
+    print('new model loaded {}'.format(model_dir))
     predict_label, predict_proba = predict(X_train[:3], new_model, new_vec)
     for text, pred_label, pred_proba in zip(X_train[:3], predict_label, predict_proba):
         print(text, pred_label, pred_proba)

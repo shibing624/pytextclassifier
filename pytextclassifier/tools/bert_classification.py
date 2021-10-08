@@ -78,7 +78,7 @@ def predict(model, data_list, label_id_map):
     # predict proba
     id_label_map = {v: k for k, v in label_id_map.items()}
     predict_label = [id_label_map.get(i) for i in predictions]
-    predict_proba = [np.exp(-raw_output[prediction]) for raw_output, prediction in zip(raw_outputs, predictions)]
+    predict_proba = [1 - np.exp(-raw_output[prediction]) for raw_output, prediction in zip(raw_outputs, predictions)]
     return predict_label, predict_proba
 
 
@@ -131,21 +131,20 @@ if __name__ == '__main__':
     # it should contain a 'text' and a 'labels' column. text with type str, the label with type int.
     model.train_model(train_df)
     # Evaluate the model
-    result, model_outputs, wrong_predictions = model.eval_model(dev_df)
+    result, model_outputs, wrong_predictions = model.eval_model(dev_df[:20])
     print('evaluate: ', result, model_outputs, wrong_predictions)
     # predict
-    predictions, raw_outputs = model.predict(["就要性价比 惠普CQ40仅3800元抱回家"])
-    print('pred:', predictions, ' raw_output:', raw_outputs)
     predict_label, predict_proba = predict(model, ["就要性价比 惠普CQ40仅3800元抱回家"], label_id_map)
     print(f'predict_label:{predict_label}, predict_proba:{predict_proba}')
-    # predict with new model
+    # load new model and predict
     new_model = BertClassificationModel(model_type=args.pretrain_model_type,
-                                        model_name='./bert/best_model/',
+                                        model_name=args.model_dir,
                                         num_classes=len(label_id_map),
                                         num_epochs=args.num_epochs,
                                         batch_size=args.batch_size,
                                         max_seq_length=args.max_seq_length,
                                         model_dir=args.model_dir,
                                         use_cuda=use_cuda)
+    print('new model loaded from file, and predict')
     predict_label, predict_proba = predict(new_model, ["就要性价比 惠普CQ40仅3800元抱回家"], label_id_map)
     print(f'predict_label:{predict_label}, predict_proba:{predict_proba}')
