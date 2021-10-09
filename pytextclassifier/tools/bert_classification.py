@@ -27,7 +27,7 @@ def load_data(data_filepath, header=None, delimiter='\t', names=('labels', 'text
     logger.debug(f'loaded data list, X size: {len(X)}, y size: {len(y)}')
     assert len(X) == len(y)
     logger.debug(f'num_classes:{len(set(y))}')
-    return data_df
+    return X, y, data_df
 
 
 def build_dataset(data_df, label_vocab_path):
@@ -110,7 +110,7 @@ if __name__ == '__main__':
     torch.cuda.manual_seed_all(SEED)  # 保持结果一致
     # load data
     label_vocab_path = os.path.join(model_dir, 'label_vocab.json')
-    data_df = load_data(args.data_path)
+    X, y, data_df = load_data(args.data_path)
     data_df, label_id_map = build_dataset(data_df, label_vocab_path)
     print(data_df.head())
     train_df, dev_df = train_test_split(data_df, test_size=0.1, random_state=SEED)
@@ -131,11 +131,12 @@ if __name__ == '__main__':
     # it should contain a 'text' and a 'labels' column. text with type str, the label with type int.
     model.train_model(train_df)
     # Evaluate the model
-    result, model_outputs, wrong_predictions = model.eval_model(dev_df[:20])
+    result, model_outputs, wrong_predictions = model.eval_model(dev_df[:10])
     print('evaluate: ', result, model_outputs, wrong_predictions)
     # predict
-    predict_label, predict_proba = predict(model, ["就要性价比 惠普CQ40仅3800元抱回家"], label_id_map)
-    print(f'predict_label:{predict_label}, predict_proba:{predict_proba}')
+    predict_label, predict_proba = predict(model, X[:10], label_id_map)
+    for text, label, proba in zip(X[:10], predict_label, predict_proba):
+        print(text, label, proba)
     # load new model and predict
     new_model = BertClassificationModel(model_type=args.pretrain_model_type,
                                         model_name=args.model_dir,
@@ -146,5 +147,6 @@ if __name__ == '__main__':
                                         model_dir=args.model_dir,
                                         use_cuda=use_cuda)
     print('new model loaded from file, and predict')
-    predict_label, predict_proba = predict(new_model, ["就要性价比 惠普CQ40仅3800元抱回家"], label_id_map)
-    print(f'predict_label:{predict_label}, predict_proba:{predict_proba}')
+    predict_label, predict_proba = predict(new_model, X[:10], label_id_map)
+    for text, label, proba in zip(X[:10], predict_label, predict_proba):
+        print(text, label, proba)

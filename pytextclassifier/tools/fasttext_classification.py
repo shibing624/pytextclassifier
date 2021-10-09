@@ -43,7 +43,7 @@ def load_data(data_filepath, header=None, delimiter='\t', names=('labels', 'text
     data_df = pd.read_csv(data_filepath, header=header, delimiter=delimiter, names=names)
     logger.debug(data_df.head())
     X, y = data_df['text'], data_df['labels']
-    return X, y
+    return X, y, data_df
 
 
 def build_vocab(contents, tokenizer, max_size, min_freq):
@@ -293,6 +293,14 @@ def load_model(model, model_path):
 
 
 def predict(model, data_list, word_id_map, label_id_map):
+    """
+    Predict data_list
+    @param model: Fasttext model
+    @param data_list: input texts
+    @param word_id_map:
+    @param label_id_map:
+    @return: predict_label, predict_proba
+    """
     model.eval()
 
     def biGramHash(sequence, t, buckets):
@@ -372,7 +380,7 @@ if __name__ == '__main__':
     torch.cuda.manual_seed_all(SEED)  # 保持结果一致
     print(f'device: {device}')
     # load data
-    X, y = load_data(args.data_path)
+    X, y, _ = load_data(args.data_path)
     print(f'loaded data list, X size: {len(X)}, y size: {len(y)}')
     assert len(X) == len(y)
     print(f'num_classes:{len(set(y))}')

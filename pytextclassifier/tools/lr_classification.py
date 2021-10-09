@@ -63,7 +63,7 @@ stopwords = set(load_list(default_stopwords_path))
 def load_data(data_filepath, header=None, delimiter='\t', names=('labels', 'text')):
     data_df = pd.read_csv(data_filepath, header=header, delimiter=delimiter, names=names)
     X, y = data_df['text'], data_df['labels']
-    return X, y
+    return X, y, data_df
 
 
 def _encode_data(X):
@@ -186,7 +186,7 @@ if __name__ == '__main__':
     os.makedirs(model_dir, exist_ok=True)
     SEED = 1  # 保持结果一致
     # load data
-    X, y = load_data(args.data_path)
+    X, y, _ = load_data(args.data_path)
     print(f'loaded data list, X size: {len(X)}, y size: {len(y)}')
     assert len(X) == len(y)
     print(f'num_classes:{len(set(y))}')
