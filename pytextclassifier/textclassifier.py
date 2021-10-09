@@ -53,6 +53,7 @@ class TextClassifier:
         self.word_vocab_path = os.path.join(self.model_dir, 'word_vocab.json')
         self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab.json')
         self.save_model_path = os.path.join(self.model_dir, f'{model_name}_model.pth')
+        logger.debug(f'model_name: {self.model_name}')
 
     def __repr__(self):
         return 'TextClassifier instance ({})'.format(self.model_name)
@@ -77,7 +78,6 @@ class TextClassifier:
         @param hf_model_name: 默认bert-base-chinese，simpletransformers的model_name
         @return: None, and set self.is_trained = True
         """
-        logger.info(f'model_name: {self.model_name}')
         logger.debug(f'train model...')
         logger.debug(f'device: {device}')
         if self.model_dir:
@@ -288,6 +288,7 @@ class TextClassifier:
         Load model from self.model_dir
         @return: None, set self.is_trained = True
         """
+        logger.debug(f'device: {device}')
         if self.model_name in ['lr', 'random_forest', 'decision_tree', 'knn', 'bayes', 'xgboost', 'svm']:
             from pytextclassifier.tools.lr_classification import load_model
             self.model, self.vectorizer = load_model(model_dir=self.model_dir)
