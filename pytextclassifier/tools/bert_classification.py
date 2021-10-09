@@ -132,9 +132,9 @@ if __name__ == '__main__':
     model.train_model(train_df)
     # Evaluate the model
     result, model_outputs, wrong_predictions = model.eval_model(dev_df[:10])
-    print('evaluate: ', result, model_outputs, wrong_predictions)
+    print(f'evaluate, result:{result} model_outputs:{model_outputs} wrong_predictions:{wrong_predictions}')
     # predict
-    predict_label, predict_proba = predict(model, X[:10], label_id_map)
+    predict_label, predict_proba = predict(model, X[:10].tolist(), label_id_map)
     for text, label, proba in zip(X[:10], predict_label, predict_proba):
         print(text, label, proba)
     # load new model and predict
@@ -147,6 +147,6 @@ if __name__ == '__main__':
                                         model_dir=args.model_dir,
                                         use_cuda=use_cuda)
     print('new model loaded from file, and predict')
-    predict_label, predict_proba = predict(new_model, X[:10], label_id_map)
+    predict_label, predict_proba = predict(new_model, X[:10].tolist(), label_id_map)
     for text, label, proba in zip(X[:10], predict_label, predict_proba):
         print(text, label, proba)
