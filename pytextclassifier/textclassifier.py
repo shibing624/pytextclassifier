@@ -50,8 +50,8 @@ class TextClassifier:
         self.is_trained = False
         self.model_dir = model_dir if model_dir else model_name
         self.model = None
-        self.word_vocab_path = os.path.join(self.model_dir, 'word_vocab..json')
-        self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab..json')
+        self.word_vocab_path = os.path.join(self.model_dir, 'word_vocab.json')
+        self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab.json')
         self.save_model_path = os.path.join(self.model_dir, f'{model_name}_model.pth')
 
     def __repr__(self):
