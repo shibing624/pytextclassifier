@@ -7,7 +7,7 @@ from __future__ import print_function
 
 from setuptools import setup, find_packages
 
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 with open('README.md', 'r', encoding='utf-8') as f:
     readme = f.read()
