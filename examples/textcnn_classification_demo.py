@@ -19,7 +19,7 @@ if __name__ == '__main__':
         ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
         ('sports', '米兰客场8战不败国米10年连胜')
     ]
-    m.train(data)
+    m.train(data, num_epochs=3)
     print(m)
     predict_label, predict_proba = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                                               '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
