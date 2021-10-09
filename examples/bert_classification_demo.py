@@ -19,7 +19,7 @@ if __name__ == '__main__':
         ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
         ('sports', '米兰客场8战不败国米10年连胜')
     ]
-    m.train(data, num_epochs=1)
+    m.train(data, num_epochs=3)
     print(m)
     predict_label, predict_proba = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                                               '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
@@ -38,14 +38,14 @@ if __name__ == '__main__':
     ]
     acc_score = new_m.evaluate(test_data)
     print(f'acc_score: {acc_score}')  # 1.0
-    import os
-    os.remove('bert')
+    import shutil
+    shutil.rmtree(model_name)
 
     #### load data from file
     print('-' * 42)
     m = TextClassifier(model_name)
     data_file = 'thucnews_train_10w.txt'
-    m.train(data_file, num_epochs=1)  # fine tune 1 轮
+    m.train(data_file, num_epochs=2)  # fine tune 2 轮
 
     predict_label, predict_proba = m.predict(
         ['顺义北京苏活88平米起精装房在售',

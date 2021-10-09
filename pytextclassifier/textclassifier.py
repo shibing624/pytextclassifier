@@ -173,7 +173,7 @@ class TextClassifier:
             # evaluate the model
             result, model_outputs, wrong_predictions = model.eval_model(dev_df)
             logger.debug(f'evaluate, {result}, wrong_predictions: {wrong_predictions}')
-            if wrong_predictions and dev_df:
+            if wrong_predictions:
                 acc = (len(dev_df) - len(wrong_predictions[0])) / len(dev_df)
                 wrong_size = len(wrong_predictions[0])
             else:
@@ -234,7 +234,7 @@ class TextClassifier:
                 build_dataset, predict, BertClassificationModel)
             dev_df, label_id_map = build_dataset(data_df, self.label_vocab_path)
             result, model_outputs, wrong_predictions = self.model.eval_model(dev_df)
-            if wrong_predictions and dev_df:
+            if wrong_predictions:
                 acc = (len(dev_df) - len(wrong_predictions[0])) / len(dev_df)
                 wrong_size = len(wrong_predictions[0])
             else:
