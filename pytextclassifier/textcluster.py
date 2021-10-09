@@ -90,7 +90,7 @@ class TextCluster(object):
         Load text file, format(txt): text
         :param file_path: str
         :param sep: \t
-        :param use_col: int
+        :param use_col: int or None
         :return: list, text list
         """
         contents = []

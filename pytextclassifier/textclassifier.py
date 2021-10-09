@@ -23,7 +23,7 @@ def load_data(data_list_or_filepath, header=None, names=('labels', 'text'), deli
     @param header: read_csv header
     @param names: read_csv names
     @param delimiter: read_csv sep
-    @return: X, X_tokens, Y
+    @return: X, y, data_df
     """
     if isinstance(data_list_or_filepath, list):
         data_df = pd.DataFrame(data_list_or_filepath, columns=names)
