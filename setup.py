@@ -3,8 +3,6 @@
 @author:XuMing(xuming624@qq.com)
 @description: 
 """
-from __future__ import print_function
-
 from setuptools import setup, find_packages
 
 __version__ = "1.0.4"
