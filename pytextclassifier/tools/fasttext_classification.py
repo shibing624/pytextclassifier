@@ -267,6 +267,7 @@ def train(model, train_iter, dev_iter, num_epochs=10, learning_rate=1e-3, requir
                 dev_acc, dev_loss = evaluate(model, dev_iter)
                 if dev_loss < dev_best_loss:
                     dev_best_loss = dev_loss
+                    model.eval()
                     torch.save(model.state_dict(), save_path)
                     logger.debug(f'Saved model: {save_path}')
                     improve = '*'
