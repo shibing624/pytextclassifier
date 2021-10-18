@@ -300,10 +300,11 @@ def predict(model, data_list, word_id_map, label_id_map):
     with torch.no_grad():
         for texts, _ in data_iter:
             outputs = model(texts)
-            pred = torch.max(outputs, 1)[1].detach().cpu().numpy()
+            logit = F.softmax(outputs, dim=1).detach().cpu().numpy()
+            pred = np.argmax(logit, axis=1)
+            proba = np.max(logit, axis=1)
+
             predict_all = np.append(predict_all, pred)
-            logit = torch.max(outputs, 1)[0].detach().cpu().numpy()
-            proba = 1 / (1 + np.exp(-logit))
             proba_all = np.append(proba_all, proba)
     id_label_map = {v: k for k, v in label_id_map.items()}
     predict_label = [id_label_map.get(i) for i in predict_all]
