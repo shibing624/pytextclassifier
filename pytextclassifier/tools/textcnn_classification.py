@@ -302,8 +302,8 @@ def predict(model, data_list, word_id_map, label_id_map):
             outputs = model(texts)
             pred = torch.max(outputs, 1)[1].detach().cpu().numpy()
             predict_all = np.append(predict_all, pred)
-            log_proba = torch.max(outputs, 1)[0].detach().cpu().numpy()
-            proba = 1 - np.exp(-log_proba)
+            logit = torch.max(outputs, 1)[0].detach().cpu().numpy()
+            proba = 1 / (1 + np.exp(-logit))
             proba_all = np.append(proba_all, proba)
     id_label_map = {v: k for k, v in label_id_map.items()}
     predict_label = [id_label_map.get(i) for i in predict_all]
@@ -355,9 +355,8 @@ if __name__ == '__main__':
     for text, label, proba in zip(X[:10], predict_label, predict_proba):
         print(text, label, proba)
     # load new model and predict
-    model = TextCNNModel(vocab_size, num_classes).to(device)
-    init_network(model)
-    new_model = load_model(model, save_model_path)
+    new_model = TextCNNModel(vocab_size, num_classes).to(device)
+    new_model = load_model(new_model, save_model_path)
     print('new model loaded from file, and predict')
     predict_label, predict_proba = predict(new_model, X[:10], word_id_map, label_id_map)
     for text, label, proba in zip(X[:10], predict_label, predict_proba):
