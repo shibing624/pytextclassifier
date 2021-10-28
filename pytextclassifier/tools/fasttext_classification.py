@@ -289,7 +289,7 @@ def train(model, train_iter, dev_iter, num_epochs=10, learning_rate=1e-3, requir
 
 
 def load_model(model, model_path):
-    model.load_state_dict(torch.load(model_path))
+    model.load_state_dict(torch.load(model_path, map_location=device))
     return model
 
 
