@@ -49,8 +49,8 @@ def save_pkl(vocab, pkl_path, overwrite=True):
         return
     if pkl_path:
         with open(pkl_path, 'wb') as f:
-            # pickle.dump(vocab, f, protocol=pickle.HIGHEST_PROTOCOL)
-            pickle.dump(vocab, f, protocol=2)  # 兼容python2和python3
+            pickle.dump(vocab, f, protocol=pickle.HIGHEST_PROTOCOL)
+            # pickle.dump(vocab, f, protocol=2)  # 兼容python2和python3
         print("save %s ok." % pkl_path)
 
 
