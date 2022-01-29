@@ -303,16 +303,16 @@ if __name__ == '__main__':
 
 各模型在THUCNews中文文本10分类数据集评估，模型效果如下：
 
-模型|acc|备注
+模型|acc|说明
 --|--|--
-LR|88.03%|逻辑回归Logistics Regression
-TextCNN|88.09%|Kim 2014 经典的CNN文本分类
-TextRNN_Att|90.22%|BiLSTM+Attention
-FastText|91.77%|bow+bigram+trigram， 效果出奇的好
-DPCNN|91.25%|深层金字塔CNN
-Transformer|89.91%|效果较差
-BERT|94.83%|bert + fc
-ERNIE|94.61%|比bert略差
+LR|0.8803|逻辑回归Logistics Regression
+TextCNN|0.8809|Kim 2014 经典的CNN文本分类
+TextRNN_Att|0.9022|BiLSTM+Attention
+FastText|0.9177|bow+bigram+trigram， 效果出奇的好
+DPCNN|0.9125|深层金字塔CNN
+Transformer|0.8991|效果较差
+BERT|0.9483|bert + fc
+ERNIE|0.9461|比bert略差
 
 ### 模型调研
 
