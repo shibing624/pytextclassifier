@@ -74,7 +74,7 @@ python3 setup.py install
 
 ### English Text Classifier
 
-Including model training, saving, predict, test, for example [examples/base_demo.py](examples/base_demo.py):
+Including model training, saving, predict, evaluate, for example [examples/base_demo.py](examples/base_demo.py):
 
 
 ```python
@@ -220,7 +220,7 @@ output:
 
 ### Deep Classification model
 
-工具支持多种常用深度分类模型，包括Fasttext、TextCNN、RextRNN_Att、Bert分类模型。
+工具支持多种常用深度分类模型，包括Fasttext、TextCNN、TextRNN_Att、BERT分类模型。
 
 训练和预测`Fasttext`模型示例[examples/fasttext_classification_demo.py](examples/fasttext_classification_demo.py)
 
