@@ -45,7 +45,7 @@ Functions：
   - [x] TextCNN
   - [x] TextRNN_Att
   - [x] Fasttext
-  - [x] Bert
+  - [x] BERT
 
 ### Cluster
   - [x] MiniBatchKmeans
