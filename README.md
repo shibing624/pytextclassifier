@@ -45,7 +45,7 @@ Functions：
   - [x] TextCNN
   - [x] TextRNN_Att
   - [x] Fasttext
-  - [x] Bert
+  - [x] BERT
 
 ### Cluster
   - [x] MiniBatchKmeans
@@ -74,7 +74,7 @@ python3 setup.py install
 
 ### English Text Classifier
 
-Including model training, saving, predict, test, for example [examples/base_demo.py](examples/base_demo.py):
+Including model training, saving, predict, evaluate, for example [examples/base_demo.py](examples/base_demo.py):
 
 
 ```python
@@ -220,7 +220,7 @@ output:
 
 ### Deep Classification model
 
-工具支持多种常用深度分类模型，包括Fasttext、TextCNN、RextRNN_Att、Bert分类模型。
+工具支持多种常用深度分类模型，包括Fasttext、TextCNN、TextRNN_Att、BERT分类模型。
 
 训练和预测`Fasttext`模型示例[examples/fasttext_classification_demo.py](examples/fasttext_classification_demo.py)
 
@@ -303,16 +303,16 @@ if __name__ == '__main__':
 
 各模型在THUCNews中文文本10分类数据集评估，模型效果如下：
 
-模型|acc|备注
+模型|acc|说明
 --|--|--
-LR|88.03%|逻辑回归Logistics Regression
-TextCNN|88.09%|Kim 2014 经典的CNN文本分类
-TextRNN_Att|90.22%|BiLSTM+Attention
-FastText|91.77%|bow+bigram+trigram， 效果出奇的好
-DPCNN|91.25%|深层金字塔CNN
-Transformer|89.91%|效果较差
-BERT|94.83%|bert + fc
-ERNIE|94.61%|比bert略差
+LR|0.8803|逻辑回归Logistics Regression
+TextCNN|0.8809|Kim 2014 经典的CNN文本分类
+TextRNN_Att|0.9022|BiLSTM+Attention
+FastText|0.9177|bow+bigram+trigram， 效果出奇的好
+DPCNN|0.9125|深层金字塔CNN
+Transformer|0.8991|效果较差
+BERT|0.9483|bert + fc
+ERNIE|0.9461|比bert略差
 
 ### 模型调研
 
