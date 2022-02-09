@@ -1,5 +1,3 @@
-# pytextclassifier
-
 [![PyPI version](https://badge.fury.io/py/pytextclassifier.svg)](https://badge.fury.io/py/pytextclassifier)
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![GitHub contributors](https://img.shields.io/github/contributors/shibing624/pytextclassifier.svg)](https://github.com/shibing624/pytextclassifier/graphs/contributors)
@@ -8,7 +6,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/shibing624/pytextclassifier.svg)](https://github.com/shibing624/pytextclassifier/issues)
 [![Wechat Group](http://vlog.sfyc.ltd/wechat_everyday/wxgroup_logo.png?imageView2/0/w/60/h/20)](#Contact)
 
-
+# pytextclassifier
 pytextclassifier, Python Text Classifier. It can be applied to the fields of sentiment polarity analysis, text risk classification and so on,
 and it supports multiple classification algorithms and clustering algorithms.
 
@@ -22,7 +20,7 @@ and it supports multiple classification algorithms and clustering algorithms.
 - [Usage](#usage)
 - [Dataset](#Dataset)
 - [Contact](#Contact)
-- [Cite](#Cite)
+- [Citation](#Citation)
 - [Reference](#reference)
 
 # Feature
@@ -395,7 +393,7 @@ clustering plot image:
 <img src="http://42.193.145.218/github_data/xm_wechat_erweima.png" width="200" />
 
 
-# Cite
+# Citation
 
 如果你在研究中使用了pytextclassifier，请按如下格式引用：
 
