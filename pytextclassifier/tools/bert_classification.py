@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 @author:XuMing(xuming624@qq.com)
-@description: BERT classification, support 'bert', 'albert', 'roberta', 'xlnet' model
+@description: BERT classification, support 'bert', 'albert', 'roberta', 'xlnet'
 """
 import argparse
 import pandas as pd

@@ -4,5 +4,5 @@ scikit-learn
 pandas
 numpy
 transformers
-simpletransformers
+simpletransformers>=0.63.4
 torch
