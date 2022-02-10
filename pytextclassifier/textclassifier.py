@@ -8,10 +8,7 @@ import torch
 import json
 import pandas as pd
 from sklearn.model_selection import train_test_split
-import sys
-
-sys.path.append('..')
-from pytextclassifier.log import logger
+from loguru import logger
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -46,15 +43,19 @@ class TextClassifier:
         @param model_name: 模型名称，可以是 lr, random_forest, textcnn, fasttext, textrnn_att, bert
         @param model_dir: 模型保存路径，默认跟model_name同名
         """
+        model_name = model_name.lower()
+        if model_name not in ['lr', 'random_forest', 'decision_tree', 'knn', 'bayes', 'xgboost', 'svm',
+                              'fasttext', 'textcnn', 'textrnn_att', 'bert', 'albert', 'roberta', 'xlnet']:
+            raise ValueError('model_name not found.')
         self.model_name = model_name
         self.is_trained = False
         self.model_dir = model_dir if model_dir else model_name
-        self.model = None
         self.word_vocab_path = os.path.join(self.model_dir, 'word_vocab.json')
         self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab.json')
         self.save_model_path = os.path.join(self.model_dir, f'{model_name}_model.pth')
         logger.debug(f'model_name: {self.model_name}')
         logger.debug(f'device: {device}')
+        self.model = None
 
     def __repr__(self):
         return 'TextClassifier instance ({})'.format(self.model_name)
@@ -75,8 +76,9 @@ class TextClassifier:
         @param num_epochs: 训练多少轮
         @param learning_rate: 学习率
         @param require_improvement: 默认1000，若超过1000batch效果还没提升，则提前结束训练
-        @param hf_model_type: 默认bert，simpletransformers的model_type
-        @param hf_model_name: 默认bert-base-chinese，simpletransformers的model_name
+        @param hf_model_type: 默认bert，simpletransformers的model_type, support 'bert', 'albert', 'roberta', 'xlnet', 'xlm'
+        @param hf_model_name: 默认bert-base-chinese，simpletransformers的model_name, support 'bert-base-chinese',
+                            'bert-base-cased', 'bert-base-multilingual-cased' ...
         @return: None, and set self.is_trained = True
         """
         logger.debug(f'train model...')
@@ -174,8 +176,8 @@ class TextClassifier:
             result, model_outputs, wrong_predictions = model.eval_model(dev_df)
             logger.debug(f'evaluate, {result}, wrong_predictions: {wrong_predictions}')
             if wrong_predictions:
-                acc = (len(dev_df) - len(wrong_predictions[0])) / len(dev_df)
-                wrong_size = len(wrong_predictions[0])
+                acc = (len(dev_df) - len(wrong_predictions)) / len(dev_df)
+                wrong_size = len(wrong_predictions)
             else:
                 acc = 1.0
                 wrong_size = 0
@@ -235,13 +237,12 @@ class TextClassifier:
             dev_df, label_id_map = build_dataset(data_df, self.label_vocab_path)
             result, model_outputs, wrong_predictions = self.model.eval_model(dev_df)
             if wrong_predictions:
-                acc = (len(dev_df) - len(wrong_predictions[0])) / len(dev_df)
-                wrong_size = len(wrong_predictions[0])
+                acc = (len(dev_df) - len(wrong_predictions)) / len(dev_df)
+                wrong_size = len(wrong_predictions)
             else:
                 acc = 1.0
                 wrong_size = 0
-            logger.debug(f'evaluate, dev data size: {len(dev_df)}, wrong_predictions size: '
-                         f'{wrong_size}, acc :{acc}')
+            logger.debug(f'evaluate, dev data size: {len(dev_df)}, wrong_predictions size: {wrong_size}')
         else:
             raise ValueError('model_name not found.')
         logger.debug(f'evaluate model done, accuracy_score: {acc}')

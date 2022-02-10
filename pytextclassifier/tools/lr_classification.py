@@ -18,10 +18,7 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 import jieba
-import sys
-
-sys.path.append('../..')
-from pytextclassifier.log import logger
+from loguru import logger
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
 default_stopwords_path = os.path.join(pwd_path, '../data/stopwords.txt')

@@ -5,7 +5,7 @@
 """
 from setuptools import setup, find_packages
 
-__version__ = "1.1.3"
+__version__ = '1.1.4'
 
 with open('README.md', 'r', encoding='utf-8') as f:
     readme = f.read()
@@ -22,18 +22,16 @@ setup(
     author='XuMing',
     author_email='xuming624@qq.com',
     url='https://github.com/shibing624/pytextclassifier',
-    license="Apache 2.0",
+    license='Apache 2.0',
     classifiers=[
-        'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
         'Operating System :: OS Independent',
-        'Natural Language :: Chinese (Simplified)',
-        'Natural Language :: Chinese (Traditional)',
+        'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Topic :: Text Processing',
-        'Topic :: Text Processing :: Indexing',
         'Topic :: Text Processing :: Linguistic',
+        'Topic :: Scientific/Engineering :: Artificial Intelligence',
     ],
     keywords='pytextclassifier,textclassifier,classifier,textclassification',
     install_requires=reqs.strip().split('\n'),

@@ -8,10 +8,10 @@ from codecs import open
 import pickle
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
+from loguru import logger
 import sys
 
 sys.path.append('..')
-from pytextclassifier.log import logger
 from pytextclassifier.tokenizer import Tokenizer
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))

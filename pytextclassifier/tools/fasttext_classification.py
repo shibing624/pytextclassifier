@@ -16,10 +16,7 @@ from datetime import timedelta
 from sklearn.model_selection import train_test_split
 import json
 from tqdm import tqdm
-import sys
-
-sys.path.append('../..')
-from pytextclassifier.log import logger
+from loguru import logger
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

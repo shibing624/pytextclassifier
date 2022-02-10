@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 @author:XuMing(xuming624@qq.com)
-@description: 
+@description: BERT classification, support 'bert', 'albert', 'roberta', 'xlnet' model
 """
 import argparse
 import pandas as pd
@@ -11,10 +11,7 @@ import json
 import torch
 from sklearn.model_selection import train_test_split
 from simpletransformers.classification import ClassificationModel
-import sys
-
-sys.path.append('../..')
-from pytextclassifier.log import logger
+from loguru import logger
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -57,6 +54,17 @@ class BertClassificationModel(ClassificationModel):
                  model_dir='bert',
                  use_cuda=False
                  ):
+        """
+        Init classification model
+        @param model_type: support 'bert', 'albert', 'roberta', 'xlnet'
+        @param model_name:
+        @param num_classes:
+        @param num_epochs:
+        @param batch_size:
+        @param max_seq_length:
+        @param model_dir:
+        @param use_cuda:
+        """
         train_args = {
             "reprocess_input_data": True,
             "overwrite_output_dir": True,

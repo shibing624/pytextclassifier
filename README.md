@@ -82,7 +82,7 @@ sys.path.append('..')
 from pytextclassifier import TextClassifier
 
 if __name__ == '__main__':
-    m = TextClassifier()
+    m = TextClassifier(model_name='lr', model_dir='lr')
     # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     print(m)
     data = [
@@ -99,8 +99,8 @@ if __name__ == '__main__':
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
     del m
 
-    new_m = TextClassifier()
-    new_m.load_model()
+    new_m = TextClassifier(model_name='lr', model_dir='lr')
+    new_m.load_model() # load model from model_dir
     predict_label, predict_proba = new_m.predict([
         'Abbott government spends $8 million on higher education media blitz'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
@@ -133,7 +133,7 @@ sys.path.append('..')
 from pytextclassifier import TextClassifier
 
 if __name__ == '__main__':
-    m = TextClassifier()
+    m = TextClassifier(model_name='lr', model_dir='lr')
     # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
@@ -149,7 +149,7 @@ if __name__ == '__main__':
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
     del m
 
-    new_m = TextClassifier()
+    new_m = TextClassifier(model_name='lr', model_dir='lr')
     new_m.load_model()
     predict_label, predict_proba = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                                                   '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
@@ -162,9 +162,9 @@ if __name__ == '__main__':
     acc_score = new_m.evaluate(test_data)
     print(f'acc_score: {acc_score}')  # 1.0
 
-    #### load data from file
+    #### train model with 10w data
     print('-' * 42)
-    m = TextClassifier()
+    m = TextClassifier(model_name='lr', model_dir='lr')
     data_file = 'thucnews_train_10w.txt'
     m.train(data_file)
 
@@ -218,7 +218,9 @@ output:
 
 ### Deep Classification model
 
-工具支持多种常用深度分类模型，包括Fasttext、TextCNN、TextRNN_Att、BERT分类模型。
+本项目支持多种常用深度分类模型，包括Fasttext、TextCNN、TextRNN_Att、BERT分类模型。
+
+- Fasttext 模型
 
 训练和预测`Fasttext`模型示例[examples/fasttext_classification_demo.py](examples/fasttext_classification_demo.py)
 
@@ -229,8 +231,7 @@ sys.path.append('..')
 from pytextclassifier import TextClassifier
 
 if __name__ == '__main__':
-    model_name = 'fasttext'
-    m = TextClassifier(model_name)
+    m = TextClassifier(model_name='fasttext', model_dir='fasttext')
     # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
@@ -246,7 +247,7 @@ if __name__ == '__main__':
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
     del m
 
-    new_m = TextClassifier(model_name)
+    new_m = TextClassifier(model_name='fasttext', model_dir='fasttext')
     new_m.load_model()
     predict_label, predict_proba = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                                                   '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
@@ -260,46 +261,71 @@ if __name__ == '__main__':
     print(f'acc_score: {acc_score}')
 ```
 
-训练样本也支持文件加载，示例[examples/data_file_classfication_demo.py](examples/data_file_classfication_demo.py)
+- BERT 类模型
+
+训练和预测`BERT`模型，示例[examples/bert_classification_zh_demo.py](examples/bert_classification_zh_demo.py)
 
 ```python
 import sys
 
 sys.path.append('..')
-from pytextclassifier import TextClassifier, load_data
+from pytextclassifier import TextClassifier
 
 if __name__ == '__main__':
-    model_name = 'fasttext'  # or lr, textcnn, bert
-    m = TextClassifier(model_name)
+    m = TextClassifier(model_name='bert', model_dir='bert-chinese')
     # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
+    data = [
+        ('education', '名师指导托福语法技巧：名词的复数形式'),
+        ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
+        ('sports', '图文：法网孟菲尔斯苦战进16强 孟菲尔斯怒吼'),
+        ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
+        ('sports', '米兰客场8战不败国米10年连胜')
+    ]
+    m.train(data, num_epochs=3, hf_model_type='bert', hf_model_name='bert-base-chinese')
+    # hf_model_type: support 'bert', 'albert', 'roberta', 'xlnet'
+    # hf_model_name: support 'bert-base-chinese', 'bert-base-cased', 'bert-base-multilingual-cased' ...
+    print(m)
+    predict_label, predict_proba = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
+                                              '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
+    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
+    del m
+
+    new_m = TextClassifier(model_name='bert', model_dir='bert-chinese')
+    new_m.load_model()
+    predict_label, predict_proba = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
+                                                  '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
+    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
+
+    test_data = [
+        ('education', '福建春季公务员考试报名18日截止 2月6日考试'),
+        ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
+    ]
+    acc_score = new_m.evaluate(test_data)
+    print(f'acc_score: {acc_score}')  # 1.0
+
+    #### train model with 10w data file
+    import shutil
+
+    shutil.rmtree('bert-chinese')
+    print('-' * 42)
+    m = TextClassifier(model_name='bert', model_dir='bert-chinese')
     data_file = 'thucnews_train_10w.txt'
-    m.train(data_file)
+    m.train(data_file, num_epochs=2)  # fine tune 2 轮
 
     predict_label, predict_proba = m.predict(
         ['顺义北京苏活88平米起精装房在售',
          '美EB-5项目“15日快速移民”将推迟'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
-    del m
-
-    new_m = TextClassifier(model_name)
-    new_m.load_model()
-    predict_label, predict_proba = new_m.predict(
-        ['顺义北京苏活88平米起精装房在售',
-         '美EB-5项目“15日快速移民”将推迟'])
-    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
-    x, y, df = load_data(data_file)
-    test_data = df[:100]
-    acc_score = new_m.evaluate(test_data)
-    print(f'acc_score: {acc_score}')
 ```
 
 
-### 模型效果
+### Dataset
 
 1. THUCNews中文文本数据集（1.56GB）：官方[下载地址](http://thuctc.thunlp.org/)。
 2. 抽样的THUCNews中文文本10分类数据集（6MB），地址：[examples/thucnews_train_10w.txt](examples/thucnews_train_10w.txt)。
 
-各模型在THUCNews中文文本10分类数据集评估，模型效果如下：
+### Evaluate
+各模型在THUCNews中文文本10分类数据集（6MB）的测试集评估，模型效果如下：
 
 模型|acc|说明
 --|--|--
@@ -409,7 +435,7 @@ clustering plot image:
 # License
 
 
-授权协议为 [The Apache License 2.0](LICENSE)，可免费用做商业用途。请在产品说明中附加pytextclassifier的链接和授权协议。
+授权协议为 [The Apache License 2.0](LICENSE)，可免费用做商业用途。请在产品说明中附加**pytextclassifier**的链接和授权协议。
 
 
 # Contribute
