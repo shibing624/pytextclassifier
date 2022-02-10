@@ -31,7 +31,7 @@ if __name__ == '__main__':
                        'Middle East and Asia boost investment in top level sports'])
     print(r)
 
-    ########### load chinese train data from file
+    ########### load chinese train data from 10w data file
     from sklearn.feature_extraction.text import TfidfVectorizer
 
     vec = TfidfVectorizer(ngram_range=(1, 2))

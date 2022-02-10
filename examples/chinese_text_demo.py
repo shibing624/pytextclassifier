@@ -9,7 +9,7 @@ sys.path.append('..')
 from pytextclassifier import TextClassifier
 
 if __name__ == '__main__':
-    m = TextClassifier()
+    m = TextClassifier(model_name='lr', model_dir='lr')
     # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
@@ -25,8 +25,8 @@ if __name__ == '__main__':
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
     del m
 
-    new_m = TextClassifier()
-    new_m.load_model()
+    new_m = TextClassifier(model_name='lr', model_dir='lr')
+    new_m.load_model() # load model from model_dir
     predict_label, predict_proba = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                                                   '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
@@ -38,9 +38,9 @@ if __name__ == '__main__':
     acc_score = new_m.evaluate(test_data)
     print(f'acc_score: {acc_score}')  # 1.0
 
-    #### load data from file
+    #### train model with 10w data
     print('-' * 42)
-    m = TextClassifier()
+    m = TextClassifier(model_name='lr', model_dir='lr')
     data_file = 'thucnews_train_10w.txt'
     m.train(data_file)
 

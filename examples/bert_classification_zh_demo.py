@@ -9,8 +9,7 @@ sys.path.append('..')
 from pytextclassifier import TextClassifier
 
 if __name__ == '__main__':
-    model_name = 'bert'
-    m = TextClassifier(model_name)
+    m = TextClassifier(model_name='bert', model_dir='bert-chinese')
     # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
@@ -19,14 +18,16 @@ if __name__ == '__main__':
         ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
         ('sports', '米兰客场8战不败国米10年连胜')
     ]
-    m.train(data, num_epochs=3)
+    m.train(data, num_epochs=3, hf_model_type='bert', hf_model_name='bert-base-chinese')
+    # hf_model_type: support 'bert', 'albert', 'roberta', 'xlnet'
+    # hf_model_name: support 'bert-base-chinese', 'bert-base-cased', 'bert-base-multilingual-cased' ...
     print(m)
     predict_label, predict_proba = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                                               '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
     del m
 
-    new_m = TextClassifier(model_name)
+    new_m = TextClassifier(model_name='bert', model_dir='bert-chinese')
     new_m.load_model()
     predict_label, predict_proba = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                                                   '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
@@ -38,12 +39,13 @@ if __name__ == '__main__':
     ]
     acc_score = new_m.evaluate(test_data)
     print(f'acc_score: {acc_score}')  # 1.0
-    import shutil
-    shutil.rmtree(model_name)
 
-    #### load data from file
+    #### train model with 10w data file
+    import shutil
+
+    shutil.rmtree('bert-chinese')
     print('-' * 42)
-    m = TextClassifier(model_name)
+    m = TextClassifier(model_name='bert', model_dir='bert-chinese')
     data_file = 'thucnews_train_10w.txt'
     m.train(data_file, num_epochs=2)  # fine tune 2 轮
 

@@ -9,8 +9,7 @@ sys.path.append('..')
 from pytextclassifier import TextClassifier
 
 if __name__ == '__main__':
-    model_name = 'random_forest'
-    m = TextClassifier(model_name)
+    m = TextClassifier(model_name='random_forest', model_dir='random_forest')
     # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     print(m)
     data = [
@@ -27,7 +26,7 @@ if __name__ == '__main__':
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
     del m
 
-    new_m = TextClassifier(model_name)
+    new_m = TextClassifier(model_name='random_forest', model_dir='random_forest')
     new_m.load_model()
     predict_label, predict_proba = new_m.predict([
         'Abbott government spends $8 million on higher education media blitz'])

@@ -9,11 +9,10 @@ sys.path.append('..')
 from pytextclassifier import TextClassifier, load_data
 
 if __name__ == '__main__':
-    model_name = 'fasttext'  # or lr, textcnn, bert
-    m = TextClassifier(model_name)
+    m = TextClassifier(model_name='fasttext', model_dir='fasttext')
     # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     data_file = 'thucnews_train_10w.txt'
-    m.train(data_file)
+    m.train(data_file, names=('labels', 'text'), num_epochs=3)
 
     predict_label, predict_proba = m.predict(
         ['顺义北京苏活88平米起精装房在售',
@@ -21,8 +20,8 @@ if __name__ == '__main__':
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
     del m
 
-    new_m = TextClassifier(model_name)
-    new_m.load_model()
+    new_m = TextClassifier(model_name='fasttext', model_dir='fasttext')
+    new_m.load_model() # load model from model_dir
     predict_label, predict_proba = new_m.predict(
         ['顺义北京苏活88平米起精装房在售',
          '美EB-5项目“15日快速移民”将推迟'])

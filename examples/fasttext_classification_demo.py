@@ -9,8 +9,7 @@ sys.path.append('..')
 from pytextclassifier import TextClassifier
 
 if __name__ == '__main__':
-    model_name = 'fasttext'
-    m = TextClassifier(model_name)
+    m = TextClassifier(model_name='fasttext', model_dir='fasttext')
     # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
@@ -26,7 +25,7 @@ if __name__ == '__main__':
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
     del m
 
-    new_m = TextClassifier(model_name)
+    new_m = TextClassifier(model_name='fasttext', model_dir='fasttext')
     new_m.load_model()
     predict_label, predict_proba = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                                                   '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
