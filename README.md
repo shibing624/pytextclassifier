@@ -424,13 +424,14 @@ clustering plot image:
 如果你在研究中使用了pytextclassifier，请按如下格式引用：
 
 ```latex
-@software{pytextclassifier,
-  author = {Xu Ming},
-  title = {pytextclassifier: A Tool for Text Classifier},
-  year = {2021},
-  url = {https://github.com/shibing624/pytextclassifier},
+@misc{pytextclassifier,
+  title={pytextclassifier: Text Classifier Tool},
+  author={Ming Xu},
+  howpublished={https://github.com/shibing624/pytextclassifier},
+  year={2021}
 }
 ```
+
 
 # License
 
