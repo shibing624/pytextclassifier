@@ -423,6 +423,21 @@ clustering plot image:
 
 如果你在研究中使用了pytextclassifier，请按如下格式引用：
 
+APA:
+```latex
+Xu, M. Addressparser: Chinese address parser toolkit (Version 0.2.2) [Computer software]. https://github.com/shibing624/addressparser
+```
+
+BibTeX:
+```latex
+@software{Xu_Addressparser_Chinese_address,
+author = {Xu, Ming},
+title = {{Addressparser: Chinese address parser toolkit}},
+url = {https://github.com/shibing624/addressparser},
+version = {0.2.2}
+}
+```
+
 ```latex
 @misc{pytextclassifier,
   title={pytextclassifier: Text Classifier Tool},
