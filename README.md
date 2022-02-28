@@ -426,25 +426,16 @@ clustering plot image:
 
 APA:
 ```latex
-Xu, M. Addressparser: Chinese address parser toolkit (Version 0.2.2) [Computer software]. https://github.com/shibing624/addressparser
+Xu, M. Pytextclassifier: Text classifier toolkit for NLP (Version 1.1.4) [Computer software]. https://github.com/shibing624/pytextclassifier
 ```
 
 BibTeX:
 ```latex
-@software{Xu_Addressparser_Chinese_address,
+@software{Xu_Pytextclassifier_Text_classifier,
 author = {Xu, Ming},
-title = {{Addressparser: Chinese address parser toolkit}},
-url = {https://github.com/shibing624/addressparser},
-version = {0.2.2}
-}
-```
-
-```latex
-@misc{pytextclassifier,
-  title={pytextclassifier: Text Classifier Tool},
-  author={Ming Xu},
-  howpublished={https://github.com/shibing624/pytextclassifier},
-  year={2021}
+title = {{Pytextclassifier: Text classifier toolkit for NLP}},
+url = {https://github.com/shibing624/pytextclassifier},
+version = {1.1.4}
 }
 ```
 
