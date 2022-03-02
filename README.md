@@ -355,7 +355,7 @@ pytextclassifier/tools
 
 直接在终端调用fasttext模型训练：
 ```bash
-python -m pytextclassifier.tools.fasttext_classification
+python -m pytextclassifier.tools.fasttext_classification -h
 ```
 
 ## Text Cluster
@@ -433,7 +433,7 @@ BibTeX:
 ```latex
 @software{Xu_Pytextclassifier_Text_classifier,
 author = {Xu, Ming},
-title = {{Pytextclassifier: Text classifier toolkit for NLP}},
+title = {Pytextclassifier: Text classifier toolkit for NLP},
 url = {https://github.com/shibing624/pytextclassifier},
 version = {1.1.4}
 }
