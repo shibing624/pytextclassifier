@@ -22,6 +22,7 @@ class BaseTestCase(unittest.TestCase):
             ('sports', 'Summit Series look launches HBO Canada sports doc series: Mudhar')
         ]
         m.train(data)
+        m.load_model()
         r, _ = m.predict(['Abbott government spends $8 million on higher education media blitz',
                           'Middle East and Asia boost investment in top level sports'])
         print(r)

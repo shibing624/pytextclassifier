@@ -81,7 +81,7 @@ class TextCluster(object):
         self.stopwords = set(load_list(stopwords_path)) if stopwords_path else set(load_list(default_stopwords_path))
         self.is_trained = False
 
-    def __repr__(self):
+    def __str__(self):
         return 'TextCluster instance ({}, {}, {})'.format(self.model, self.tokenizer, self.vectorizer)
 
     @staticmethod

@@ -230,8 +230,9 @@ def train(model, train_iter, dev_iter, num_epochs=10, learning_rate=1e-3, requir
         # scheduler.step() # 学习率衰减
         for i, (trains, labels) in enumerate(train_iter):
             outputs = model(trains)
-            model.zero_grad()
             loss = F.cross_entropy(outputs, labels)
+            # compute gradient and do SGD step
+            optimizer.zero_grad()
             loss.backward()
             optimizer.step()
             if total_batch % 100 == 0:
@@ -265,6 +266,8 @@ def train(model, train_iter, dev_iter, num_epochs=10, learning_rate=1e-3, requir
 
 def load_model(model, model_path):
     model.load_state_dict(torch.load(model_path, map_location=device))
+    model.to(device)
+    model.eval()
     return model
 
 

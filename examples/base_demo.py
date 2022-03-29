@@ -18,16 +18,11 @@ if __name__ == '__main__':
         ('sports', 'Middle East and Asia boost investment in top level sports'),
         ('sports', 'Summit Series look launches HBO Canada sports doc series: Mudhar')
     ]
+    # tarin and save best model
     m.train(data)
-
-    predict_label, predict_proba = m.predict(
-        ['Abbott government spends $8 million on higher education media blitz',
-         'Middle East and Asia boost investment in top level sports'])
-    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
-    del m
-
     new_m = TextClassifier(model_name='lr', model_dir='lr')
-    new_m.load_model()  # model load from model_dir
+    # load best model from model_dir
+    new_m.load_model()
     predict_label, predict_proba = new_m.predict([
         'Abbott government spends $8 million on higher education media blitz'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')

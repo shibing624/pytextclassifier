@@ -57,7 +57,7 @@ class TextClassifier:
         logger.debug(f'device: {device}')
         self.model = None
 
-    def __repr__(self):
+    def __str__(self):
         return 'TextClassifier instance ({})'.format(self.model_name)
 
     def train(self, data_list_or_filepath, header=None, names=('labels', 'text'), delimiter='\t', vectorizer=None,
@@ -86,7 +86,7 @@ class TextClassifier:
             os.makedirs(self.model_dir, exist_ok=True)
         # load data
         X, y, data_df = load_data(data_list_or_filepath, header=header, names=names, delimiter=delimiter)
-        logger.debug(data_df.head())
+        logger.debug(data_df.head(10))
         if self.model_name in ['lr', 'random_forest', 'decision_tree', 'knn', 'bayes', 'xgboost', 'svm']:
             from pytextclassifier.tools.lr_classification import train, evaluate, get_model
             model = get_model(self.model_name)
@@ -102,8 +102,8 @@ class TextClassifier:
         elif self.model_name == 'fasttext':
             from pytextclassifier.tools.fasttext_classification import (
                 build_dataset, build_iterator, FastTextModel, init_network, train)
-            data, word_id_map, label_id_map = build_dataset(X, y, self.word_vocab_path,
-                                                            self.label_vocab_path, pad_size=pad_size)
+            data, word_id_map, label_id_map = build_dataset(X, y, self.word_vocab_path, self.label_vocab_path,
+                                                            pad_size=pad_size, override=True)
             train_data, dev_data = train_test_split(data, test_size=test_size, random_state=1)
             train_iter = build_iterator(train_data, batch_size=batch_size, device=device)
             dev_iter = build_iterator(dev_data, batch_size=batch_size, device=device)
@@ -120,8 +120,8 @@ class TextClassifier:
         elif self.model_name == 'textcnn':
             from pytextclassifier.tools.textcnn_classification import (
                 build_dataset, build_iterator, TextCNNModel, init_network, train)
-            data, word_id_map, label_id_map = build_dataset(X, y, self.word_vocab_path,
-                                                            self.label_vocab_path, pad_size=pad_size)
+            data, word_id_map, label_id_map = build_dataset(X, y, self.word_vocab_path, self.label_vocab_path,
+                                                            pad_size=pad_size)
             train_data, dev_data = train_test_split(data, test_size=test_size, random_state=1)
             train_iter = build_iterator(train_data, batch_size=batch_size, device=device)
             dev_iter = build_iterator(dev_data, batch_size=batch_size, device=device)
@@ -293,17 +293,18 @@ class TextClassifier:
             from pytextclassifier.tools.lr_classification import load_model
             self.model, self.vectorizer = load_model(model_dir=self.model_dir)
         elif self.model_name == 'fasttext':
-            from pytextclassifier.tools.fasttext_classification import load_model, FastTextModel
+            from pytextclassifier.tools.fasttext_classification import load_model, FastTextModel, init_network
             word_id_map = json.load(open(self.word_vocab_path, 'r', encoding='utf-8'))
             label_id_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
             model = FastTextModel(len(word_id_map), len(label_id_map)).to(device)
             self.model = load_model(model, self.save_model_path)
         elif self.model_name == 'textcnn':
-            from pytextclassifier.tools.textcnn_classification import load_model, TextCNNModel
+            from pytextclassifier.tools.textcnn_classification import load_model, TextCNNModel, init_network
             word_id_map = json.load(open(self.word_vocab_path, 'r', encoding='utf-8'))
             label_id_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
             model = TextCNNModel(len(word_id_map), len(label_id_map)).to(device)
             self.model = load_model(model, self.save_model_path)
+            logger.debug(self.model.parameters)
         elif self.model_name == 'textrnn_att':
             from pytextclassifier.tools.textrnn_att_classification import load_model, TextRNNAttModel
             word_id_map = json.load(open(self.word_vocab_path, 'r', encoding='utf-8'))

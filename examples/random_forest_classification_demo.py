@@ -19,13 +19,6 @@ if __name__ == '__main__':
         ('sports', 'Summit Series look launches HBO Canada sports doc series: Mudhar')
     ]
     m.train(data)
-
-    predict_label, predict_proba = m.predict(
-        ['Abbott government spends $8 million on higher education media blitz',
-         'Middle East and Asia boost investment in top level sports'])
-    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
-    del m
-
     new_m = TextClassifier(model_name='random_forest', model_dir='random_forest')
     new_m.load_model()
     predict_label, predict_proba = new_m.predict([

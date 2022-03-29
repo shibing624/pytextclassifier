@@ -19,13 +19,8 @@ if __name__ == '__main__':
     ]
     m.train(data, num_epochs=2, hf_model_type='bert', hf_model_name='bert-base-uncased')
     print(m)
-    predict_label, predict_proba = m.predict(
-        ['Abbott government spends $8 million on higher education media blitz',
-         'Middle East and Asia boost investment in top level sports'])
-    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
-    del m
-
     new_m = TextClassifier(model_name='bert', model_dir='bert-english')
+    # load trained model
     new_m.load_model()
     predict_label, predict_proba = new_m.predict(['Abbott government spends $8 million on higher education media blitz',
                                                   'Middle East and Asia boost investment in top level sports'])

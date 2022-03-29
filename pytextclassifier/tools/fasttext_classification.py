@@ -59,20 +59,22 @@ def build_vocab(contents, tokenizer, max_size, min_freq):
     return vocab_dic
 
 
-def build_dataset(X, y, vocab_path, label_vocab_path, pad_size=128):
-    if os.path.exists(vocab_path):
+def build_dataset(X, y, vocab_path, label_vocab_path, pad_size=128, override=False):
+    if os.path.exists(vocab_path) and not override:
         word_id_map = json.load(open(vocab_path, 'r', encoding='utf-8'))
     else:
         word_id_map = build_vocab(X, tokenizer=tokenizer, max_size=MAX_VOCAB_SIZE, min_freq=1)
         json.dump(word_id_map, open(vocab_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=4)
+        logger.debug('save vocab_path: {}'.format(vocab_path))
     logger.debug(f"word vocab size: {len(word_id_map)}, word_vocab_path: {vocab_path}")
 
-    if os.path.exists(label_vocab_path):
+    if os.path.exists(label_vocab_path) and not override:
         label_id_map = json.load(open(label_vocab_path, 'r', encoding='utf-8'))
     else:
         id_label_map = {id: v for id, v in enumerate(set(y.tolist()))}
         label_id_map = {v: k for k, v in id_label_map.items()}
         json.dump(label_id_map, open(label_vocab_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=4)
+        logger.debug('save label_vocab_path: {}'.format(label_vocab_path))
     logger.debug(f"label vocab size: {len(label_id_map)}, label_vocab_path: {label_vocab_path}")
 
     def biGramHash(sequence, t, buckets):
@@ -240,20 +242,21 @@ def evaluate(model, data_iter):
 def train(model, train_iter, dev_iter, num_epochs=10, learning_rate=1e-3, require_improvement=1000, save_path=''):
     # train
     start_time = time.time()
-    model.train()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     total_batch = 0  # 记录进行到多少batch
-    dev_best_loss = float('inf')
+    dev_best_loss = 1e10
     last_improve = 0  # 记录上次验证集loss下降的batch数
     flag = False  # 记录是否很久没有效果提升
     for epoch in range(num_epochs):
         logger.debug('Epoch [{}/{}]'.format(epoch + 1, num_epochs))
         # scheduler.step() # 学习率衰减
         for i, (trains, labels) in enumerate(train_iter):
+            model.train()
             outputs = model(trains)
-            model.zero_grad()
             loss = F.cross_entropy(outputs, labels)
+            # compute gradient and do SGD step
+            optimizer.zero_grad()
             loss.backward()
             optimizer.step()
             if total_batch % 100 == 0:
@@ -264,7 +267,7 @@ def train(model, train_iter, dev_iter, num_epochs=10, learning_rate=1e-3, requir
                 dev_acc, dev_loss = evaluate(model, dev_iter)
                 if dev_loss < dev_best_loss:
                     dev_best_loss = dev_loss
-                    model.eval()
+                    # model.eval()
                     torch.save(model.state_dict(), save_path)
                     logger.debug(f'Saved model: {save_path}')
                     improve = '*'
@@ -287,6 +290,8 @@ def train(model, train_iter, dev_iter, num_epochs=10, learning_rate=1e-3, requir
 
 def load_model(model, model_path):
     model.load_state_dict(torch.load(model_path, map_location=device))
+    model.to(device)
+    model.eval()
     return model
 
 
@@ -393,7 +398,7 @@ if __name__ == '__main__':
     vocab_size = len(word_id_map)
     num_classes = len(set(y.tolist()))
     model = FastTextModel(vocab_size, num_classes).to(device)
-    init_network(model)
+    # init_network(model)
     print(model.parameters)
     # train model
     train(model, train_iter, dev_iter, num_epochs, learning_rate, require_improvement, save_model_path)
