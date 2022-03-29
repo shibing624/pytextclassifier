@@ -315,7 +315,7 @@ def predict(model, data_list, word_id_map, label_id_map):
 def get_args():
     parser = argparse.ArgumentParser(description='Text Classification')
     parser.add_argument('--model_dir', default='textcnn', type=str, help='save model dir')
-    parser.add_argument('--data_path', default=os.path.join(pwd_path, '../../examples/thucnews_train_10w.txt'),
+    parser.add_argument('--data_path', default=os.path.join(pwd_path, '../../examples/thucnews_train_1w.txt'),
                         type=str, help='sample data file path')
     args = parser.parse_args()
     return args

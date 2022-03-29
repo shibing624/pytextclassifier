@@ -170,7 +170,7 @@ def load_model(model_dir=''):
 def get_args():
     parser = argparse.ArgumentParser(description='Text Classification')
     parser.add_argument('--model_dir', default='lr', type=str, help='save model dir')
-    parser.add_argument('--data_path', default=os.path.join(pwd_path, '../../examples/thucnews_train_10w.txt'),
+    parser.add_argument('--data_path', default=os.path.join(pwd_path, '../../examples/thucnews_train_1w.txt'),
                         type=str, help='sample data file path')
     args = parser.parse_args()
     return args

@@ -41,7 +41,6 @@ setup(
     packages=find_packages(exclude=['tests']),
     package_dir={'pytextclassifier': 'pytextclassifier'},
     package_data={
-        'pytextclassifier': ['*.*', 'data/*', 'tools/*', '../examples/thucnews_train_1w.txt'],
+        'pytextclassifier': ['*.*', 'data/*', 'tools/*.py', '../examples/thucnews_train_1w.txt'],
     },
-    test_suite='tests',
 )
