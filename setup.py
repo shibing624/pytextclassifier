@@ -5,13 +5,10 @@
 """
 from setuptools import setup, find_packages
 
-__version__ = '1.1.4'
+__version__ = '1.1.5'
 
 with open('README.md', 'r', encoding='utf-8') as f:
     readme = f.read()
-
-with open('requirements.txt', 'r', encoding='utf-8') as f:
-    reqs = f.read()
 
 setup(
     name='pytextclassifier',
@@ -34,12 +31,17 @@ setup(
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
     ],
     keywords='pytextclassifier,textclassifier,classifier,textclassification',
-    install_requires=reqs.strip().split('\n'),
+    install_requires=[
+        "loguru",
+        "jieba",
+        "scikit-learn",
+        "pandas",
+        "numpy",
+    ],
     packages=find_packages(exclude=['tests']),
     package_dir={'pytextclassifier': 'pytextclassifier'},
     package_data={
-        'pytextclassifier': ['*.*', '../LICENSE', '../README.*', '../*.txt', 'data/*',
-                             'tools/*', '../examples/thucnews_train_10w.txt'],
+        'pytextclassifier': ['*.*', 'data/*', 'tools/*', '../examples/thucnews_train_10w.txt'],
     },
     test_suite='tests',
 )

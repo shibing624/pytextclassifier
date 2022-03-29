@@ -10,8 +10,12 @@ import numpy as np
 import json
 import torch
 from sklearn.model_selection import train_test_split
-from simpletransformers.classification import ClassificationModel
 from loguru import logger
+
+try:
+    from simpletransformers.classification import ClassificationModel
+except ImportError:
+    raise ImportError("Please install simpletransformers with `pip install simpletransformers`")
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
