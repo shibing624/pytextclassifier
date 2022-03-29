@@ -37,13 +37,13 @@ if __name__ == '__main__':
     acc_score = new_m.evaluate(test_data)
     print(f'acc_score: {acc_score}')  # 1.0
 
-    #### train model with 10w data file
+    #### train model with 1w data file
     import shutil
 
     shutil.rmtree('bert-chinese')
     print('-' * 42)
     m = TextClassifier(model_name='bert', model_dir='bert-chinese')
-    data_file = 'thucnews_train_10w.txt'
+    data_file = 'thucnews_train_1w.txt'
     m.train(data_file, num_epochs=2)  # fine tune 2 轮
 
     predict_label, predict_proba = m.predict(

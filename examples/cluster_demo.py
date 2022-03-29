@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     vec = TfidfVectorizer(ngram_range=(1, 2))
     tcluster = TextCluster(vectorizer=vec, n_clusters=10)
-    data = tcluster.load_file_data('thucnews_train_10w.txt', sep='\t', use_col=1)
+    data = tcluster.load_file_data('thucnews_train_1w.txt', sep='\t', use_col=1)
     X_vec, labels = tcluster.train(data[:5000])
     tcluster.show_clusters(X_vec, labels, 'cluster_train_seg_samples.png')
     r = tcluster.predict(data[:30])

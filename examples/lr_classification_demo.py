@@ -35,10 +35,10 @@ if __name__ == '__main__':
     acc_score = new_m.evaluate(test_data)
     print(f'acc_score: {acc_score}')  # 1.0
 
-    #### train model with 1k data
+    #### train model with 1w data
     print('-' * 42)
     m = TextClassifier(model_name='lr', model_dir='lr')
-    data_file = 'thucnews_train_10w.txt'
+    data_file = 'thucnews_train_1w.txt'
     m.train(data_file)
 
     predict_label, predict_proba = m.predict(

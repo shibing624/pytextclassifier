@@ -11,7 +11,7 @@ from pytextclassifier import TextClassifier, load_data
 if __name__ == '__main__':
     m = TextClassifier(model_name='fasttext', model_dir='fasttext')
     # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
-    data_file = 'thucnews_train_1k.txt'
+    data_file = 'thucnews_train_1w.txt'
     m.train(data_file, names=('labels', 'text'), num_epochs=3)
     new_m = TextClassifier(model_name='fasttext', model_dir='fasttext')
     new_m.load_model() # load best model from model_dir

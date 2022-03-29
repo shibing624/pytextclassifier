@@ -156,10 +156,10 @@ if __name__ == '__main__':
     acc_score = new_m.evaluate(test_data)
     print(f'acc_score: {acc_score}')  # 1.0
 
-    #### train model with 1k data
+    #### train model with 1w data
     print('-' * 42)
     m = TextClassifier(model_name='lr', model_dir='lr')
-    data_file = 'thucnews_train_10w.txt'
+    data_file = 'thucnews_train_1w.txt'
     m.train(data_file)
 
     predict_label, predict_proba = m.predict(
@@ -175,7 +175,7 @@ TextClassifier instance (lr)
 predict_label: ['education' 'sports'], predict_proba: [0.5, 0.598941806741534]
 acc_score: 1.0
 ------------------------------------------
-predict_label: ['realty' 'education'], predict_proba: [0.9746881260530019, 0.5150055067574651]
+predict_label: ['realty' 'education'], predict_proba: [0.7302956923617372, 0.2565005445322923]
 ```
 
 ### Visual Feature Importance
@@ -288,13 +288,13 @@ if __name__ == '__main__':
     acc_score = new_m.evaluate(test_data)
     print(f'acc_score: {acc_score}')  # 1.0
 
-    #### train model with 10w data file
+    #### train model with 1w data file
     import shutil
 
     shutil.rmtree('bert-chinese')
     print('-' * 42)
     m = TextClassifier(model_name='bert', model_dir='bert-chinese')
-    data_file = 'thucnews_train_10w.txt'
+    data_file = 'thucnews_train_1w.txt'
     m.train(data_file, num_epochs=2)  # fine tune 2 轮
 
     predict_label, predict_proba = m.predict(
@@ -345,7 +345,7 @@ python -m pytextclassifier.tools.fasttext_classification -h
 ## Text Cluster
 
 
-Text clustering, for example [cluster_demo.py](examples/cluster_demo.py)
+Text clustering, for example [examples/cluster_demo.py](examples/cluster_demo.py)
 ```python
 from pytextclassifier.textcluster import TextCluster
 
@@ -372,7 +372,7 @@ if __name__ == '__main__':
 
     vec = TfidfVectorizer(ngram_range=(1, 2))
     tcluster = TextCluster(vectorizer=vec, n_clusters=10)
-    data = tcluster.load_file_data('thucnews_train_10w.txt')
+    data = tcluster.load_file_data('thucnews_train_1w.txt')
     X_vec, labels = tcluster.train(data[:5000])
     tcluster.show_clusters(X_vec, labels, 'cluster_train_seg_samples.png')
     r = tcluster.predict(data[:30])

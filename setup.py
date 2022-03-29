@@ -5,7 +5,7 @@
 """
 from setuptools import setup, find_packages
 
-__version__ = '1.1.5'
+__version__ = '1.1.6'
 
 with open('README.md', 'r', encoding='utf-8') as f:
     readme = f.read()
@@ -41,7 +41,7 @@ setup(
     packages=find_packages(exclude=['tests']),
     package_dir={'pytextclassifier': 'pytextclassifier'},
     package_data={
-        'pytextclassifier': ['*.*', 'data/*', 'tools/*', '../examples/thucnews_train_10w.txt'],
+        'pytextclassifier': ['*.*', 'data/*', 'tools/*', '../examples/thucnews_train_1w.txt'],
     },
     test_suite='tests',
 )
