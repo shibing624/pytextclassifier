@@ -19,11 +19,7 @@ if __name__ == '__main__':
         'Summit Series look launches HBO Canada sports doc series: Mudhar'
     ]
     X_vec, labels = m.train(data)
-    r = m.predict(['Abbott government spends $8 million on higher education media blitz',
-                   'Middle East and Asia boost investment in top level sports'])
-    print(r)
     m.show_clusters(X_vec, labels, image_file='cluster.png')
-    del m
 
     new_m = TextCluster(n_clusters=2)
     new_m.load_model()

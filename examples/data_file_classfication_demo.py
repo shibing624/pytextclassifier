@@ -13,9 +13,8 @@ if __name__ == '__main__':
     # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     data_file = 'thucnews_train_1k.txt'
     m.train(data_file, names=('labels', 'text'), num_epochs=3)
-
     new_m = TextClassifier(model_name='fasttext', model_dir='fasttext')
-    new_m.load_model() # load model from model_dir
+    new_m.load_model() # load best model from model_dir
     predict_label, predict_proba = new_m.predict(
         ['顺义北京苏活88平米起精装房在售',
          '美EB-5项目“15日快速移民”将推迟'])

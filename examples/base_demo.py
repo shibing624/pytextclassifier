@@ -7,6 +7,10 @@ import sys
 
 sys.path.append('..')
 from pytextclassifier import TextClassifier
+from loguru import logger
+
+logger.remove()  # Remove default log handler
+logger.add(sys.stderr, level="INFO")  # 设置log级别
 
 if __name__ == '__main__':
     m = TextClassifier(model_name='lr', model_dir='lr')
@@ -18,7 +22,7 @@ if __name__ == '__main__':
         ('sports', 'Middle East and Asia boost investment in top level sports'),
         ('sports', 'Summit Series look launches HBO Canada sports doc series: Mudhar')
     ]
-    # tarin and save best model
+    # train and save best model
     m.train(data)
     new_m = TextClassifier(model_name='lr', model_dir='lr')
     # load best model from model_dir
