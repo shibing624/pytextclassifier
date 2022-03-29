@@ -92,16 +92,11 @@ if __name__ == '__main__':
         ('sports', 'Middle East and Asia boost investment in top level sports'),
         ('sports', 'Summit Series look launches HBO Canada sports doc series: Mudhar')
     ]
+    # tarin and save best model
     m.train(data)
-
-    predict_label, predict_proba = m.predict(
-        ['Abbott government spends $8 million on higher education media blitz',
-         'Middle East and Asia boost investment in top level sports'])
-    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
-    del m
-
     new_m = TextClassifier(model_name='lr', model_dir='lr')
-    new_m.load_model() # load model from model_dir
+    # load best model from model_dir
+    new_m.load_model()
     predict_label, predict_proba = new_m.predict([
         'Abbott government spends $8 million on higher education media blitz'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
@@ -118,14 +113,15 @@ output:
 
 ```
 TextClassifier instance (lr)
-predict_label: ['education' 'sports'], predict_proba: [0.5378236358492112, 0.5989408491490308]
 predict_label: ['education'], predict_proba: [0.5378236358492112]
 acc_score: 1.0
 ```
 
 ### Chinese Text Classifier(中文文本分类)
 
-Text classification compatible with Chinese and English corpora, for example [examples/chinese_text_demo.py](examples/chinese_text_demo.py)
+Text classification compatible with Chinese and English corpora.
+
+example [examples/lr_classification_demo.py](examples/lr_classification_demo.py)
 
 ```python
 import sys
@@ -139,19 +135,16 @@ if __name__ == '__main__':
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
+        ('education', '公务员考虑越来越吃香，这是怎么回事？'),
         ('sports', '图文：法网孟菲尔斯苦战进16强 孟菲尔斯怒吼'),
         ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
-        ('sports', '米兰客场8战不败国米10年连胜')
+        ('sports', '米兰客场8战不败国米10年连胜'),
     ]
     m.train(data)
     print(m)
-    predict_label, predict_proba = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
-                                              '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
-    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
-    del m
 
     new_m = TextClassifier(model_name='lr', model_dir='lr')
-    new_m.load_model()
+    new_m.load_model() # load model from model_dir
     predict_label, predict_proba = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                                                   '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
@@ -163,7 +156,7 @@ if __name__ == '__main__':
     acc_score = new_m.evaluate(test_data)
     print(f'acc_score: {acc_score}')  # 1.0
 
-    #### train model with 10w data
+    #### train model with 1k data
     print('-' * 42)
     m = TextClassifier(model_name='lr', model_dir='lr')
     data_file = 'thucnews_train_10w.txt'
@@ -179,8 +172,7 @@ output:
 
 ```
 TextClassifier instance (lr)
-predict_label: ['education' 'sports'], predict_proba: [0.5, 0.5989415812731275]
-predict_label: ['education' 'sports'], predict_proba: [0.5, 0.5989415812731275]
+predict_label: ['education' 'sports'], predict_proba: [0.5, 0.598941806741534]
 acc_score: 1.0
 ------------------------------------------
 predict_label: ['realty' 'education'], predict_proba: [0.9746881260530019, 0.5150055067574651]
@@ -237,29 +229,24 @@ if __name__ == '__main__':
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
+        ('education', '公务员考虑越来越吃香，这是怎么回事？'),
         ('sports', '图文：法网孟菲尔斯苦战进16强 孟菲尔斯怒吼'),
         ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
-        ('sports', '米兰客场8战不败国米10年连胜')
+        ('sports', '米兰客场8战不败保持连胜'),
     ]
-    m.train(data)
+    m.train(data, num_epochs=3)
     print(m)
+    # load best model
+    m.load_model()
     predict_label, predict_proba = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                                               '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
-    del m
-
-    new_m = TextClassifier(model_name='fasttext', model_dir='fasttext')
-    new_m.load_model()
-    predict_label, predict_proba = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
-                                                  '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
-    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
-
     test_data = [
         ('education', '福建春季公务员考试报名18日截止 2月6日考试'),
         ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
     ]
-    acc_score = new_m.evaluate(test_data)
-    print(f'acc_score: {acc_score}')
+    acc_score = m.evaluate(test_data)
+    print(f'acc_score: {acc_score}')  # 1.0
 ```
 
 - BERT 类模型
@@ -278,19 +265,16 @@ if __name__ == '__main__':
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
+        ('education', '公务员考虑越来越吃香，这是怎么回事？'),
         ('sports', '图文：法网孟菲尔斯苦战进16强 孟菲尔斯怒吼'),
         ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
-        ('sports', '米兰客场8战不败国米10年连胜')
+        ('sports', '米兰客场8战不败国米10年连胜'),
     ]
     m.train(data, num_epochs=3, hf_model_type='bert', hf_model_name='bert-base-chinese')
     # hf_model_type: support 'bert', 'albert', 'roberta', 'xlnet'
     # hf_model_name: support 'bert-base-chinese', 'bert-base-cased', 'bert-base-multilingual-cased' ...
     print(m)
-    predict_label, predict_proba = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
-                                              '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
-    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
-    del m
-
+    # load trained model from model_dir
     new_m = TextClassifier(model_name='bert', model_dir='bert-chinese')
     new_m.load_model()
     predict_label, predict_proba = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
@@ -376,12 +360,7 @@ if __name__ == '__main__':
         'Summit Series look launches HBO Canada sports doc series: Mudhar'
     ]
     X_vec, labels = m.train(data)
-    r = m.predict(['Abbott government spends $8 million on higher education media blitz',
-                   'Middle East and Asia boost investment in top level sports'])
-    print(r)
     m.show_clusters(X_vec, labels, image_file='cluster.png')
-    del m
-
     new_m = TextCluster(n_clusters=2)
     new_m.load_model()
     r = new_m.predict(['Abbott government spends $8 million on higher education media blitz',

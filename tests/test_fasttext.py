@@ -12,6 +12,7 @@ sys.path.append('..')
 from pytextclassifier import TextClassifier
 import torch
 
+
 class SaveModelTestCase(unittest.TestCase):
     def test_classifier(self):
         m = TextClassifier(model_name='fasttext')
@@ -32,7 +33,12 @@ class SaveModelTestCase(unittest.TestCase):
         model = torch.load('model.pkl')
         m.model = model
         r, p = m.predict(samples)
-        print(r,p)
+        print(r, p)
+
+        os.remove('model.pkl')
+        import shutil
+        shutil.rmtree('fasttext')
+
 
 if __name__ == '__main__':
     unittest.main()

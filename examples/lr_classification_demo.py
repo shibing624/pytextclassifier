@@ -15,8 +15,6 @@ if __name__ == '__main__':
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
         ('education', '公务员考虑越来越吃香，这是怎么回事？'),
-        ('education', '北京公务员报名人数创历史新高'),
-        ('education', '小学教育资源共享网络平台正式上线'),
         ('sports', '图文：法网孟菲尔斯苦战进16强 孟菲尔斯怒吼'),
         ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
         ('sports', '米兰客场8战不败国米10年连胜'),
@@ -40,7 +38,7 @@ if __name__ == '__main__':
     #### train model with 1k data
     print('-' * 42)
     m = TextClassifier(model_name='lr', model_dir='lr')
-    data_file = 'thucnews_train_1k.txt'
+    data_file = 'thucnews_train_10w.txt'
     m.train(data_file)
 
     predict_label, predict_proba = m.predict(

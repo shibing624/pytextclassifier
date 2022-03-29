@@ -35,6 +35,8 @@ class BaseTestCase(unittest.TestCase):
         acc_score = m.evaluate(test_data)
         print(acc_score)  # 1.0
         self.assertEqual(acc_score, 1.0)
+        import shutil
+        shutil.rmtree('lr')
 
 
 if __name__ == '__main__':
