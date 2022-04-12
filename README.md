@@ -408,7 +408,7 @@ clustering plot image:
 - Issue(建议)：[![GitHub issues](https://img.shields.io/github/issues/shibing624/pytextclassifier.svg)](https://github.com/shibing624/pytextclassifier/issues)
 - 邮件我：xuming: xuming624@qq.com
 - 微信我：加我*微信号：xuming624*, 进Python-NLP交流群，备注：*姓名-公司名-NLP*
-<img src="docs/wechat.png" width="200" />
+<img src="docs/wechat.jpeg" width="200" />
 
 
 # Citation
