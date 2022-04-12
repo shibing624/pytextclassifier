@@ -40,9 +40,9 @@ class BertClassifier(ClassifierABC):
     def __init__(
             self,
             model_dir,
+            num_classes,
             model_type='bert',
             model_name='bert-base-chinese',
-            num_classes=10,
             num_epochs=3,
             batch_size=64,
             max_seq_length=128,
@@ -193,9 +193,9 @@ if __name__ == '__main__':
     # create model
     m = BertClassifier(
         model_dir=args.model_dir,
+        num_classes=args.num_classes,
         model_type=args.pretrain_model_type,
         model_name=args.pretrain_model_name,
-        num_classes=args.num_classes,
         num_epochs=args.num_epochs,
         batch_size=args.batch_size,
         max_seq_length=args.max_seq_length,
