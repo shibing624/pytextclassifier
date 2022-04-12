@@ -17,6 +17,7 @@ from loguru import logger
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
+sys.path.append('..')
 from pytextclassifier.base_classifier import ClassifierABC, load_data
 from pytextclassifier.data_helper import set_seed, build_vocab, load_vocab
 from pytextclassifier.time_util import get_time_spend

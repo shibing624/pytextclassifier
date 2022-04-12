@@ -6,6 +6,7 @@
 """
 import argparse
 import os
+import sys
 import pickle
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
@@ -19,6 +20,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from loguru import logger
 
+sys.path.append('..')
 from pytextclassifier.base_classifier import ClassifierABC, load_data
 from pytextclassifier.tokenizer import Tokenizer
 

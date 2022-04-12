@@ -6,12 +6,14 @@
 import argparse
 import json
 import os
+import sys
 
 import numpy as np
 import torch
 from loguru import logger
 from sklearn.model_selection import train_test_split
 
+sys.path.append('..')
 from pytextclassifier.base_classifier import ClassifierABC, load_data
 from pytextclassifier.data_helper import set_seed, load_vocab
 
@@ -84,6 +86,8 @@ class BertClassifier(ClassifierABC):
         self.batch_size = batch_size
         self.max_seq_length = max_seq_length
         self.num_epochs = num_epochs
+        self.train_args = train_args
+        self.use_cuda = use_cuda
         self.is_trained = False
 
     def __str__(self):
@@ -151,7 +155,6 @@ class BertClassifier(ClassifierABC):
     def load_model(self):
         """
         Load model from model_dir
-        @param model_dir:
         @return:
         """
         model_path = os.path.join(self.model_dir, 'pytorch_model.bin')
@@ -159,14 +162,16 @@ class BertClassifier(ClassifierABC):
             self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab.json')
             self.label_id_map = load_vocab(self.label_vocab_path)
             num_classes = len(self.label_id_map)
-            self.model = BertClassifier(
-                model_dir=self.model_dir,
+            try:
+                from simpletransformers.classification import ClassificationModel
+            except ImportError:
+                raise ImportError("Please install simpletransformers with `pip install simpletransformers`")
+            self.model = ClassificationModel(
                 model_type=self.model_type,
                 model_name=self.model_dir,
-                num_classes=num_classes,
-                num_epochs=self.num_epochs,
-                batch_size=self.batch_size,
-                max_seq_length=self.max_seq_length,
+                num_labels=num_classes,
+                args=self.train_args,
+                use_cuda=self.use_cuda
             )
             self.is_trained = True
         else:
