@@ -38,7 +38,8 @@ if __name__ == '__main__':
 
     #### train model with 1w data file
     print('-' * 42)
-    m = BertClassifier(model_dir='models/bert-chinese', model_type='bert', model_name='bert-base-chinese', num_epochs=2)
+    m = BertClassifier(model_dir='models/bert-chinese', model_type='bert', model_name='bert-base-chinese',
+                       num_epochs=2)
     data_file = 'thucnews_train_1w.txt'
     m.train(data_file)  # fine tune 2 轮
     m.load_model()

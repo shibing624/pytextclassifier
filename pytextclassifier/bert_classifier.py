@@ -154,7 +154,7 @@ class BertClassifier(ClassifierABC):
         @param model_dir:
         @return:
         """
-        model_path = os.path.join(self.model_dir, 'pytorch_model.pth')
+        model_path = os.path.join(self.model_dir, 'pytorch_model.bin')
         if os.path.exists(model_path):
             self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab.json')
             self.label_id_map = load_vocab(self.label_vocab_path)
@@ -181,7 +181,7 @@ if __name__ == '__main__':
                         help='pretrained huggingface model type')
     parser.add_argument('--pretrain_model_name', default='bert-base-chinese', type=str,
                         help='pretrained huggingface model name')
-    parser.add_argument('--model_dir', default='bert', type=str, help='save model dir')
+    parser.add_argument('--model_dir', default='models/bert', type=str, help='save model dir')
     parser.add_argument('--data_path', default=os.path.join(pwd_path, '../examples/thucnews_train_1w.txt'),
                         type=str, help='sample data file path')
     parser.add_argument('--num_classes', default=10, type=int, help='number of classes')
