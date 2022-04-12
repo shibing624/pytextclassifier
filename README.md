@@ -56,6 +56,7 @@ While providing rich functions, **pytextclassifier** internal modules adhere to 
 - Requirements and Installation
 
 ```
+pip3 install torch # conda install pytorch
 pip3 install pytextclassifier
 ```
 
@@ -80,11 +81,11 @@ Including model training, saving, predict, evaluate, for example [examples/base_
 import sys
 
 sys.path.append('..')
-from pytextclassifier import TextClassifier
+from pytextclassifier import ClassicClassifier
 
 if __name__ == '__main__':
-    m = TextClassifier(model_name='lr', model_dir='lr')
-    # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
+    m = ClassicClassifier(model_dir='models/lr', model_name_or_model='lr')
+    # model_name is choose classifier, default lr, support lr, random_forest, decision_tree, knn, bayes, svm, xgboost
     print(m)
     data = [
         ('education', 'Student debt to cost Britain billions within decades'),
@@ -92,12 +93,11 @@ if __name__ == '__main__':
         ('sports', 'Middle East and Asia boost investment in top level sports'),
         ('sports', 'Summit Series look launches HBO Canada sports doc series: Mudhar')
     ]
-    # tarin and save best model
+    # train and save best model
     m.train(data)
-    new_m = TextClassifier(model_name='lr', model_dir='lr')
     # load best model from model_dir
-    new_m.load_model()
-    predict_label, predict_proba = new_m.predict([
+    m.load_model()
+    predict_label, predict_proba = m.predict([
         'Abbott government spends $8 million on higher education media blitz'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
 
@@ -105,14 +105,14 @@ if __name__ == '__main__':
         ('education', 'Abbott government spends $8 million on higher education media blitz'),
         ('sports', 'Middle East and Asia boost investment in top level sports'),
     ]
-    acc_score = new_m.evaluate(test_data)
+    acc_score = m.evaluate_model(test_data)
     print(f'acc_score: {acc_score}')
 ```
 
 output:
 
 ```
-TextClassifier instance (lr)
+ClassicClassifier instance (LogisticRegression(fit_intercept=False), stopwords size: 2438)
 predict_label: ['education'], predict_proba: [0.5378236358492112]
 acc_score: 1.0
 ```
@@ -127,10 +127,10 @@ example [examples/lr_classification_demo.py](examples/lr_classification_demo.py)
 import sys
 
 sys.path.append('..')
-from pytextclassifier import TextClassifier
+from pytextclassifier import ClassicClassifier
 
 if __name__ == '__main__':
-    m = TextClassifier(model_name='lr', model_dir='lr')
+    m = ClassicClassifier(model_dir='models/lr-toy', model_name_or_model='lr')
     # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
@@ -142,26 +142,25 @@ if __name__ == '__main__':
     ]
     m.train(data)
     print(m)
-
-    new_m = TextClassifier(model_name='lr', model_dir='lr')
-    new_m.load_model() # load model from model_dir
-    predict_label, predict_proba = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
-                                                  '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
+    # load best model from model_dir
+    m.load_model()
+    predict_label, predict_proba = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
+                                              '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
 
     test_data = [
         ('education', '福建春季公务员考试报名18日截止 2月6日考试'),
         ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
     ]
-    acc_score = new_m.evaluate(test_data)
+    acc_score = m.evaluate_model(test_data)
     print(f'acc_score: {acc_score}')  # 1.0
 
     #### train model with 1w data
     print('-' * 42)
-    m = TextClassifier(model_name='lr', model_dir='lr')
+    m = ClassicClassifier(model_dir='models/lr', model_name_or_model='lr')
     data_file = 'thucnews_train_1w.txt'
     m.train(data_file)
-
+    m.load_model()
     predict_label, predict_proba = m.predict(
         ['顺义北京苏活88平米起精装房在售',
          '美EB-5项目“15日快速移民”将推迟'])
@@ -171,7 +170,7 @@ if __name__ == '__main__':
 output:
 
 ```
-TextClassifier instance (lr)
+ClassicClassifier instance (LogisticRegression(fit_intercept=False), stopwords size: 2438)
 predict_label: ['education' 'sports'], predict_proba: [0.5, 0.598941806741534]
 acc_score: 1.0
 ------------------------------------------
@@ -185,10 +184,10 @@ Show feature weights of model, and prediction word weight, for example [examples
 import sys
 
 sys.path.append('..')
-from pytextclassifier import TextClassifier
+from pytextclassifier import ClassicClassifier
 import jieba
 
-tc = TextClassifier()
+tc = ClassicClassifier(model_dir='models/lr-toy', model_name_or_model='lr')
 data = [
     ('education', '名师指导托福语法技巧：名词的复数形式'),
     ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
@@ -200,9 +199,10 @@ tc.train(data)
 import eli5
 infer_data = ['高考指导托福语法技巧国际认可',
               '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜']
-eli5.show_weights(tc.model, vec=tc.vectorizer)
+eli5.show_weights(tc.model, vec=tc.feature)
 seg_infer_data = [' '.join(jieba.lcut(i)) for i in infer_data]
-eli5.show_prediction(tc.model, seg_infer_data[0], vec=tc.vectorizer)
+eli5.show_prediction(tc.model, seg_infer_data[0], vec=tc.feature,
+                     target_names=['education', 'sports'])
 ```
 
 output:
@@ -211,9 +211,9 @@ output:
 
 ### Deep Classification model
 
-本项目支持多种常用深度分类模型，包括Fasttext、TextCNN、TextRNN_Att、BERT分类模型。
+本项目支持多种常用深度分类模型，包括FastText、TextCNN、TextRNN、Bert分类模型。
 
-- Fasttext 模型
+- FastText 模型
 
 训练和预测`Fasttext`模型示例[examples/fasttext_classification_demo.py](examples/fasttext_classification_demo.py)
 
@@ -221,11 +221,10 @@ output:
 import sys
 
 sys.path.append('..')
-from pytextclassifier import TextClassifier
+from pytextclassifier import FastTextClassifier, load_data
 
 if __name__ == '__main__':
-    m = TextClassifier(model_name='fasttext', model_dir='fasttext')
-    # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
+    m = FastTextClassifier(model_dir='models/fasttext-toy')
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
@@ -236,7 +235,7 @@ if __name__ == '__main__':
     ]
     m.train(data, num_epochs=3)
     print(m)
-    # load best model
+    # load trained best model
     m.load_model()
     predict_label, predict_proba = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                                               '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
@@ -245,8 +244,25 @@ if __name__ == '__main__':
         ('education', '福建春季公务员考试报名18日截止 2月6日考试'),
         ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
     ]
-    acc_score = m.evaluate(test_data)
+    acc_score = m.evaluate_model(test_data)
     print(f'acc_score: {acc_score}')  # 1.0
+
+    #### train model with 1w data
+    print('-' * 42)
+    data_file = 'thucnews_train_1w.txt'
+    m = FastTextClassifier(model_dir='models/fasttext')
+    m.train(data_file, names=('labels', 'text'), num_epochs=3)
+    # load best trained model from model_dir
+    m.load_model()
+    predict_label, predict_proba = m.predict(
+        ['顺义北京苏活88平米起精装房在售',
+         '美EB-5项目“15日快速移民”将推迟']
+    )
+    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
+    x, y, df = load_data(data_file)
+    test_data = df[:100]
+    acc_score = m.evaluate_model(test_data)
+    print(f'acc_score: {acc_score}')
 ```
 
 - BERT 类模型
@@ -257,11 +273,13 @@ if __name__ == '__main__':
 import sys
 
 sys.path.append('..')
-from pytextclassifier import TextClassifier
+from pytextclassifier import BertClassifier
 
 if __name__ == '__main__':
-    m = TextClassifier(model_name='bert', model_dir='bert-chinese')
-    # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
+    m = BertClassifier(model_dir='models/bert-chinese-toy', model_type='bert', model_name='bert-base-chinese',
+                       num_epochs=2)
+    # model_type: support 'bert', 'albert', 'roberta', 'xlnet'
+    # model_name: support 'bert-base-chinese', 'bert-base-cased', 'bert-base-multilingual-cased' ...
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
@@ -270,33 +288,27 @@ if __name__ == '__main__':
         ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
         ('sports', '米兰客场8战不败国米10年连胜'),
     ]
-    m.train(data, num_epochs=3, hf_model_type='bert', hf_model_name='bert-base-chinese')
-    # hf_model_type: support 'bert', 'albert', 'roberta', 'xlnet'
-    # hf_model_name: support 'bert-base-chinese', 'bert-base-cased', 'bert-base-multilingual-cased' ...
+    m.train(data)
     print(m)
-    # load trained model from model_dir
-    new_m = TextClassifier(model_name='bert', model_dir='bert-chinese')
-    new_m.load_model()
-    predict_label, predict_proba = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
-                                                  '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
+    # load trained best model from model_dir
+    m.load_model()
+    predict_label, predict_proba = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
+                                              '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
 
     test_data = [
         ('education', '福建春季公务员考试报名18日截止 2月6日考试'),
         ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
     ]
-    acc_score = new_m.evaluate(test_data)
+    acc_score = m.evaluate_model(test_data)
     print(f'acc_score: {acc_score}')  # 1.0
 
     #### train model with 1w data file
-    import shutil
-
-    shutil.rmtree('bert-chinese')
     print('-' * 42)
-    m = TextClassifier(model_name='bert', model_dir='bert-chinese')
+    m = BertClassifier(model_dir='models/bert-chinese', model_type='bert', model_name='bert-base-chinese', num_epochs=2)
     data_file = 'thucnews_train_1w.txt'
-    m.train(data_file, num_epochs=2)  # fine tune 2 轮
-
+    m.train(data_file)  # fine tune 2 轮
+    m.load_model()
     predict_label, predict_proba = m.predict(
         ['顺义北京苏活88平米起精装房在售',
          '美EB-5项目“15日快速移民”将推迟'])
@@ -325,21 +337,21 @@ ERNIE|0.9461|比bert略差
 
 ### 模型调研
 
-提供分类模型快速调研工具tools，文件树：
+提供分类模型快速调研工具，文件树：
 ```bash
-pytextclassifier/tools
-├── bert_classification.py
-├── fasttext_classification.py
-├── lr_classification.py
-├── textcnn_classification.py
-└── textrnn_att_classification.py
+pytextclassifier
+├── bert_classifier.py
+├── fasttext_classifier.py
+├── classic_classifier.py
+├── textcnn_classifier.py
+└── textrnn_classifier.py
 ```
 
 每个文件对应一个模型，各模型完全独立，可以直接运行，也方便修改，支持通过`argparse` 修改`--data_path`等参数。
 
 直接在终端调用fasttext模型训练：
 ```bash
-python -m pytextclassifier.tools.fasttext_classification -h
+python -m pytextclassifier.fasttext_classifier -h
 ```
 
 ## Text Cluster
@@ -347,10 +359,13 @@ python -m pytextclassifier.tools.fasttext_classification -h
 
 Text clustering, for example [examples/cluster_demo.py](examples/cluster_demo.py)
 ```python
+import sys
+
+sys.path.append('..')
 from pytextclassifier.textcluster import TextCluster
 
 if __name__ == '__main__':
-    m = TextCluster(n_clusters=2)
+    m = TextCluster(model_dir='models/cluster-toy', n_clusters=2)
     print(m)
     data = [
         'Student debt to cost Britain billions within decades',
@@ -359,22 +374,19 @@ if __name__ == '__main__':
         'Middle East and Asia boost investment in top level sports',
         'Summit Series look launches HBO Canada sports doc series: Mudhar'
     ]
-    X_vec, labels = m.train(data)
-    m.show_clusters(X_vec, labels, image_file='cluster.png')
-    new_m = TextCluster(n_clusters=2)
-    new_m.load_model()
-    r = new_m.predict(['Abbott government spends $8 million on higher education media blitz',
-                       'Middle East and Asia boost investment in top level sports'])
+    m.train(data)
+    m.load_model()
+    r = m.predict(['Abbott government spends $8 million on higher education media blitz',
+                   'Middle East and Asia boost investment in top level sports'])
     print(r)
 
-    ########### load chinese train data from file
+    ########### load chinese train data from 1w data file
     from sklearn.feature_extraction.text import TfidfVectorizer
 
-    vec = TfidfVectorizer(ngram_range=(1, 2))
-    tcluster = TextCluster(vectorizer=vec, n_clusters=10)
-    data = tcluster.load_file_data('thucnews_train_1w.txt')
-    X_vec, labels = tcluster.train(data[:5000])
-    tcluster.show_clusters(X_vec, labels, 'cluster_train_seg_samples.png')
+    tcluster = TextCluster(model_dir='models/cluster', feature=TfidfVectorizer(ngram_range=(1, 2)), n_clusters=10)
+    data = tcluster.load_file_data('thucnews_train_1w.txt', sep='\t', use_col=1)
+    feature, labels = tcluster.train(data[:5000])
+    tcluster.show_clusters(feature, labels, 'models/cluster/cluster_train_seg_samples.png')
     r = tcluster.predict(data[:30])
     print(r)
 ```
@@ -383,8 +395,7 @@ output:
 
 ```
 TextCluster instance (MiniBatchKMeans(n_clusters=2, n_init=10), <pytextclassifier.utils.tokenizer.Tokenizer object at 0x7f80bd4682b0>, TfidfVectorizer(ngram_range=(1, 2)))
-[1 0]
-[1 0]
+[1 1 1 1 1 1 1 1 1 1 1 8 1 1 1 1 1 1 1 1 1 1 9 1 1 8 1 1 9 1]
 ```
 clustering plot image:
 
@@ -414,7 +425,7 @@ BibTeX:
 author = {Xu, Ming},
 title = {Pytextclassifier: Text classifier toolkit for NLP},
 url = {https://github.com/shibing624/pytextclassifier},
-version = {1.1.4}
+version = {1.2.0}
 }
 ```
 

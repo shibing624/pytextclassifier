@@ -9,13 +9,13 @@ import unittest
 import sys
 
 sys.path.append('..')
-from pytextclassifier import TextClassifier
+from pytextclassifier import FastTextClassifier
 import torch
 
 
 class SaveModelTestCase(unittest.TestCase):
     def test_classifier(self):
-        m = TextClassifier(model_name='fasttext')
+        m = FastTextClassifier(model_dir='models/fasttext')
         data = [
             ('education', 'Student debt to cost Britain billions within decades'),
             ('education', 'Chinese education for TV experiment'),
@@ -29,15 +29,17 @@ class SaveModelTestCase(unittest.TestCase):
         r, p = m.predict(samples)
         print(r, p)
         print('-' * 20)
-        torch.save(m.model, 'model.pkl')
-        model = torch.load('model.pkl')
+        torch.save(m.model, 'models/model.pkl')
+        model = torch.load('models/model.pkl')
         m.model = model
-        r, p = m.predict(samples)
-        print(r, p)
+        r1, p1 = m.predict(samples)
+        print(r1, p1)
+        self.assertEqual(r, r1)
+        self.assertEqual(p, p1)
 
-        os.remove('model.pkl')
+        os.remove('models/model.pkl')
         import shutil
-        shutil.rmtree('fasttext')
+        shutil.rmtree('models')
 
 
 if __name__ == '__main__':

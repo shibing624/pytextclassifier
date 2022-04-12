@@ -6,10 +6,10 @@
 import sys
 
 sys.path.append('..')
-from pytextclassifier import TextClassifier
+from pytextclassifier import TextCNNClassifier
 
 if __name__ == '__main__':
-    m = TextClassifier(model_name='textcnn', model_dir='textcnn')
+    m = TextCNNClassifier(model_dir='models/textcnn-toy')
     # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
@@ -19,19 +19,18 @@ if __name__ == '__main__':
         ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
         ('sports', '米兰客场8战不败国米10年连胜')
     ]
-    m.train(data, num_epochs=3)
+    # train and save best model
+    m.train(data, num_epochs=3, evaluate_during_training_steps=1)
     print(m)
-
-    new_m = TextClassifier(model_name='textcnn', model_dir='textcnn')
-    new_m.load_model()
-    print(new_m)
-    predict_label, predict_proba = new_m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
-                                                  '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
+    # load best model from model_dir
+    m.load_model()
+    predict_label, predict_proba = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
+                                              '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
 
     test_data = [
         ('education', '福建春季公务员考试报名18日截止 2月6日考试'),
         ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
     ]
-    acc_score = new_m.evaluate(test_data)
+    acc_score = m.evaluate_model(test_data)
     print(f'acc_score: {acc_score}')  # 1.0

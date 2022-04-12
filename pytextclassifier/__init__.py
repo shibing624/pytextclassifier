@@ -3,7 +3,12 @@
 @author:XuMing(xuming624@qq.com)
 @description: 
 """
-__version__ = '1.1.6'
+__version__ = '1.2.0'
 
-from pytextclassifier.textclassifier import TextClassifier, load_data
+from pytextclassifier.classic_classifier import ClassicClassifier
+from pytextclassifier.fasttext_classifier import FastTextClassifier
+from pytextclassifier.textcnn_classifier import TextCNNClassifier
+from pytextclassifier.textrnn_classifier import TextRNNClassifier
+from pytextclassifier.bert_classifier import BertClassifier
+from pytextclassifier.base_classifier import load_data
 from pytextclassifier.textcluster import TextCluster

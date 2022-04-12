@@ -6,15 +6,15 @@
 import sys
 
 sys.path.append('..')
-from pytextclassifier import TextClassifier
+from pytextclassifier import ClassicClassifier
 from loguru import logger
 
 logger.remove()  # Remove default log handler
 logger.add(sys.stderr, level="INFO")  # 设置log级别
 
 if __name__ == '__main__':
-    m = TextClassifier(model_name='lr', model_dir='lr')
-    # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
+    m = ClassicClassifier(model_dir='models/lr', model_name_or_model='lr')
+    # model_name is choose classifier, default lr, support lr, random_forest, decision_tree, knn, bayes, svm, xgboost
     print(m)
     data = [
         ('education', 'Student debt to cost Britain billions within decades'),
@@ -24,10 +24,9 @@ if __name__ == '__main__':
     ]
     # train and save best model
     m.train(data)
-    new_m = TextClassifier(model_name='lr', model_dir='lr')
     # load best model from model_dir
-    new_m.load_model()
-    predict_label, predict_proba = new_m.predict([
+    m.load_model()
+    predict_label, predict_proba = m.predict([
         'Abbott government spends $8 million on higher education media blitz'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
 
@@ -35,5 +34,5 @@ if __name__ == '__main__':
         ('education', 'Abbott government spends $8 million on higher education media blitz'),
         ('sports', 'Middle East and Asia boost investment in top level sports'),
     ]
-    acc_score = new_m.evaluate(test_data)
+    acc_score = m.evaluate_model(test_data)
     print(f'acc_score: {acc_score}')

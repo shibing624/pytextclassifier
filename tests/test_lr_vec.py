@@ -9,12 +9,12 @@ import unittest
 import sys
 
 sys.path.append('..')
-from pytextclassifier import TextClassifier
+from pytextclassifier import ClassicClassifier
 
 
 class VecTestCase(unittest.TestCase):
     def setUp(self):
-        m = TextClassifier()
+        m = ClassicClassifier('models/lr')
         data = [
             ('education', 'Student debt to cost Britain billions within decades'),
             ('education', 'Chinese education for TV experiment'),
@@ -25,30 +25,33 @@ class VecTestCase(unittest.TestCase):
         print('model trained:', m)
 
     def test_classifier(self):
-        new_m = TextClassifier(model_name='lr')
+        new_m = ClassicClassifier('models/lr')
         new_m.load_model()
         r, _ = new_m.predict(['Abbott government spends $8 million on higher education media blitz',
                               'Middle East and Asia boost investment in top level sports'])
         print(r)
+        self.assertTrue(r[0] == 'education')
 
     def test_vec(self):
-        new_m = TextClassifier(model_name='lr')
+        new_m = ClassicClassifier('models/lr')
         new_m.load_model()
-        print(new_m.vectorizer.get_feature_names())
-        print('feature name size:', len(new_m.vectorizer.get_feature_names()))
+        print(new_m.feature.get_feature_names())
+        print('feature name size:', len(new_m.feature.get_feature_names()))
+        self.assertTrue(len(new_m.feature.get_feature_names()) > 0)
 
     def test_stopwords(self):
-        new_m = TextClassifier(model_name='lr')
+        new_m = ClassicClassifier('models/lr')
         new_m.load_model()
-        from pytextclassifier.tools.lr_classification import stopwords
+        stopwords = new_m.stopwords
         print(len(stopwords))
+        self.assertTrue(len(stopwords) > 0)
 
     @classmethod
     def tearDownClass(cls):
         import shutil
 
-        shutil.rmtree('lr')
-        print('remove dir: lr')
+        shutil.rmtree('models')
+        print('remove dir: models')
 
 
 if __name__ == '__main__':

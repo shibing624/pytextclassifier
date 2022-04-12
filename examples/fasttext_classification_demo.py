@@ -6,11 +6,10 @@
 import sys
 
 sys.path.append('..')
-from pytextclassifier import TextClassifier
+from pytextclassifier import FastTextClassifier, load_data
 
 if __name__ == '__main__':
-    m = TextClassifier(model_name='fasttext', model_dir='fasttext')
-    # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
+    m = FastTextClassifier(model_dir='models/fasttext-toy')
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
@@ -21,7 +20,7 @@ if __name__ == '__main__':
     ]
     m.train(data, num_epochs=3)
     print(m)
-    # load best model
+    # load trained best model
     m.load_model()
     predict_label, predict_proba = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                                               '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])
@@ -30,5 +29,22 @@ if __name__ == '__main__':
         ('education', '福建春季公务员考试报名18日截止 2月6日考试'),
         ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
     ]
-    acc_score = m.evaluate(test_data)
+    acc_score = m.evaluate_model(test_data)
     print(f'acc_score: {acc_score}')  # 1.0
+
+    #### train model with 1w data
+    print('-' * 42)
+    data_file = 'thucnews_train_1w.txt'
+    m = FastTextClassifier(model_dir='models/fasttext')
+    m.train(data_file, names=('labels', 'text'), num_epochs=3)
+    # load best trained model from model_dir
+    m.load_model()
+    predict_label, predict_proba = m.predict(
+        ['顺义北京苏活88平米起精装房在售',
+         '美EB-5项目“15日快速移民”将推迟']
+    )
+    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
+    x, y, df = load_data(data_file)
+    test_data = df[:100]
+    acc_score = m.evaluate_model(test_data)
+    print(f'acc_score: {acc_score}')

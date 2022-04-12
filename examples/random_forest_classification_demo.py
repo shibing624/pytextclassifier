@@ -6,10 +6,10 @@
 import sys
 
 sys.path.append('..')
-from pytextclassifier import TextClassifier
+from pytextclassifier import ClassicClassifier
 
 if __name__ == '__main__':
-    m = TextClassifier(model_name='random_forest', model_dir='random_forest')
+    m = ClassicClassifier(model_dir='models/random_forest', model_name_or_model='random_forest')
     # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
     print(m)
     data = [
@@ -19,9 +19,8 @@ if __name__ == '__main__':
         ('sports', 'Summit Series look launches HBO Canada sports doc series: Mudhar')
     ]
     m.train(data)
-    new_m = TextClassifier(model_name='random_forest', model_dir='random_forest')
-    new_m.load_model()
-    predict_label, predict_proba = new_m.predict([
+    m.load_model()
+    predict_label, predict_proba = m.predict([
         'Abbott government spends $8 million on higher education media blitz'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
 
@@ -29,5 +28,5 @@ if __name__ == '__main__':
         ('education', 'Abbott government spends $8 million on higher education media blitz'),
         ('sports', 'Middle East and Asia boost investment in top level sports'),
     ]
-    acc_score = new_m.evaluate(test_data)
+    acc_score = m.evaluate_model(test_data)
     print(f'acc_score: {acc_score}')  # 1.0

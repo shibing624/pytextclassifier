@@ -9,12 +9,12 @@ import unittest
 import sys
 
 sys.path.append('..')
-from pytextclassifier import TextClassifier
+from pytextclassifier import ClassicClassifier
 
 
 class BaseTestCase(unittest.TestCase):
     def test_classifier(self):
-        m = TextClassifier()
+        m = ClassicClassifier(model_dir='models/lr', model_name_or_model='lr')
         data = [
             ('education', 'Student debt to cost Britain billions within decades'),
             ('education', 'Chinese education for TV experiment'),
@@ -32,11 +32,11 @@ class BaseTestCase(unittest.TestCase):
             ('education', 'Abbott government spends $8 million on higher education media blitz'),
             ('sports', 'Middle East and Asia boost investment in top level sports'),
         ]
-        acc_score = m.evaluate(test_data)
+        acc_score = m.evaluate_model(test_data)
         print(acc_score)  # 1.0
         self.assertEqual(acc_score, 1.0)
         import shutil
-        shutil.rmtree('lr')
+        shutil.rmtree('models')
 
 
 if __name__ == '__main__':

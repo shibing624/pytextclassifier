@@ -9,7 +9,7 @@ sys.path.append('..')
 from pytextclassifier.textcluster import TextCluster
 
 if __name__ == '__main__':
-    m = TextCluster(n_clusters=2)
+    m = TextCluster(model_dir='models/cluster-toy', n_clusters=2)
     print(m)
     data = [
         'Student debt to cost Britain billions within decades',
@@ -18,22 +18,18 @@ if __name__ == '__main__':
         'Middle East and Asia boost investment in top level sports',
         'Summit Series look launches HBO Canada sports doc series: Mudhar'
     ]
-    X_vec, labels = m.train(data)
-    m.show_clusters(X_vec, labels, image_file='cluster.png')
-
-    new_m = TextCluster(n_clusters=2)
-    new_m.load_model()
-    r = new_m.predict(['Abbott government spends $8 million on higher education media blitz',
-                       'Middle East and Asia boost investment in top level sports'])
+    m.train(data)
+    m.load_model()
+    r = m.predict(['Abbott government spends $8 million on higher education media blitz',
+                   'Middle East and Asia boost investment in top level sports'])
     print(r)
 
-    ########### load chinese train data from 10w data file
+    ########### load chinese train data from 1w data file
     from sklearn.feature_extraction.text import TfidfVectorizer
 
-    vec = TfidfVectorizer(ngram_range=(1, 2))
-    tcluster = TextCluster(vectorizer=vec, n_clusters=10)
+    tcluster = TextCluster(model_dir='models/cluster', feature=TfidfVectorizer(ngram_range=(1, 2)), n_clusters=10)
     data = tcluster.load_file_data('thucnews_train_1w.txt', sep='\t', use_col=1)
-    X_vec, labels = tcluster.train(data[:5000])
-    tcluster.show_clusters(X_vec, labels, 'cluster_train_seg_samples.png')
+    feature, labels = tcluster.train(data[:5000])
+    tcluster.show_clusters(feature, labels, 'models/cluster/cluster_train_seg_samples.png')
     r = tcluster.predict(data[:30])
     print(r)
