@@ -147,9 +147,10 @@ class BertClassifier(ClassifierABC):
 
     def evaluate_model(self, data_list_or_path, header=None,
                        names=('labels', 'text'), delimiter='\t'):
-        X_test, y_test, df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter)
+        X_test, y_test, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter)
         self.load_model()
-        result, model_outputs, wrong_predictions = self.model.eval_model(df)
+        data_df, _ = build_dataset(data_df, self.label_vocab_path)
+        result, model_outputs, wrong_predictions = self.model.eval_model(data_df, output_dir=self.model_dir)
         return result
 
     def load_model(self):
