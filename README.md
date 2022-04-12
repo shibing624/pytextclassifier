@@ -408,7 +408,7 @@ clustering plot image:
 - Issue(建议)：[![GitHub issues](https://img.shields.io/github/issues/shibing624/pytextclassifier.svg)](https://github.com/shibing624/pytextclassifier/issues)
 - 邮件我：xuming: xuming624@qq.com
 - 微信我：加我*微信号：xuming624*, 进Python-NLP交流群，备注：*姓名-公司名-NLP*
-<img src="http://42.193.145.218/github_data/xm_wechat_erweima.png" width="200" />
+<img src="docs/wechat.png" width="200" />
 
 
 # Citation
@@ -417,7 +417,7 @@ clustering plot image:
 
 APA:
 ```latex
-Xu, M. Pytextclassifier: Text classifier toolkit for NLP (Version 1.1.4) [Computer software]. https://github.com/shibing624/pytextclassifier
+Xu, M. Pytextclassifier: Text classifier toolkit for NLP (Version 1.2.0) [Computer software]. https://github.com/shibing624/pytextclassifier
 ```
 
 BibTeX:
