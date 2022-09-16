@@ -5,7 +5,7 @@
 """
 from setuptools import setup, find_packages
 
-__version__ = '1.3.0'
+__version__ = '1.3.1'
 
 with open('README.md', 'r', encoding='utf-8') as f:
     readme = f.read()
@@ -37,6 +37,7 @@ setup(
         "scikit-learn",
         "pandas",
         "numpy",
+        "transformers",
     ],
     packages=find_packages(exclude=['tests']),
     package_dir={'pytextclassifier': 'pytextclassifier'},
