@@ -93,7 +93,7 @@ from transformers.optimization import (
 
 sys.path.append('..')
 from pytextclassifier.bert_classfication_utils import (
-    ClassificationArgs,
+    BertClassificationArgs,
     InputExample,
     LazyClassificationDataset,
     ClassificationDataset,
@@ -128,7 +128,7 @@ MODELS_WITH_ADD_PREFIX_SPACE = [
 ]
 
 
-class ClassificationModel:
+class BertClassificationModel:
     def __init__(
             self,
             model_type,
@@ -230,7 +230,7 @@ class ClassificationModel:
 
         if isinstance(args, dict):
             self.args.update_from_dict(args)
-        elif isinstance(args, ClassificationArgs):
+        elif isinstance(args, BertClassificationArgs):
             self.args = args
 
         if self.args.thread_count:
@@ -2046,7 +2046,7 @@ class ClassificationModel:
         self.args.save(output_dir)
 
     def _load_model_args(self, input_dir):
-        args = ClassificationArgs()
+        args = BertClassificationArgs()
         args.load(input_dir)
         return args
 

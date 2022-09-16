@@ -170,7 +170,7 @@ class ModelArgs:
 
 
 @dataclass
-class ClassificationArgs(ModelArgs):
+class BertClassificationArgs(ModelArgs):
     """
     Model args for a ClassificationModel
     """

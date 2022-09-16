@@ -12,3 +12,4 @@ from pytextclassifier.textrnn_classifier import TextRNNClassifier
 from pytextclassifier.bert_classifier import BertClassifier
 from pytextclassifier.base_classifier import load_data
 from pytextclassifier.textcluster import TextCluster
+from pytextclassifier.bert_classification_model import BertClassificationModel, BertClassificationArgs
