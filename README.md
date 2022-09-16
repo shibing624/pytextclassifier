@@ -70,9 +70,9 @@ python3 setup.py install
 
 
 # Usage
-## Text Classifier
+# Text Classifier
 
-### English Text Classifier
+## English Text Classifier
 
 Including model training, saving, predict, evaluate, for example [examples/base_demo.py](examples/base_demo.py):
 
@@ -117,7 +117,7 @@ predict_label: ['education'], predict_proba: [0.5378236358492112]
 acc_score: 1.0
 ```
 
-### Chinese Text Classifier(中文文本分类)
+## Chinese Text Classifier(中文文本分类)
 
 Text classification compatible with Chinese and English corpora.
 
@@ -177,7 +177,7 @@ acc_score: 1.0
 predict_label: ['realty' 'education'], predict_proba: [0.7302956923617372, 0.2565005445322923]
 ```
 
-### Visual Feature Importance
+## Visual Feature Importance
 
 Show feature weights of model, and prediction word weight, for example [examples/visual_feature_importance.ipynb](examples/visual_feature_importance.ipynb)
 ```python
@@ -209,11 +209,11 @@ output:
 
 ![img.png](docs/img.png)
 
-### Deep Classification model
+## Deep Classification model
 
 本项目支持多种常用深度分类模型，包括FastText、TextCNN、TextRNN、Bert分类模型。
 
-- FastText 模型
+### FastText 模型
 
 训练和预测`FastText`模型示例[examples/fasttext_classification_demo.py](examples/fasttext_classification_demo.py)
 
@@ -265,7 +265,7 @@ if __name__ == '__main__':
     print(f'acc_score: {acc_score}')
 ```
 
-- BERT 类模型
+### BERT 类模型
 
 训练和预测`BERT`模型，示例[examples/bert_classification_zh_demo.py](examples/bert_classification_zh_demo.py)
 
@@ -317,12 +317,17 @@ if __name__ == '__main__':
 ```
 
 
+## Evaluation
+
 ### Dataset
 
-1. THUCNews中文文本数据集（1.56GB）：官方[下载地址](http://thuctc.thunlp.org/)。
-2. 抽样的THUCNews中文文本10分类数据集（6MB），地址：[examples/thucnews_train_10w.txt](examples/thucnews_train_10w.txt)。
+1. THUCNews中文文本数据集（1.56GB）：官方[下载地址](http://thuctc.thunlp.org/)，抽样10万条THUCNews中文文本10分类数据集（6MB），地址：[examples/thucnews_train_10w.txt](examples/thucnews_train_10w.txt)。
+2. Book_review: This dataset contains 20,000 positive and 20,000 negative reviews collected from Douban
+3. ChnSentiCorp: Chnsenticorpisahotelreviewdatasetwith a total of 12,000 reviews, including 6,000 positive reviews and 6,000 negative reviews
+4. Shopping: Shopping is a online shopping review dataset that contains 40,000 reviews, including 21,111 positive reviews and 18,889 negative reviews
+5. Weibo: Weibo is a dataset with emotional annotations from Sina Weibo, including 60,000 positive samples and 60,000 negative samples
 
-### Evaluate
+### Evaluation Result
 各模型在THUCNews中文文本10分类数据集（6MB）的测试集评估，模型效果如下：
 
 模型|acc|说明

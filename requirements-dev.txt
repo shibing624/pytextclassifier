@@ -1,8 +1,0 @@
-loguru
-jieba
-scikit-learn
-pandas
-numpy
-transformers
-simpletransformers>=0.63.4
-torch

@@ -16,9 +16,11 @@ from sklearn.model_selection import train_test_split
 sys.path.append('..')
 from pytextclassifier.base_classifier import ClassifierABC, load_data
 from pytextclassifier.data_helper import set_seed, load_vocab
+from pytextclassifier.bert_classification_model import ClassificationModel, ClassificationArgs
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+use_cuda = torch.cuda.is_available()
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
@@ -48,6 +50,7 @@ class BertClassifier(ClassifierABC):
             num_epochs=3,
             batch_size=64,
             max_seq_length=128,
+            args=None,
     ):
         """
         Init classification model
@@ -60,19 +63,20 @@ class BertClassifier(ClassifierABC):
         @param max_seq_length:
         @param use_cuda:
         """
-        train_args = {
-            "reprocess_input_data": True,
-            "overwrite_output_dir": True,
+        default_args = {
             "output_dir": model_dir,
             "max_seq_length": max_seq_length,
             "num_train_epochs": num_epochs,
             "train_batch_size": batch_size,
+            "best_model_dir": os.path.join(model_dir, 'best_model'),
         }
-        use_cuda = torch.cuda.is_available()
-        try:
-            from simpletransformers.classification import ClassificationModel
-        except ImportError:
-            raise ImportError("Please install simpletransformers with `pip install simpletransformers`")
+        train_args = ClassificationArgs()
+        if args and isinstance(args, dict):
+            train_args.update_from_dict(args)
+            train_args.update_from_dict(default_args)
+        if isinstance(args, dict):
+            train_args.update_from_dict(args)
+
         self.model = ClassificationModel(
             model_type=model_type,
             model_name=model_name,
@@ -163,10 +167,6 @@ class BertClassifier(ClassifierABC):
             self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab.json')
             self.label_id_map = load_vocab(self.label_vocab_path)
             num_classes = len(self.label_id_map)
-            try:
-                from simpletransformers.classification import ClassificationModel
-            except ImportError:
-                raise ImportError("Please install simpletransformers with `pip install simpletransformers`")
             self.model = ClassificationModel(
                 model_type=self.model_type,
                 model_name=self.model_dir,
