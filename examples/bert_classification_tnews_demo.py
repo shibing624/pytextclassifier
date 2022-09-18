@@ -22,14 +22,14 @@ if __name__ == '__main__':
     # train model with TNEWS data file
     train_file = './TNEWS/train.json'
     dev_file = './TNEWS/dev.json'
-    test_file = './TNEWS/dev.json'
     train_data = convert_json_to_csv(train_file)[:None]
     dev_data = convert_json_to_csv(dev_file)[:None]
     print('train_data head:', train_data[:10])
 
     m = BertClassifier(model_dir='models/bert-tnews', num_classes=15,
-                       model_type='bert', model_name='bert-base-chinese', num_epochs=5)
-    m.train(train_data)
+                       model_type='bert', model_name='bert-base-chinese', 
+                       batch_size=32, num_epochs=5)
+    m.train(train_data, test_size=0)
     m.load_model()
     # {"label": "102", "label_desc": "news_entertainment", "sentence": "江疏影甜甜圈自拍，迷之角度竟这么好看，美吸引一切事物", "keywords": "江疏影,美少女,经纪人,甜甜圈"}
     # {"label": "110", "label_desc": "news_military", "sentence": "以色列大规模空袭开始！伊朗多个军事目标遭遇打击，誓言对等反击", "keywords": "伊朗,圣城军,叙利亚,以色列国防军,以色列"}
