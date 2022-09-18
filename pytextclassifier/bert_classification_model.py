@@ -27,6 +27,10 @@ from sklearn.metrics import (
     roc_curve,
     auc,
     average_precision_score,
+    f1_score,
+    accuracy_score,
+    precision_score,
+    recall_score,
 )
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from torch.utils.tensorboard import SummaryWriter
@@ -1608,6 +1612,12 @@ class BertClassificationModel:
             return {**extra_metrics}, wrong
 
         mcc = matthews_corrcoef(labels, preds)
+
+        acc = accuracy_score(labels, preds)
+        precision = precision_score(labels, preds)
+        recall = recall_score(labels, preds)
+        f1 = f1_score(labels, preds)
+
         if self.model.num_labels == 2:
             tn, fp, fn, tp = confusion_matrix(labels, preds, labels=[0, 1]).ravel()
             if self.args.sliding_window:
@@ -1633,13 +1643,23 @@ class BertClassificationModel:
                             "fn": fn,
                             "auroc": auroc,
                             "auprc": auprc,
+                            "acc": acc,
+                            "precision": precision,
+                            "recall": recall,
+                            "f1": f1,
                         },
                         **extra_metrics,
                     },
                     wrong,
                 )
         else:
-            return {**{"mcc": mcc}, **extra_metrics}, wrong
+            return {**{
+                "mcc": mcc,
+                "acc": acc,
+                "precision": precision,
+                "recall": recall,
+                "f1": f1,
+            }, **extra_metrics}, wrong
 
     def predict(self, to_predict, multi_label=False):
         """
