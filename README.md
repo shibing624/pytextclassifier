@@ -325,7 +325,7 @@ if __name__ == '__main__':
 2. TNEWS今日头条中文新闻（短文本）分类 Short Text Classificaiton for News，该数据集(5.1MB)来自今日头条的新闻版块，共提取了15个类别的新闻，包括旅游，教育，金融，军事等，地址：[tnews_public.zip](https://storage.googleapis.com/cluebenchmark/tasks/tnews_public.zip)
 
 ### Evaluation Result
-各模型在THUCNews中文文本10分类数据集（6MB）的测试集评估，模型效果如下：
+在THUCNews中文文本10分类数据集（6MB）上评估，模型在测试集(test)评测效果如下：
 
 模型|acc|说明
 --|--|--
@@ -338,12 +338,12 @@ Transformer|0.8991|效果较差
 BERT-base|**0.9483**|bert + fc
 ERNIE|0.9461|比bert略差
 
-在中文新闻短文本分类数据集TNEWS上评估，模型效果如下：
+在中文新闻短文本分类数据集TNEWS上评估，模型在开发集(dev)评测效果如下：
 
 模型|acc|说明
 --|--|--
 BERT-base|**0.5660**|本项目实现
-BERT-base|0.5658|CLUE Benchmark Leaderboard结果 [CLUEbenchmark](https://github.com/CLUEbenchmark/CLUE)
+BERT-base|0.5609|CLUE Benchmark Leaderboard结果 [CLUEbenchmark](https://github.com/CLUEbenchmark/CLUE)
 
 - 以上结果均为分类的准确率（accuracy）结果
 - THUCNews数据集评测结果可以基于`examples/thucnews_train_10w.txt`数据用`examples`下的各模型demo复现
