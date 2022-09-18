@@ -45,5 +45,6 @@ if __name__ == '__main__':
     m.load_model()
     predict_label, predict_proba = m.predict(
         ['顺义北京苏活88平米起精装房在售',
-         '美EB-5项目“15日快速移民”将推迟'])
+         '美EB-5项目“15日快速移民”将推迟',
+         '恒生AH溢指收平 A股对H股折价1.95%'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')

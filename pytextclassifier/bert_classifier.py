@@ -118,17 +118,23 @@ class BertClassifier(ClassifierABC):
             os.makedirs(self.model_dir, exist_ok=True)
         label_vocab_path = os.path.join(self.model_dir, 'label_vocab.json')
         data_df, self.label_id_map = build_dataset(data_df, label_vocab_path)
-        train_data, dev_data = train_test_split(data_df, test_size=test_size, random_state=SEED)
-        logger.debug(f"train_data size: {len(train_data)}, dev_data size: {len(dev_data)}")
-        logger.debug(f'train_data sample:\n{train_data[:3]}\ndev_data sample:\n{dev_data[:3]}')
+        if test_size > 0:
+            train_data, dev_data = train_test_split(data_df, test_size=test_size, random_state=SEED)
+        else:
+            train_data = data_df
+            dev_data = None
+        logger.debug(f"train_data size: {len(train_data)}")
+        logger.debug(f'train_data sample:\n{train_data[:3]}')
         # train model
         self.model.train_model(train_data)
         # evaluate model
-        result, model_outputs, wrong_predictions = self.model.eval_model(dev_data)
-        logger.debug(f'evaluate, result:{result} model_outputs:{model_outputs} wrong_predictions:{wrong_predictions}')
+        if dev_data:
+            logger.debug(f"dev_data size: {len(dev_data)}")
+            logger.debug(f'dev_data sample:\n{dev_data[:3]}')
+            result, model_outputs, wrong_predictions = self.model.eval_model(dev_data)
+            logger.debug(f'evaluate, result:{result}')
         self.is_trained = True
         logger.debug('train model done')
-        return result
 
     def predict(self, sentences: list):
         """
