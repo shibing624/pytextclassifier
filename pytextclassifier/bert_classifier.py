@@ -126,13 +126,12 @@ class BertClassifier(ClassifierABC):
         logger.debug(f"train_data size: {len(train_data)}")
         logger.debug(f'train_data sample:\n{train_data[:3]}')
         # train model
-        self.model.train_model(train_data)
-        # evaluate model
         if dev_data:
             logger.debug(f"dev_data size: {len(dev_data)}")
             logger.debug(f'dev_data sample:\n{dev_data[:3]}')
-            result, model_outputs, wrong_predictions = self.model.eval_model(dev_data)
-            logger.debug(f'evaluate, result:{result}')
+            self.model.train_model(train_data, eval_df=dev_data)
+        else:
+            self.model.train_model(train_data)
         self.is_trained = True
         logger.debug('train model done')
 

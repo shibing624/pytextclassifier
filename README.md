@@ -322,10 +322,7 @@ if __name__ == '__main__':
 ### Dataset
 
 1. THUCNews中文文本数据集（1.56GB）：官方[下载地址](http://thuctc.thunlp.org/)，抽样10万条THUCNews中文文本10分类数据集（6MB），地址：[examples/thucnews_train_10w.txt](examples/thucnews_train_10w.txt)。
-2. Book_review: This dataset contains 20,000 positive and 20,000 negative reviews collected from Douban
-3. ChnSentiCorp: Chnsenticorpisahotelreviewdatasetwith a total of 12,000 reviews, including 6,000 positive reviews and 6,000 negative reviews
-4. Shopping: Shopping is a online shopping review dataset that contains 40,000 reviews, including 21,111 positive reviews and 18,889 negative reviews
-5. Weibo: Weibo is a dataset with emotional annotations from Sina Weibo, including 60,000 positive samples and 60,000 negative samples
+2. TNEWS今日头条中文新闻（短文本）分类 Short Text Classificaiton for News，该数据集来自今日头条的新闻版块，共提取了15个类别的新闻，包括旅游，教育，金融，军事等，地址：[tnews_public.zip](https://storage.googleapis.com/cluebenchmark/tasks/tnews_public.zip)
 
 ### Evaluation Result
 各模型在THUCNews中文文本10分类数据集（6MB）的测试集评估，模型效果如下：
@@ -338,8 +335,16 @@ TextRNN_Att|0.9022|BiLSTM+Attention
 FastText|0.9177|bow+bigram+trigram， 效果出奇的好
 DPCNN|0.9125|深层金字塔CNN
 Transformer|0.8991|效果较差
-BERT|0.9483|bert + fc
+BERT-base|0.9483|bert + fc
 ERNIE|0.9461|比bert略差
+
+在中文新闻短文本分类数据集TNEWS上评估，模型效果如下：
+
+模型|acc|说明
+--|--|--
+BERT-base|0.5643|本项目实现
+BERT-base|0.5658|CLUE标准实现
+
 
 ### 模型调研
 
