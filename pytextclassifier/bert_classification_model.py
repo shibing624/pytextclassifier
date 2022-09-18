@@ -31,6 +31,8 @@ from sklearn.metrics import (
     accuracy_score,
     precision_score,
     recall_score,
+    classification_report,
+    precision_recall_fscore_support,
 )
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from torch.utils.tensorboard import SummaryWriter
@@ -1612,14 +1614,12 @@ class BertClassificationModel:
             return {**extra_metrics}, wrong
 
         mcc = matthews_corrcoef(labels, preds)
-
         acc = accuracy_score(labels, preds)
-        precision = precision_score(labels, preds)
-        recall = recall_score(labels, preds)
-        f1 = f1_score(labels, preds)
+        classification_report_str = classification_report(labels, preds)
 
         if self.model.num_labels == 2:
             tn, fp, fn, tp = confusion_matrix(labels, preds, labels=[0, 1]).ravel()
+            precision, recall, f_score, true_sum = precision_recall_fscore_support(labels, preds)
             if self.args.sliding_window:
                 return (
                     {
@@ -1646,19 +1646,22 @@ class BertClassificationModel:
                             "acc": acc,
                             "precision": precision,
                             "recall": recall,
-                            "f1": f1,
+                            "f1": f_score,
+                            "classification_report": classification_report_str,
                         },
                         **extra_metrics,
                     },
                     wrong,
                 )
         else:
+            precision, recall, f_score, true_sum = precision_recall_fscore_support(labels, preds, average='weighted')
             return {**{
                 "mcc": mcc,
                 "acc": acc,
                 "precision": precision,
                 "recall": recall,
-                "f1": f1,
+                "f1": f_score,
+                "classification_report": classification_report_str,
             }, **extra_metrics}, wrong
 
     def predict(self, to_predict, multi_label=False):
