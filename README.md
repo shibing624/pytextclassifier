@@ -335,16 +335,19 @@ TextRNN_Att|0.9022|BiLSTM+Attention
 FastText|0.9177|bow+bigram+trigram， 效果出奇的好
 DPCNN|0.9125|深层金字塔CNN
 Transformer|0.8991|效果较差
-BERT-base|0.9483|bert + fc
+BERT-base|**0.9483**|bert + fc
 ERNIE|0.9461|比bert略差
 
 在中文新闻短文本分类数据集TNEWS上评估，模型效果如下：
 
 模型|acc|说明
 --|--|--
-BERT-base|0.5660|本项目实现
+BERT-base|**0.5660**|本项目实现
 BERT-base|0.5658|CLUE Benchmark Leaderboard结果 [CLUEbenchmark](https://github.com/CLUEbenchmark/CLUE)
 
+- 以上结果均为分类的准确率（accuracy）结果
+- THUCNews数据集评测结果可以基于`examples/thucnews_train_10w.txt`数据用`examples`下的各模型demo复现
+- TNEWS数据集评测结果可以下载TNEWS数据集，运行`examples/bert_classification_tnews_demo.py`复现
 
 ### 模型调研
 
