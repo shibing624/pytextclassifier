@@ -27,10 +27,7 @@ from sklearn.metrics import (
     roc_curve,
     auc,
     average_precision_score,
-    f1_score,
     accuracy_score,
-    precision_score,
-    recall_score,
     classification_report,
     precision_recall_fscore_support,
 )
@@ -39,32 +36,17 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm.auto import tqdm, trange
 from transformers import (
     AlbertConfig,
-    AlbertTokenizer,
     AlbertForSequenceClassification,
     AutoConfig,
     AutoModelForSequenceClassification,
     AutoTokenizer,
-    BertConfig,
     BertTokenizerFast,
     BertForSequenceClassification,
-    BertweetTokenizer,
-    BigBirdConfig,
-    BigBirdTokenizer,
-    BigBirdForSequenceClassification,
-    DebertaConfig,
-    DebertaForSequenceClassification,
-    DebertaTokenizer,
-    DebertaV2Config,
-    DebertaV2ForSequenceClassification,
-    DebertaV2Tokenizer,
-    DistilBertConfig,
     DistilBertTokenizerFast,
     DistilBertForSequenceClassification,
-    ElectraConfig,
     ElectraTokenizerFast,
     ElectraForSequenceClassification,
     HerbertTokenizerFast,
-    LongformerConfig,
     LongformerTokenizerFast,
     LongformerForSequenceClassification,
     MPNetConfig,
@@ -73,18 +55,32 @@ from transformers import (
     MobileBertConfig,
     MobileBertTokenizerFast,
     MobileBertForSequenceClassification,
-    RobertaConfig,
     RobertaTokenizerFast,
     RobertaForSequenceClassification,
-    XLMConfig,
-    XLMRobertaConfig,
     XLMRobertaTokenizerFast,
     XLMRobertaForSequenceClassification,
-    XLMTokenizer,
     XLMForSequenceClassification,
-    XLNetConfig,
     XLNetTokenizerFast,
     XLNetForSequenceClassification,
+    AlbertTokenizer,
+    BertConfig,
+    BertTokenizer,
+    BertweetTokenizer,
+    DistilBertConfig,
+    DistilBertTokenizer,
+    ElectraConfig,
+    ElectraTokenizer,
+    HerbertTokenizer,
+    LongformerConfig,
+    LongformerTokenizer,
+    RobertaConfig,
+    RobertaTokenizer,
+    XLMConfig,
+    XLMRobertaConfig,
+    XLMRobertaTokenizer,
+    XLMTokenizer,
+    XLNetConfig,
+    XLNetTokenizer,
 )
 from transformers.convert_graph_to_onnx import convert, quantize
 from transformers.optimization import AdamW, Adafactor
@@ -106,6 +102,18 @@ from pytextclassifier.bert_classfication_utils import (
     load_hf_dataset,
     flatten_results,
     init_loss,
+)
+from pytextclassifier.bert_multi_label_classification_model import (
+    AlbertForMultiLabelSequenceClassification,
+    BertForMultiLabelSequenceClassification,
+    BertweetForMultiLabelSequenceClassification,
+    DistilBertForMultiLabelSequenceClassification,
+    ElectraForMultiLabelSequenceClassification,
+    LongformerForMultiLabelSequenceClassification,
+    RobertaForMultiLabelSequenceClassification,
+    XLMForMultiLabelSequenceClassification,
+    XLMRobertaForMultiLabelSequenceClassification,
+    XLNetForMultiLabelSequenceClassification
 )
 
 try:
@@ -143,6 +151,7 @@ class BertClassificationModel:
             tokenizer_name=None,
             num_labels=None,
             weight=None,
+            multi_label=False,
             args=None,
             use_cuda=True,
             cuda_device=-1,
@@ -168,69 +177,109 @@ class BertClassificationModel:
             **kwargs (optional): For providing proxies, force_download, resume_download, cache_dir and other options specific to the 'from_pretrained' implementation where this will be supplied.
         """  # noqa: ignore flake8"
 
-        MODEL_CLASSES = {
-            "albert": (AlbertConfig, AlbertForSequenceClassification, AlbertTokenizer),
-            "auto": (AutoConfig, AutoModelForSequenceClassification, AutoTokenizer),
-            "bert": (BertConfig, BertForSequenceClassification, BertTokenizerFast),
-            "bertweet": (
-                RobertaConfig,
-                RobertaForSequenceClassification,
-                BertweetTokenizer,
-            ),
-            "bigbird": (
-                BigBirdConfig,
-                BigBirdForSequenceClassification,
-                BigBirdTokenizer,
-            ),
-            "deberta": (
-                DebertaConfig,
-                DebertaForSequenceClassification,
-                DebertaTokenizer,
-            ),
-            "debertav2": (
-                DebertaV2Config,
-                DebertaV2ForSequenceClassification,
-                DebertaV2Tokenizer,
-            ),
-            "distilbert": (
-                DistilBertConfig,
-                DistilBertForSequenceClassification,
-                DistilBertTokenizerFast,
-            ),
-            "electra": (
-                ElectraConfig,
-                ElectraForSequenceClassification,
-                ElectraTokenizerFast,
-            ),
-            "herbert": (
-                BertConfig,
-                BertForSequenceClassification,
-                HerbertTokenizerFast,
-            ),
-            "longformer": (
-                LongformerConfig,
-                LongformerForSequenceClassification,
-                LongformerTokenizerFast,
-            ),
-            "mobilebert": (
-                MobileBertConfig,
-                MobileBertForSequenceClassification,
-                MobileBertTokenizerFast,
-            ),
-            "mpnet": (MPNetConfig, MPNetForSequenceClassification, MPNetTokenizerFast),
-            "roberta": (
-                RobertaConfig,
-                RobertaForSequenceClassification,
-                RobertaTokenizerFast,
-            ),
-            "xlm": (XLMConfig, XLMForSequenceClassification, XLMTokenizer),
-            "xlmroberta": (
-                XLMRobertaConfig,
-                XLMRobertaForSequenceClassification,
-                XLMRobertaTokenizerFast,
-            ),
-            "xlnet": (XLNetConfig, XLNetForSequenceClassification, XLNetTokenizerFast),
-        }
+        if multi_label:
+            MODEL_CLASSES = {
+                "albert": (
+                    AlbertConfig,
+                    AlbertForMultiLabelSequenceClassification,
+                    AlbertTokenizer,
+                ),
+                "bert": (
+                    BertConfig,
+                    BertForMultiLabelSequenceClassification,
+                    BertTokenizer,
+                ),
+                "bertweet": (
+                    RobertaConfig,
+                    BertweetForMultiLabelSequenceClassification,
+                    BertweetTokenizer,
+                ),
+                "distilbert": (
+                    DistilBertConfig,
+                    DistilBertForMultiLabelSequenceClassification,
+                    DistilBertTokenizer,
+                ),
+                "electra": (
+                    ElectraConfig,
+                    ElectraForMultiLabelSequenceClassification,
+                    ElectraTokenizer,
+                ),
+                "herbert": (
+                    BertConfig,
+                    BertForMultiLabelSequenceClassification,
+                    HerbertTokenizer,
+                ),
+                "longformer": (
+                    LongformerConfig,
+                    LongformerForMultiLabelSequenceClassification,
+                    LongformerTokenizer,
+                ),
+                "roberta": (
+                    RobertaConfig,
+                    RobertaForMultiLabelSequenceClassification,
+                    RobertaTokenizer,
+                ),
+                "xlm": (XLMConfig, XLMForMultiLabelSequenceClassification, XLMTokenizer),
+                "xlmroberta": (
+                    XLMRobertaConfig,
+                    XLMRobertaForMultiLabelSequenceClassification,
+                    XLMRobertaTokenizer,
+                ),
+                "xlnet": (
+                    XLNetConfig,
+                    XLNetForMultiLabelSequenceClassification,
+                    XLNetTokenizer,
+                ),
+            }
+        else:
+            MODEL_CLASSES = {
+                "albert": (AlbertConfig, AlbertForSequenceClassification, AlbertTokenizer),
+                "auto": (AutoConfig, AutoModelForSequenceClassification, AutoTokenizer),
+                "bert": (BertConfig, BertForSequenceClassification, BertTokenizerFast),
+                "bertweet": (
+                    RobertaConfig,
+                    RobertaForSequenceClassification,
+                    BertweetTokenizer,
+                ),
+                "distilbert": (
+                    DistilBertConfig,
+                    DistilBertForSequenceClassification,
+                    DistilBertTokenizerFast,
+                ),
+                "electra": (
+                    ElectraConfig,
+                    ElectraForSequenceClassification,
+                    ElectraTokenizerFast,
+                ),
+                "herbert": (
+                    BertConfig,
+                    BertForSequenceClassification,
+                    HerbertTokenizerFast,
+                ),
+                "longformer": (
+                    LongformerConfig,
+                    LongformerForSequenceClassification,
+                    LongformerTokenizerFast,
+                ),
+                "mobilebert": (
+                    MobileBertConfig,
+                    MobileBertForSequenceClassification,
+                    MobileBertTokenizerFast,
+                ),
+                "mpnet": (MPNetConfig, MPNetForSequenceClassification, MPNetTokenizerFast),
+                "roberta": (
+                    RobertaConfig,
+                    RobertaForSequenceClassification,
+                    RobertaTokenizerFast,
+                ),
+                "xlm": (XLMConfig, XLMForSequenceClassification, XLMTokenizer),
+                "xlmroberta": (
+                    XLMRobertaConfig,
+                    XLMRobertaForSequenceClassification,
+                    XLMRobertaTokenizerFast,
+                ),
+                "xlnet": (XLNetConfig, XLNetForSequenceClassification, XLNetTokenizerFast),
+            }
 
         self.args = self._load_model_args(model_name)
 
@@ -251,26 +300,27 @@ class BertClassificationModel:
             if self.args.n_gpu > 0:
                 torch.cuda.manual_seed_all(self.args.manual_seed)
 
-        if self.args.labels_list:
-            if num_labels:
-                assert num_labels == len(self.args.labels_list)
-            if self.args.labels_map:
-                try:
-                    assert list(self.args.labels_map.keys()) == self.args.labels_list
-                except AssertionError:
-                    assert [
-                               int(key) for key in list(self.args.labels_map.keys())
-                           ] == self.args.labels_list
+        if not multi_label:
+            if self.args.labels_list:
+                if num_labels:
+                    assert num_labels == len(self.args.labels_list)
+                if self.args.labels_map:
+                    try:
+                        assert list(self.args.labels_map.keys()) == self.args.labels_list
+                    except AssertionError:
+                        assert [
+                                   int(key) for key in list(self.args.labels_map.keys())
+                               ] == self.args.labels_list
+                        self.args.labels_map = {
+                            int(key): value for key, value in self.args.labels_map.items()
+                        }
+                else:
                     self.args.labels_map = {
-                        int(key): value for key, value in self.args.labels_map.items()
+                        label: i for i, label in enumerate(self.args.labels_list)
                     }
             else:
-                self.args.labels_map = {
-                    label: i for i, label in enumerate(self.args.labels_list)
-                }
-        else:
-            len_labels_list = 2 if not num_labels else num_labels
-            self.args.labels_list = [i for i in range(len_labels_list)]
+                len_labels_list = 2 if not num_labels else num_labels
+                self.args.labels_list = [i for i in range(len_labels_list)]
 
         config_class, model_class, tokenizer_class = MODEL_CLASSES[model_type]
 
@@ -401,11 +451,13 @@ class BertClassificationModel:
                 "wandb_project specified but wandb is not available. Wandb disabled."
             )
             self.args.wandb_project = None
+        if multi_label:
+            self.weight = None  # Not implemented for multilabel
+        self.multi_label = multi_label
 
     def train_model(
             self,
             train_df,
-            multi_label=False,
             output_dir=None,
             show_running_loss=True,
             args=None,
@@ -461,7 +513,7 @@ class BertClassificationModel:
 
         if self.args.use_hf_datasets:
             train_dataset = load_hf_dataset(
-                train_df, self.tokenizer, self.args, multi_label=multi_label
+                train_df, self.tokenizer, self.args, multi_label=self.multi_label
             )
         elif isinstance(train_df, str) and self.args.lazy_loading:
             train_dataset = LazyClassificationDataset(
@@ -507,7 +559,6 @@ class BertClassificationModel:
         global_step, training_details = self.train(
             train_dataloader,
             output_dir,
-            multi_label=multi_label,
             show_running_loss=show_running_loss,
             eval_df=eval_df,
             verbose=verbose,
@@ -528,7 +579,6 @@ class BertClassificationModel:
             self,
             train_dataloader,
             output_dir,
-            multi_label=False,
             show_running_loss=True,
             eval_df=None,
             test_df=None,
@@ -732,7 +782,7 @@ class BertClassificationModel:
 
         if args.evaluate_during_training:
             training_progress_scores = self._create_training_progress_scores(
-                multi_label, **kwargs
+                self.multi_label, **kwargs
             )
 
         if args.wandb_project:
@@ -1192,7 +1242,6 @@ class BertClassificationModel:
     def eval_model(
             self,
             eval_df,
-            multi_label=False,
             output_dir=None,
             verbose=True,
             silent=False,
@@ -1226,7 +1275,6 @@ class BertClassificationModel:
         result, model_outputs, wrong_preds = self.evaluate(
             eval_df,
             output_dir,
-            multi_label=multi_label,
             verbose=verbose,
             silent=silent,
             wandb_log=wandb_log,
@@ -1243,7 +1291,6 @@ class BertClassificationModel:
             self,
             eval_df,
             output_dir,
-            multi_label=False,
             verbose=True,
             silent=False,
             wandb_log=True,
@@ -1262,7 +1309,7 @@ class BertClassificationModel:
         results = {}
         if self.args.use_hf_datasets:
             eval_dataset = load_hf_dataset(
-                eval_df, self.tokenizer, self.args, multi_label=multi_label
+                eval_df, self.tokenizer, self.args, multi_label=self.multi_label
             )
             eval_examples = None
         elif isinstance(eval_df, str) and self.args.lazy_loading:
@@ -1316,7 +1363,7 @@ class BertClassificationModel:
         nb_eval_steps = 0
         n_batches = len(eval_dataloader)
         preds = np.empty((len(eval_dataset), self.num_labels))
-        if multi_label:
+        if self.multi_label:
             out_label_ids = np.empty((len(eval_dataset), self.num_labels))
         else:
             out_label_ids = np.empty((len(eval_dataset)))
@@ -1357,7 +1404,7 @@ class BertClassificationModel:
                     )
                     tmp_eval_loss, logits = outputs[:2]
 
-                if multi_label:
+                if self.multi_label:
                     logits = logits.sigmoid()
                 if self.args.n_gpu > 1:
                     tmp_eval_loss = tmp_eval_loss.mean()
@@ -1416,13 +1463,13 @@ class BertClassificationModel:
                     else:
                         final_preds.append(val_freqs_desc[0][0])
             preds = np.array(final_preds)
-        elif not multi_label and args.regression is True:
+        elif not self.multi_label and args.regression is True:
             preds = np.squeeze(preds)
             model_outputs = preds
         else:
             model_outputs = preds
 
-            if not multi_label:
+            if not self.multi_label:
                 preds = np.argmax(preds, axis=1)
 
         result, wrong = self.compute_metrics(
@@ -1439,7 +1486,7 @@ class BertClassificationModel:
         if (
                 self.args.wandb_project
                 and wandb_log
-                and not multi_label
+                and not self.multi_label
                 and not self.args.regression
         ):
             if not wandb.setup().settings.sweep_id:
@@ -1487,7 +1534,6 @@ class BertClassificationModel:
             examples,
             evaluate=False,
             no_cache=False,
-            multi_label=False,
             verbose=True,
             silent=False,
     ):
@@ -1501,7 +1547,7 @@ class BertClassificationModel:
         if not no_cache:
             no_cache = args.no_cache
 
-        if not multi_label and args.regression:
+        if not self.multi_label and args.regression:
             output_mode = "regression"
         else:
             output_mode = "classification"
@@ -1515,7 +1561,7 @@ class BertClassificationModel:
             self.tokenizer,
             self.args,
             mode=mode,
-            multi_label=multi_label,
+            multi_label=self.multi_label,
             output_mode=output_mode,
             no_cache=no_cache,
         )
@@ -1527,7 +1573,6 @@ class BertClassificationModel:
             model_outputs,
             labels,
             eval_examples=None,
-            multi_label=False,
             **kwargs,
     ):
         """
@@ -1557,7 +1602,7 @@ class BertClassificationModel:
             else:
                 extra_metrics[metric] = func(labels, preds)
 
-        if multi_label:
+        if self.multi_label:
             threshold_values = self.args.threshold if self.args.threshold else 0.5
             if isinstance(threshold_values, list):
                 mismatched = labels != [
@@ -1607,7 +1652,7 @@ class BertClassificationModel:
         else:
             wrong = ["NA"]
 
-        if multi_label:
+        if self.multi_label:
             label_ranking_score = label_ranking_average_precision_score(labels, preds)
             return {**{"LRAP": label_ranking_score}, **extra_metrics}, wrong
         elif self.args.regression:
@@ -1666,7 +1711,7 @@ class BertClassificationModel:
                 # "classification_report": classification_report_str,
             }, **extra_metrics}, wrong
 
-    def predict(self, to_predict, multi_label=False):
+    def predict(self, to_predict):
         """
         Performs predictions on a list of text.
 
@@ -1684,12 +1729,12 @@ class BertClassificationModel:
         eval_loss = 0.0
         nb_eval_steps = 0
         preds = np.empty((len(to_predict), self.num_labels))
-        if multi_label:
+        if self.multi_label:
             out_label_ids = np.empty((len(to_predict), self.num_labels))
         else:
             out_label_ids = np.empty((len(to_predict)))
 
-        if not multi_label and self.args.onnx:
+        if not self.multi_label and self.args.onnx:
             model_inputs = self.tokenizer.batch_encode_plus(
                 to_predict, return_tensors="pt", padding=True, truncation=True
             )
@@ -1743,7 +1788,7 @@ class BertClassificationModel:
                 else next(iter(self.args.labels_map.keys()))
             )
 
-            if multi_label:
+            if self.multi_label:
                 dummy_label = [dummy_label for i in range(self.num_labels)]
 
             if args.n_gpu > 1:
@@ -1765,13 +1810,13 @@ class BertClassificationModel:
                     eval_examples, evaluate=True, no_cache=True
                 )
                 preds = np.empty((len(eval_dataset), self.num_labels))
-                if multi_label:
+                if self.multi_label:
                     out_label_ids = np.empty((len(eval_dataset), self.num_labels))
                 else:
                     out_label_ids = np.empty((len(eval_dataset)))
             else:
                 eval_dataset = self.load_and_cache_examples(
-                    eval_examples, evaluate=True, multi_label=multi_label, no_cache=True
+                    eval_examples, evaluate=True, no_cache=True
                 )
 
             eval_sampler = SequentialSampler(eval_dataset)
@@ -1819,7 +1864,7 @@ class BertClassificationModel:
                             outputs[2][1:],
                         )
 
-                        if multi_label:
+                        if self.multi_label:
                             logits = logits.sigmoid()
 
                         if self.args.n_gpu > 1:
@@ -1889,7 +1934,7 @@ class BertClassificationModel:
                             )
                             tmp_eval_loss, logits = outputs[:2]
 
-                        if multi_label:
+                        if self.multi_label:
                             logits = logits.sigmoid()
 
                         if self.args.n_gpu > 1:
@@ -1911,12 +1956,12 @@ class BertClassificationModel:
 
             eval_loss = eval_loss / nb_eval_steps
 
-            if not multi_label and args.regression is True:
+            if not self.multi_label and args.regression is True:
                 preds = np.squeeze(preds)
                 model_outputs = preds
             else:
                 model_outputs = preds
-                if multi_label:
+                if self.multi_label:
                     if isinstance(args.threshold, list):
                         threshold_values = args.threshold
                         preds = [
@@ -2005,7 +2050,7 @@ class BertClassificationModel:
     def _get_inputs_dict(self, batch, no_hf=False):
         if self.args.use_hf_datasets and not no_hf:
             return {key: value.to(self.device) for key, value in batch.items()}
-        if isinstance(batch[0], dict):
+        if isinstance(batch[0], dict) or isinstance(batch[0].data, dict):
             inputs = {
                 key: value.squeeze(1).to(self.device) for key, value in batch[0].items()
             }
@@ -2023,12 +2068,9 @@ class BertClassificationModel:
             if self.args.model_type != "distilbert":
                 inputs["token_type_ids"] = (
                     batch[2]
-                    if self.args.model_type in ["bert", "xlnet", "albert", "layoutlm"]
+                    if self.args.model_type in ["bert", "xlnet", "albert"]
                     else None
                 )
-
-        if self.args.model_type == "layoutlm":
-            inputs["bbox"] = batch[4]
 
         return inputs
 

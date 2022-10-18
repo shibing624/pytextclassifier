@@ -50,6 +50,7 @@ class BertClassifier(ClassifierABC):
             num_epochs=3,
             batch_size=64,
             max_seq_length=128,
+            multi_label=False,
             args=None,
     ):
         """
@@ -61,7 +62,8 @@ class BertClassifier(ClassifierABC):
         @param num_epochs:
         @param batch_size:
         @param max_seq_length:
-        @param use_cuda:
+        @param multi_label:
+        @param args:
         """
         default_args = {
             "output_dir": model_dir,
@@ -79,8 +81,9 @@ class BertClassifier(ClassifierABC):
             model_type=model_type,
             model_name=model_name,
             num_labels=num_classes,
+            multi_label=multi_label,
             args=train_args,
-            use_cuda=use_cuda
+            use_cuda=use_cuda,
         )
         self.model_dir = model_dir
         self.model_type = model_type
@@ -90,6 +93,7 @@ class BertClassifier(ClassifierABC):
         self.num_epochs = num_epochs
         self.train_args = train_args
         self.use_cuda = use_cuda
+        self.multi_label = multi_label
         self.is_trained = False
 
     def __str__(self):
@@ -98,7 +102,10 @@ class BertClassifier(ClassifierABC):
     def train(
             self,
             data_list_or_path,
-            header=None, names=('labels', 'text'), delimiter='\t', test_size=0.1,
+            header=None,
+            names=('labels', 'text'),
+            delimiter='\t',
+            test_size=0.1
     ):
         """
         Train model with data_list_or_path and save model to model_dir
@@ -117,7 +124,8 @@ class BertClassifier(ClassifierABC):
         if self.model_dir:
             os.makedirs(self.model_dir, exist_ok=True)
         label_vocab_path = os.path.join(self.model_dir, 'label_vocab.json')
-        data_df, self.label_id_map = build_dataset(data_df, label_vocab_path)
+        if not self.multi_label:
+            data_df, self.label_id_map = build_dataset(data_df, label_vocab_path)
         if test_size > 0:
             train_data, dev_data = train_test_split(data_df, test_size=test_size, random_state=SEED)
         else:
@@ -126,7 +134,7 @@ class BertClassifier(ClassifierABC):
         logger.debug(f"train_data size: {len(train_data)}")
         logger.debug(f'train_data sample:\n{train_data[:3]}')
         # train model
-        if dev_data:
+        if dev_data is not None and dev_data.size:
             logger.debug(f"dev_data size: {len(dev_data)}")
             logger.debug(f'dev_data sample:\n{dev_data[:3]}')
             self.model.train_model(train_data, eval_df=dev_data)
@@ -145,19 +153,26 @@ class BertClassifier(ClassifierABC):
             raise ValueError('model not trained.')
         # predict
         predictions, raw_outputs = self.model.predict(sentences)
-        # predict probability
-        id_label_map = {v: k for k, v in self.label_id_map.items()}
-        predict_labels = [id_label_map.get(i) for i in predictions]
-        predict_probs = [1 - np.exp(-raw_output[prediction]) for raw_output, prediction in
-                         zip(raw_outputs, predictions)]
-        return predict_labels, predict_probs
+        if self.multi_label:
+            return predictions, raw_outputs
+        else:
+            # predict probability
+            id_label_map = {v: k for k, v in self.label_id_map.items()}
+            predict_labels = [id_label_map.get(i) for i in predictions]
+            predict_probs = [1 - np.exp(-raw_output[prediction]) for raw_output, prediction in
+                             zip(raw_outputs, predictions)]
+            return predict_labels, predict_probs
 
     def evaluate_model(self, data_list_or_path, header=None,
                        names=('labels', 'text'), delimiter='\t'):
         X_test, y_test, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter)
         self.load_model()
-        data_df, _ = build_dataset(data_df, self.label_vocab_path)
-        result, model_outputs, wrong_predictions = self.model.eval_model(data_df, output_dir=self.model_dir)
+        if not self.multi_label:
+            data_df, _ = build_dataset(data_df, self.label_vocab_path)
+        result, model_outputs, wrong_predictions = self.model.eval_model(
+            data_df,
+            output_dir=self.model_dir,
+        )
         return result
 
     def load_model(self):
@@ -167,15 +182,18 @@ class BertClassifier(ClassifierABC):
         """
         model_path = os.path.join(self.model_dir, 'pytorch_model.bin')
         if os.path.exists(model_path):
-            self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab.json')
-            self.label_id_map = load_vocab(self.label_vocab_path)
-            num_classes = len(self.label_id_map)
+            if not self.multi_label:
+                self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab.json')
+                self.label_id_map = load_vocab(self.label_vocab_path)
+                num_classes = len(self.label_id_map)
+                assert num_classes == self.num_classes, f'num_classes not match, {num_classes} != {self.num_classes}'
             self.model = BertClassificationModel(
                 model_type=self.model_type,
                 model_name=self.model_dir,
-                num_labels=num_classes,
+                num_labels=self.num_classes,
+                multi_label=self.multi_label,
                 args=self.train_args,
-                use_cuda=self.use_cuda
+                use_cuda=self.use_cuda,
             )
             self.is_trained = True
         else:
@@ -208,6 +226,7 @@ if __name__ == '__main__':
         num_epochs=args.num_epochs,
         batch_size=args.batch_size,
         max_seq_length=args.max_seq_length,
+        multi_label=False,
     )
     # train model
     m.train(data_list_or_path=args.data_path)

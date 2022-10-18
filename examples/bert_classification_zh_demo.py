@@ -36,7 +36,7 @@ if __name__ == '__main__':
     acc_score = m.evaluate_model(test_data)
     print(f'acc_score: {acc_score}')  # 1.0
 
-    #### train model with 1w data file
+    # train model with 1w data file and 10 classes
     print('-' * 42)
     m = BertClassifier(model_dir='models/bert-chinese', num_classes=10,
                        model_type='bert', model_name='bert-base-chinese', num_epochs=2)

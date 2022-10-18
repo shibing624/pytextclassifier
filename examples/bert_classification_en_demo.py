@@ -30,4 +30,4 @@ if __name__ == '__main__':
         ('sports', 'Middle East and Asia boost investment in top level sports'),
     ]
     acc_score = m.evaluate_model(test_data)
-    print(f'acc_score: {acc_score}')  # 1.0
+    print(f'acc_score: {acc_score}')

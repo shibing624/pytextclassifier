@@ -191,6 +191,7 @@ class BertClassificationArgs(ModelArgs):
     special_tokens_list: list = field(default_factory=list)
     stride: float = 0.8
     tie_value: int = 1
+    threshold: float = 0.5
 
 
 class InputExample(object):
@@ -370,7 +371,7 @@ def build_classification_dataset(
         data = (examples, labels)
 
         if not args.no_cache and not no_cache:
-            logger.info(" Saving features into cached file %s", cached_features_file)
+            logger.info(" Saving features into cached file %s" % cached_features_file)
             torch.save(data, cached_features_file)
 
     return (examples, labels)

@@ -26,7 +26,9 @@ def load_data(data_list_or_path, header=None, names=('labels', 'text'), delimite
     else:
         raise TypeError('should be list or file path, eg: [(label, text), ... ]')
     X, y = data_df['text'], data_df['labels']
-    logger.debug(f'loaded data list, X size: {len(X)}, y size: {len(y)}, num_classes: {len(set(y))}')
+    if y.size:
+        num_classes = len(y[0]) if isinstance(y[0], list) else len(set(y))
+        logger.debug(f'loaded data list, X size: {len(X)}, y size: {len(y)}, num_classes: {num_classes}')
     assert len(X) == len(y)
     return X, y, data_df
 
