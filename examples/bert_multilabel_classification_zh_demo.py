@@ -51,5 +51,5 @@ if __name__ == '__main__':
 
     # load trained best model from model_dir
     m.load_model()
-    predict_label, predict_proba = m.predict(['some new sentence'])
+    predict_label, predict_proba = m.predict(['一个小时房间仍然没暖和', '耗电情况：这个没有注意'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
