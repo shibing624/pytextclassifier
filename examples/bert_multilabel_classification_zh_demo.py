@@ -11,6 +11,12 @@ from pytextclassifier import BertClassifier
 
 
 def load_jd_data(file_path):
+    """
+    Load jd data from file.
+    @param file_path:
+        format: content,其他,互联互通,产品功耗,滑轮提手,声音,APP操控性,呼吸灯,外观,底座,制热范围,遥控器电池,味道,制热效果,衣物烘干,体积大小
+    @return:
+    """
     data = []
     with open(file_path, 'r', encoding='utf-8') as f:
         for line in f:
