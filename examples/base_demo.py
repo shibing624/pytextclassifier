@@ -14,7 +14,7 @@ logger.add(sys.stderr, level="INFO")  # 设置log级别
 
 if __name__ == '__main__':
     m = ClassicClassifier(model_dir='models/lr-english-toy', model_name_or_model='lr')
-    # ClassicClassifier model name support lr, random_forest, decision_tree, knn, bayes, svm, xgboost
+    # 经典分类方法，支持的模型包括：lr, random_forest, decision_tree, knn, bayes, svm, xgboost
     print(m)
     data = [
         ('education', 'Student debt to cost Britain billions within decades'),

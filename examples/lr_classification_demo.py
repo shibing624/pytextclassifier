@@ -10,7 +10,7 @@ from pytextclassifier import ClassicClassifier
 
 if __name__ == '__main__':
     m = ClassicClassifier(model_dir='models/lr-toy', model_name_or_model='lr')
-    # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
+    # 经典分类方法，支持的模型包括：lr, random_forest, decision_tree, knn, bayes, svm, xgboost
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     acc_score = m.evaluate_model(test_data)
     print(f'acc_score: {acc_score}')  # 1.0
 
-    #### train model with 1w data
+    # train model with 1w data
     print('-' * 42)
     m = ClassicClassifier(model_dir='models/lr', model_name_or_model='lr')
     data_file = 'thucnews_train_1w.txt'

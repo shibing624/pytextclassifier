@@ -10,7 +10,7 @@ from pytextclassifier import ClassicClassifier
 
 if __name__ == '__main__':
     m = ClassicClassifier(model_dir='models/random_forest-toy', model_name_or_model='random_forest')
-    # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
+    # 经典分类方法，支持的模型包括：lr, random_forest, decision_tree, knn, bayes, svm, xgboost
     print(m)
     data = [
         ('education', 'Student debt to cost Britain billions within decades'),

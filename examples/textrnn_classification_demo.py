@@ -6,10 +6,10 @@
 import sys
 
 sys.path.append('..')
-from pytextclassifier import TextCNNClassifier
+from pytextclassifier import TextRNNClassifier
 
 if __name__ == '__main__':
-    m = TextCNNClassifier(model_dir='models/textcnn-toy')
+    m = TextRNNClassifier(model_dir='models/textrnn-toy')
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
@@ -32,4 +32,4 @@ if __name__ == '__main__':
         ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
     ]
     acc_score = m.evaluate_model(test_data)
-    print(f'acc_score: {acc_score}')  # 1.0
+    print(f'acc_score: {acc_score}')

@@ -85,7 +85,7 @@ from pytextclassifier import ClassicClassifier
 
 if __name__ == '__main__':
     m = ClassicClassifier(model_dir='models/lr', model_name_or_model='lr')
-    # model_name is choose classifier, default lr, support lr, random_forest, decision_tree, knn, bayes, svm, xgboost
+    # ClassicClassifier support model_name：lr, random_forest, decision_tree, knn, bayes, svm, xgboost
     print(m)
     data = [
         ('education', 'Student debt to cost Britain billions within decades'),
@@ -131,7 +131,7 @@ from pytextclassifier import ClassicClassifier
 
 if __name__ == '__main__':
     m = ClassicClassifier(model_dir='models/lr-toy', model_name_or_model='lr')
-    # model_name is choose classifier, default lr, support lr, random_forest, textcnn, fasttext, textrnn_att, bert
+    # 经典分类方法，支持的模型包括：lr, random_forest, decision_tree, knn, bayes, svm, xgboost
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
@@ -211,7 +211,12 @@ output:
 
 ## Deep Classification model
 
-本项目支持多种常用深度分类模型，包括FastText、TextCNN、TextRNN、Bert分类模型。
+本项目支持以下深度分类模型：FastText、TextCNN、TextRNN、Bert模型，`import`模型对应的方法来调用：
+```python
+from pytextclassifier import FastTextClassifier, TextCNNClassifier, TextRNNClassifier, BertClassifier
+```
+
+下面以FastText模型为示例，其他模型的使用方法类似。
 
 ### FastText 模型
 
