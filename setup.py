@@ -5,7 +5,7 @@
 """
 from setuptools import setup, find_packages
 
-__version__ = '1.3.1'
+__version__ = '1.3.2'
 
 with open('README.md', 'r', encoding='utf-8') as f:
     readme = f.read()
