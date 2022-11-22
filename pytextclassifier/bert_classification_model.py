@@ -942,8 +942,7 @@ class BertClassificationModel:
                         if test_df is not None:
                             test_results, _, _ = self.eval_model(
                                 test_df,
-                                verbose=verbose
-                                        and args.evaluate_during_training_verbose,
+                                verbose=verbose and args.evaluate_during_training_verbose,
                                 silent=args.evaluate_during_training_silent,
                                 wandb_log=False,
                                 **kwargs,
