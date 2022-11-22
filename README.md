@@ -328,7 +328,9 @@ if __name__ == '__main__':
 多标签分类比较直观的理解是，一个样本可以同时拥有几个类别标签，
 比如一首歌的标签可以是流行、轻快，一部电影的标签可以是动作、喜剧、搞笑等，这都是多标签分类的情况。
 
-训练和预测`BERT`多标签分类模型，示例[examples/bert_multilabel_classification_zh_demo.py.py](examples/bert_multilabel_classification_zh_demo.py.py)
+训练和预测`BERT`多标签分类模型，示例[examples/bert_multilabel_classification_zh_demo.py.py](https://github.com/shibing624/pytextclassifier/blob/master/examples/bert_multilabel_classification_zh_demo.py)
+
+
 ```python
 import sys
 import pandas as pd
