@@ -124,8 +124,8 @@ class ModelArgs:
     use_cached_eval_features: bool = False
     use_early_stopping: bool = False
     use_hf_datasets: bool = False
-    use_multiprocessing: bool = True
-    use_multiprocessing_for_evaluation: bool = True
+    use_multiprocessing: bool = False
+    use_multiprocessing_for_evaluation: bool = False
     wandb_kwargs: dict = field(default_factory=dict)
     wandb_project: str = None
     warmup_ratio: float = 0.06
