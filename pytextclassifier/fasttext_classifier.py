@@ -26,8 +26,11 @@ pwd_path = os.path.abspath(os.path.dirname(__file__))
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def build_dataset(tokenizer, X, y, word_vocab_path, label_vocab_path, max_vocab_size=10000,
-                  max_seq_length=128, unk_token='[UNK]', pad_token='[PAD]', n_gram_vocab=250499):
+def build_dataset(
+        tokenizer, X, y, word_vocab_path, label_vocab_path, max_vocab_size=10000,
+        max_seq_length=128, unk_token='[UNK]', pad_token='[PAD]',
+        n_gram_vocab=250499, enable_ngram=True
+):
     if os.path.exists(word_vocab_path):
         word_id_map = load_vocab(word_vocab_path)
     else:
@@ -72,14 +75,18 @@ def build_dataset(tokenizer, X, y, word_vocab_path, label_vocab_path, max_vocab_
                 words_line.append(word_id_map.get(word, word_id_map.get(unk_token)))
             label_id = label_id_map.get(label)
             # fasttext ngram
-            buckets = n_gram_vocab
             bigram = []
             trigram = []
-            # ------ngram------
-            for i in range(max_seq_length):
-                bigram.append(biGramHash(words_line, i, buckets))
-                trigram.append(triGramHash(words_line, i, buckets))
-            # -----------------
+            if enable_ngram:
+                buckets = n_gram_vocab
+                # ------ngram------
+                for i in range(max_seq_length):
+                    bigram.append(biGramHash(words_line, i, buckets))
+                    trigram.append(triGramHash(words_line, i, buckets))
+                # -----------------
+            else:
+                bigram = [0] * max_seq_length
+                trigram = [0] * max_seq_length
             contents.append((words_line, label_id, seq_len, bigram, trigram))
         return contents
 
@@ -141,7 +148,9 @@ def build_iterator(dataset, device, batch_size=32):
 class FastTextModel(nn.Module):
     """Bag of Tricks for Efficient Text Classification"""
 
-    def __init__(self, vocab_size, num_classes, embed_size=200, n_gram_vocab=250499, hidden_size=256, dropout_rate=0.5):
+    def __init__(
+            self, vocab_size, num_classes, embed_size=200, n_gram_vocab=250499, hidden_size=256, dropout_rate=0.5
+    ):
         super().__init__()
         self.embedding = nn.Embedding(vocab_size, embed_size, padding_idx=vocab_size - 1)
         self.embedding_ngram2 = nn.Embedding(n_gram_vocab, embed_size)
@@ -170,7 +179,9 @@ class FastTextClassifier(ClassifierABC):
             model_dir,
             dropout_rate=0.5, batch_size=64, max_seq_length=128,
             embed_size=200, hidden_size=256, n_gram_vocab=250499,
-            max_vocab_size=10000, unk_token='[UNK]', pad_token='[PAD]', tokenizer=None,
+            max_vocab_size=10000, unk_token='[UNK]', pad_token='[PAD]',
+            tokenizer=None,
+            enable_ngram=True,
     ):
         """
         初始化
@@ -185,6 +196,7 @@ class FastTextClassifier(ClassifierABC):
         @param unk_token: 未知字
         @param pad_token: padding符号
         @param tokenizer: 切词器
+        @param enable_ngram: 是否使用ngram
         """
         self.model_dir = model_dir
         self.is_trained = False
@@ -200,6 +212,7 @@ class FastTextClassifier(ClassifierABC):
         self.unk_token = unk_token
         self.pad_token = pad_token
         self.tokenizer = tokenizer if tokenizer else lambda x: [y for y in x]  # char-level
+        self.enable_ngram = enable_ngram
 
     def __str__(self):
         return f'FasttextClassifier instance ({self.model})'
@@ -236,12 +249,16 @@ class FastTextClassifier(ClassifierABC):
         label_vocab_path = os.path.join(model_dir, 'label_vocab.json')
         save_model_path = os.path.join(model_dir, 'model.pth')
 
-        dataset, self.word_id_map, self.label_id_map = build_dataset(self.tokenizer, X, y, word_vocab_path,
-                                                                     label_vocab_path,
-                                                                     max_vocab_size=self.max_vocab_size,
-                                                                     max_seq_length=self.max_seq_length,
-                                                                     unk_token=self.unk_token, pad_token=self.pad_token,
-                                                                     n_gram_vocab=self.n_gram_vocab)
+        dataset, self.word_id_map, self.label_id_map = build_dataset(
+            self.tokenizer, X, y, word_vocab_path,
+            label_vocab_path,
+            max_vocab_size=self.max_vocab_size,
+            max_seq_length=self.max_seq_length,
+            unk_token=self.unk_token,
+            pad_token=self.pad_token,
+            n_gram_vocab=self.n_gram_vocab,
+            enable_ngram=self.enable_ngram
+        )
         train_data, dev_data = train_test_split(dataset, test_size=test_size, random_state=SEED)
         logger.debug(f"train_data size: {len(train_data)}, dev_data size: {len(dev_data)}")
         logger.debug(f'train_data sample:\n{train_data[:3]}\ndev_data sample:\n{dev_data[:3]}')
@@ -251,14 +268,18 @@ class FastTextClassifier(ClassifierABC):
         vocab_size = len(self.word_id_map)
         num_classes = len(self.label_id_map)
         logger.debug(f'vocab_size:{vocab_size}', 'num_classes:', num_classes)
-        self.model = FastTextModel(vocab_size, num_classes, self.embed_size, self.n_gram_vocab, self.hidden_size,
-                                   self.dropout_rate)
+        self.model = FastTextModel(
+            vocab_size, num_classes, self.embed_size, self.n_gram_vocab, self.hidden_size,
+            self.dropout_rate
+        )
         self.model.to(device)
         # init_network(self.model)
         logger.info(self.model.parameters)
         # train model
-        history = self.train_model_from_data_iterator(save_model_path, train_iter, dev_iter, num_epochs, learning_rate,
-                                                      require_improvement, evaluate_during_training_steps)
+        history = self.train_model_from_data_iterator(
+            save_model_path, train_iter, dev_iter, num_epochs, learning_rate,
+            require_improvement, evaluate_during_training_steps
+        )
         self.is_trained = True
         logger.debug('train model done')
         return history
@@ -266,7 +287,8 @@ class FastTextClassifier(ClassifierABC):
     def train_model_from_data_iterator(
             self, save_model_path, train_iter, dev_iter,
             num_epochs=10, learning_rate=1e-3,
-            require_improvement=1000, evaluate_during_training_steps=100):
+            require_improvement=1000, evaluate_during_training_steps=100
+    ):
         history = []
         # train
         start_time = time.time()
@@ -302,7 +324,8 @@ class FastTextClassifier(ClassifierABC):
                         else:
                             improve = ''
                         time_dif = get_time_spend(start_time)
-                        msg = 'Iter:{0:>6},Train Loss:{1:>5.2},Train Acc:{2:>6.2%},Val Loss:{3:>5.2},Val Acc:{4:>6.2%},Time:{5} {6}'.format(
+                        msg = 'Iter:{0:>6},Train Loss:{1:>5.2},Train Acc:{2:>6.2%},' \
+                              'Val Loss:{3:>5.2},Val Acc:{4:>6.2%},Time:{5} {6}'.format(
                             total_batch, loss.item(), train_acc, dev_loss, dev_acc, time_dif, improve)
                     else:
                         time_dif = get_time_spend(start_time)
@@ -356,14 +379,18 @@ class FastTextClassifier(ClassifierABC):
                 for word in token:
                     words_line.append(self.word_id_map.get(word, self.word_id_map.get(self.unk_token)))
                 # fasttext ngram
-                buckets = self.n_gram_vocab
                 bigram = []
                 trigram = []
-                # ------ngram------
-                for i in range(max_seq_length):
-                    bigram.append(biGramHash(words_line, i, buckets))
-                    trigram.append(triGramHash(words_line, i, buckets))
-                # -----------------
+                if self.enable_ngram:
+                    buckets = self.n_gram_vocab
+                    # ------ngram------
+                    for i in range(max_seq_length):
+                        bigram.append(biGramHash(words_line, i, buckets))
+                        trigram.append(triGramHash(words_line, i, buckets))
+                    # -----------------
+                else:
+                    bigram = [0] * max_seq_length
+                    trigram = [0] * max_seq_length
                 contents.append((words_line, 0, seq_len, bigram, trigram))
             return contents
 
@@ -390,13 +417,17 @@ class FastTextClassifier(ClassifierABC):
                        names=('labels', 'text'), delimiter='\t'):
         X_test, y_test, df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter)
         self.load_model()
-        data, word_id_map, label_id_map = build_dataset(self.tokenizer, X_test, y_test,
-                                                        self.word_vocab_path,
-                                                        self.label_vocab_path,
-                                                        max_vocab_size=self.max_vocab_size,
-                                                        max_seq_length=self.max_seq_length,
-                                                        unk_token=self.unk_token,
-                                                        pad_token=self.pad_token, n_gram_vocab=self.n_gram_vocab)
+        data, word_id_map, label_id_map = build_dataset(
+            self.tokenizer, X_test, y_test,
+            self.word_vocab_path,
+            self.label_vocab_path,
+            max_vocab_size=self.max_vocab_size,
+            max_seq_length=self.max_seq_length,
+            unk_token=self.unk_token,
+            pad_token=self.pad_token,
+            n_gram_vocab=self.n_gram_vocab,
+            enable_ngram=self.enable_ngram
+        )
         data_iter = build_iterator(data, device, self.batch_size)
         return self.evaluate(data_iter)[0]
 
@@ -438,8 +469,10 @@ class FastTextClassifier(ClassifierABC):
             self.label_id_map = load_vocab(self.label_vocab_path)
             vocab_size = len(self.word_id_map)
             num_classes = len(self.label_id_map)
-            self.model = FastTextModel(vocab_size, num_classes, self.embed_size, self.n_gram_vocab, self.hidden_size,
-                                       self.dropout_rate)
+            self.model = FastTextModel(
+                vocab_size, num_classes, self.embed_size, self.n_gram_vocab, self.hidden_size,
+                self.dropout_rate
+            )
             self.model.load_state_dict(torch.load(model_path, map_location=device))
             self.model.to(device)
             self.is_trained = True

@@ -9,7 +9,7 @@ sys.path.append('..')
 from pytextclassifier import FastTextClassifier, load_data
 
 if __name__ == '__main__':
-    m = FastTextClassifier(model_dir='models/fasttext-toy')
+    m = FastTextClassifier(model_dir='models/fasttext-toy', enable_ngram=False)
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
