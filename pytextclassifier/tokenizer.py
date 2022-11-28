@@ -4,6 +4,7 @@
 @description: Tokenization
 """
 import re
+import jieba
 
 
 def tokenize_words(text):
@@ -12,7 +13,6 @@ def tokenize_words(text):
     sentences = split_2_short_text(text, include_symbol=True)
     for sentence, idx in sentences:
         if is_any_chinese_string(sentence):
-            import jieba
             output.extend(jieba.lcut(sentence))
         else:
             output.extend(whitespace_tokenize(sentence))
@@ -77,7 +77,7 @@ def is_any_chinese_string(string):
 
 
 def whitespace_tokenize(text):
-    """Runs basic whitespace cleaning and splitting on a peice of text."""
+    """Runs basic whitespace cleaning and splitting on a piece of text."""
     text = text.strip()
     if not text:
         return []

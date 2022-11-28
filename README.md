@@ -74,7 +74,7 @@ python3 setup.py install
 
 ## English Text Classifier
 
-Including model training, saving, predict, evaluate, for example [examples/base_demo.py](examples/base_demo.py):
+Including model training, saving, predict, evaluate, for example [examples/lr_en_classification_demo.py](examples/lr_en_classification_demo.py):
 
 
 ```python
@@ -508,11 +508,11 @@ Xu, M. Pytextclassifier: Text classifier toolkit for NLP (Version 1.2.0) [Comput
 
 BibTeX:
 ```latex
-@software{Xu_Pytextclassifier_Text_classifier,
-author = {Xu, Ming},
-title = {Pytextclassifier: Text classifier toolkit for NLP},
-url = {https://github.com/shibing624/pytextclassifier},
-version = {1.2.0}
+@misc{Pytextclassifier,
+  title={Pytextclassifier: Text classifier toolkit for NLP},
+  author={Xu Ming},
+  year={2022},
+  howpublished={\url{https://github.com/shibing624/pytextclassifier}},
 }
 ```
 
