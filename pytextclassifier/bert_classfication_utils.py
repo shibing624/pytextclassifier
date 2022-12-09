@@ -81,7 +81,7 @@ class ModelArgs:
     evaluate_during_training_steps: int = 2000
     evaluate_during_training_verbose: bool = False
     evaluate_each_epoch: bool = True
-    fp16: bool = True
+    fp16: bool = False
     gradient_accumulation_steps: int = 1
     learning_rate: float = 4e-5
     local_rank: int = -1
@@ -122,7 +122,7 @@ class ModelArgs:
     train_batch_size: int = 8
     train_custom_parameters_only: bool = False
     use_cached_eval_features: bool = False
-    use_early_stopping: bool = False
+    use_early_stopping: bool = True
     use_hf_datasets: bool = False
     use_multiprocessing: bool = False
     use_multiprocessing_for_evaluation: bool = False
