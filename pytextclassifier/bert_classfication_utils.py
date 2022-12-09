@@ -76,7 +76,7 @@ class ModelArgs:
     early_stopping_patience: int = 3
     encoding: str = None
     eval_batch_size: int = 8
-    evaluate_during_training: bool = False
+    evaluate_during_training: bool = True
     evaluate_during_training_silent: bool = True
     evaluate_during_training_steps: int = 2000
     evaluate_during_training_verbose: bool = False

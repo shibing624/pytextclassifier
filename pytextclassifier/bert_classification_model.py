@@ -490,10 +490,12 @@ class BertClassificationModel:
             show_running_loss = False
 
         if self.args.evaluate_during_training and eval_df is None:
-            raise ValueError(
+            logger.warning(
                 "evaluate_during_training is enabled but eval_df is not specified."
                 " Pass eval_df to model.train_model() if using evaluate_during_training."
+                " now disabling evaluate_during_training."
             )
+            self.args.evaluate_during_training = False
 
         if not output_dir:
             output_dir = self.args.output_dir
