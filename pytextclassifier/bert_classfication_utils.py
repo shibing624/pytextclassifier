@@ -854,10 +854,11 @@ class LazyClassificationDataset(Dataset):
                 label = torch.tensor(int(label), dtype=torch.long)
 
             return (
-                self.tokenizer.encode_plus(
-                    text,
+                self.tokenizer(
+                    text=text,
+                    truncation=True,
+                    padding="max_length",
                     max_length=self.args.max_seq_length,
-                    pad_to_max_length=self.args.max_seq_length,
                     return_tensors="pt",
                 ),
                 label,

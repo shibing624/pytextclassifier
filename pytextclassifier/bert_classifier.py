@@ -131,12 +131,12 @@ class BertClassifier(ClassifierABC):
         else:
             train_data = data_df
             dev_data = None
-        if self.train_args.lazy_loading:
-            train_data = data_list_or_path
-            dev_data = None
         logger.debug(f"train_data size: {len(train_data)}")
         logger.debug(f'train_data sample:\n{train_data[:3]}')
         # train model
+        if self.train_args.lazy_loading:
+            train_data = data_list_or_path
+            dev_data = None
         if dev_data is not None and dev_data.size:
             logger.debug(f"dev_data size: {len(dev_data)}")
             logger.debug(f'dev_data sample:\n{dev_data[:3]}')
