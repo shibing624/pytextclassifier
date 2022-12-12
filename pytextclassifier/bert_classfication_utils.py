@@ -305,7 +305,7 @@ def build_classification_dataset(
         logger.info(f" Features loaded from cache at {cached_features_file}")
         examples, labels = data
     else:
-        logger.info(" Converting to features started. Cache is not used.")
+        logger.debug(" Converting to features started. Cache is not used.")
 
         if len(data) == 3:
             # Sentence pair task

@@ -166,7 +166,8 @@ class BertClassifier(ClassifierABC):
     def evaluate_model(self, data_list_or_path, header=None,
                        names=('labels', 'text'), delimiter='\t'):
         X_test, y_test, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter)
-        self.load_model()
+        if not self.is_trained:
+            self.load_model()
         if not self.multi_label:
             data_df, _ = build_dataset(data_df, self.label_vocab_path)
         result, model_outputs, wrong_predictions = self.model.eval_model(

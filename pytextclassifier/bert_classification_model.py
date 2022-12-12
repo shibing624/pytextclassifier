@@ -359,7 +359,7 @@ class BertClassificationModel:
                 )
         else:
             self.device = "cpu"
-        logger.info(f"Device: {self.device}")
+        logger.debug(f"Device: {self.device}")
 
         self.loss_fct = init_loss(
             weight=self.weight, device=self.device, args=self.args
