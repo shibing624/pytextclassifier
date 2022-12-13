@@ -21,7 +21,7 @@ if __name__ == '__main__':
         ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
         ('sports', '米兰客场8战不败国米10年连胜'),
     ]
-    # m.train(data)
+    m.train(data)
     print(m)
     # load trained best model from model_dir
     m.load_model()
