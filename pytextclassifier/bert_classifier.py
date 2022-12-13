@@ -109,8 +109,10 @@ class BertClassifier(ClassifierABC):
         if self.model_dir:
             os.makedirs(self.model_dir, exist_ok=True)
         labels_map = {}
+        labels_list = []
         if not self.multi_label:
             labels_map = self.build_labels_map(y, self.label_vocab_path)
+            labels_list = sorted(list(labels_map.keys()))
         if test_size > 0:
             train_data, dev_data = train_test_split(data_df, test_size=test_size, random_state=SEED)
         else:
@@ -125,9 +127,15 @@ class BertClassifier(ClassifierABC):
         if dev_data is not None and dev_data.size:
             logger.debug(f"dev_data size: {len(dev_data)}")
             logger.debug(f'dev_data sample:\n{dev_data[:3]}')
-            self.model.train_model(train_data, eval_df=dev_data, args={'labels_map': labels_map})
+            self.model.train_model(
+                train_data, eval_df=dev_data,
+                args={'labels_map': labels_map, 'labels_list': labels_list}
+            )
         else:
-            self.model.train_model(train_data, args={'labels_map': labels_map})
+            self.model.train_model(
+                train_data,
+                args={'labels_map': labels_map, 'labels_list': labels_list}
+            )
         self.is_trained = True
         logger.debug('train model done')
 
