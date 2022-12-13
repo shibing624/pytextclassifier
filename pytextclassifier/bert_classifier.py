@@ -180,7 +180,7 @@ class BertClassifier(ClassifierABC):
             if not self.multi_label:
                 labels_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
                 labels_list = sorted(list(labels_map.keys()))
-                num_classes = len(load_vocab(self.label_vocab_path))
+                num_classes = len(labels_map)
                 assert num_classes == self.num_classes, f'num_classes not match, {num_classes} != {self.num_classes}'
             self.train_args.update_from_dict({'labels_map': labels_map, 'labels_list': labels_list})
             self.model = BertClassificationModel(

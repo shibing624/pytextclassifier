@@ -306,7 +306,7 @@ class BertClassificationModel:
                     assert num_labels == len(self.args.labels_list)
                 if self.args.labels_map:
                     try:
-                        assert list(self.args.labels_map.keys()) == self.args.labels_list
+                        assert sorted(list(self.args.labels_map.keys())) == self.args.labels_list
                     except AssertionError:
                         assert [
                                    int(key) for key in list(self.args.labels_map.keys())
