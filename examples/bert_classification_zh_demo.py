@@ -21,7 +21,7 @@ if __name__ == '__main__':
         ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
         ('sports', '米兰客场8战不败国米10年连胜'),
     ]
-    m.train(data)
+    # m.train(data)
     print(m)
     # load trained best model from model_dir
     m.load_model()
@@ -39,9 +39,10 @@ if __name__ == '__main__':
     # train model with 1w data file and 10 classes
     print('-' * 42)
     m = BertClassifier(model_dir='models/bert-chinese', num_classes=10,
-                       model_type='bert', model_name='bert-base-chinese', num_epochs=2)
+                       model_type='bert', model_name='bert-base-chinese', num_epochs=2,
+                       args={"no_cache": True, "lazy_loading": True, "lazy_text_column": 1, "lazy_labels_column": 0, })
     data_file = 'thucnews_train_1w.txt'
-    m.train(data_file)  # fine tune 2 轮
+    m.train(data_file, test_size=0, names=('labels', 'text'))
     m.load_model()
     predict_label, predict_proba = m.predict(
         ['顺义北京苏活88平米起精装房在售',

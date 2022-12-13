@@ -24,22 +24,6 @@ use_cuda = torch.cuda.is_available()
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
-def build_dataset(data_df, label_vocab_path):
-    y = data_df['labels']
-    if os.path.exists(label_vocab_path):
-        label_id_map = json.load(open(label_vocab_path, 'r', encoding='utf-8'))
-    else:
-        id_label_map = {id: v for id, v in enumerate(set(y.tolist()))}
-        label_id_map = {v: k for k, v in id_label_map.items()}
-        json.dump(label_id_map, open(label_vocab_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=4)
-    logger.debug(f"label vocab size: {len(label_id_map)}, label_vocab_path: {label_vocab_path}")
-
-    df = data_df.copy()
-    df.loc[:, 'labels'] = df.loc[:, 'labels'].map(lambda x: label_id_map.get(x))
-    data_df = df
-    return data_df, label_id_map
-
-
 class BertClassifier(ClassifierABC):
     def __init__(
             self,
@@ -94,6 +78,7 @@ class BertClassifier(ClassifierABC):
         self.train_args = train_args
         self.use_cuda = use_cuda
         self.multi_label = multi_label
+        self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab.json')
         self.is_trained = False
 
     def __str__(self):
@@ -116,16 +101,16 @@ class BertClassifier(ClassifierABC):
         @param test_size:
         @return:
         """
-        logger.debug('train model...')
+        logger.debug('train model ...')
         SEED = 1
         set_seed(SEED)
         # load data
         X, y, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter)
         if self.model_dir:
             os.makedirs(self.model_dir, exist_ok=True)
-        label_vocab_path = os.path.join(self.model_dir, 'label_vocab.json')
+        labels_map = {}
         if not self.multi_label:
-            data_df, self.label_id_map = build_dataset(data_df, label_vocab_path)
+            labels_map = self.build_labels_map(y, self.label_vocab_path)
         if test_size > 0:
             train_data, dev_data = train_test_split(data_df, test_size=test_size, random_state=SEED)
         else:
@@ -140,9 +125,9 @@ class BertClassifier(ClassifierABC):
         if dev_data is not None and dev_data.size:
             logger.debug(f"dev_data size: {len(dev_data)}")
             logger.debug(f'dev_data sample:\n{dev_data[:3]}')
-            self.model.train_model(train_data, eval_df=dev_data)
+            self.model.train_model(train_data, eval_df=dev_data, args={'labels_map': labels_map})
         else:
-            self.model.train_model(train_data)
+            self.model.train_model(train_data, args={'labels_map': labels_map})
         self.is_trained = True
         logger.debug('train model done')
 
@@ -150,7 +135,7 @@ class BertClassifier(ClassifierABC):
         """
         Predict labels and label probability for sentences.
         @param sentences: list, input text list, eg: [text1, text2, ...]
-        @return: predict_label, predict_prob
+        @return: predict_labels, predict_probs
         """
         if not self.is_trained:
             raise ValueError('model not trained.')
@@ -160,19 +145,15 @@ class BertClassifier(ClassifierABC):
             return predictions, raw_outputs
         else:
             # predict probability
-            id_label_map = {v: k for k, v in self.label_id_map.items()}
-            predict_labels = [id_label_map.get(i) for i in predictions]
-            predict_probs = [1 - np.exp(-raw_output[prediction]) for raw_output, prediction in
+            predict_probs = [1 - np.exp(-np.max(raw_output)) for raw_output, prediction in
                              zip(raw_outputs, predictions)]
-            return predict_labels, predict_probs
+            return predictions, predict_probs
 
     def evaluate_model(self, data_list_or_path, header=None,
                        names=('labels', 'text'), delimiter='\t'):
         X_test, y_test, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter)
         if not self.is_trained:
             self.load_model()
-        if not self.multi_label:
-            data_df, _ = build_dataset(data_df, self.label_vocab_path)
         result, model_outputs, wrong_predictions = self.model.eval_model(
             data_df,
             output_dir=self.model_dir,
@@ -186,11 +167,14 @@ class BertClassifier(ClassifierABC):
         """
         model_path = os.path.join(self.model_dir, 'pytorch_model.bin')
         if os.path.exists(model_path):
+            labels_map = {}
+            labels_list = []
             if not self.multi_label:
-                self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab.json')
-                self.label_id_map = load_vocab(self.label_vocab_path)
-                num_classes = len(self.label_id_map)
+                labels_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
+                labels_list = sorted(list(labels_map.keys()))
+                num_classes = len(load_vocab(self.label_vocab_path))
                 assert num_classes == self.num_classes, f'num_classes not match, {num_classes} != {self.num_classes}'
+            self.train_args.update_from_dict({'labels_map': labels_map, 'labels_list': labels_list})
             self.model = BertClassificationModel(
                 model_type=self.model_type,
                 model_name=self.model_dir,
@@ -204,6 +188,13 @@ class BertClassifier(ClassifierABC):
             logger.error(f'{model_path} not exists.')
             self.is_trained = False
         return self.is_trained
+
+    def build_labels_map(self, y, label_vocab_path):
+        id_label_map = {id: v for id, v in enumerate(set(y.tolist()))}
+        label_id_map = {v: k for k, v in id_label_map.items()}
+        json.dump(label_id_map, open(label_vocab_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=4)
+        logger.debug(f"label vocab size: {len(label_id_map)}, label_vocab_path: {label_vocab_path}")
+        return label_id_map
 
 
 if __name__ == '__main__':
