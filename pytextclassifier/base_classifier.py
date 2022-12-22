@@ -34,7 +34,7 @@ def load_data(data_list_or_path, header=None, names=('labels', 'text'), delimite
             if isinstance(label, str):
                 labels.update(label.split(labels_sep))
             elif isinstance(label, list):
-                labels.update(label)
+                labels.update(range(len(label)))
             else:
                 labels.add(label)
         num_classes = len(labels)
