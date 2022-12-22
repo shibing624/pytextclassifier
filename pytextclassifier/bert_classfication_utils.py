@@ -320,6 +320,8 @@ def build_classification_dataset(
                 if isinstance(labels[0], str):
                     labels = [[int(1) if i in label.split(args.labels_sep) else int(0) for i in
                                          args.labels_list] for label in labels]
+                elif isinstance(labels[0], list) and isinstance(labels[0][0], int):
+                    labels = labels
                 else:
                     labels = [[args.labels_map[l] for l in label] for label in labels]
             else:
