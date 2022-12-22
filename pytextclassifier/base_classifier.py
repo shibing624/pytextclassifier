@@ -8,13 +8,15 @@ import pandas as pd
 from loguru import logger
 
 
-def load_data(data_list_or_path, header=None, names=('labels', 'text'), delimiter='\t'):
+def load_data(data_list_or_path, header=None, names=('labels', 'text'), delimiter='\t',
+              labels_sep=','):
     """
     Encoding data_list text
     @param data_list_or_path: list of (label, text), eg: [(label, text), (label, text) ...]
     @param header: read_csv header
     @param names: read_csv names
     @param delimiter: read_csv sep
+    @param labels_sep: multi label split
     @return: X, y, data_df
     """
     if isinstance(data_list_or_path, list):
@@ -26,10 +28,21 @@ def load_data(data_list_or_path, header=None, names=('labels', 'text'), delimite
     else:
         raise TypeError('should be list or file path, eg: [(label, text), ... ]')
     X, y = data_df['text'], data_df['labels']
+    labels = set()
     if y.size:
-        num_classes = len(y[0]) if isinstance(y[0], list) else len(set(y))
-        logger.debug(f'loaded data list, X size: {len(X)}, y size: {len(y)}, num_classes: {num_classes}')
+        for label in y.tolist():
+            if isinstance(label, str):
+                labels.update(label.split(labels_sep))
+            elif isinstance(label, list):
+                labels.update(label)
+            else:
+                labels.add(label)
+        num_classes = len(labels)
+        labels = sorted(list(labels))
+        logger.debug(f'loaded data list, X size: {len(X)}, y size: {len(y)}')
+        logger.debug('num_classes: %d, labels: %s' % (num_classes, labels))
     assert len(X) == len(y)
+
     return X, y, data_df
 
 
@@ -37,6 +50,7 @@ class ClassifierABC:
     """
     Abstract class for classifier
     """
+
     def train(self, data_list_or_path, model_dir: str, **kwargs):
         raise NotImplementedError('train method not implemented.')
 

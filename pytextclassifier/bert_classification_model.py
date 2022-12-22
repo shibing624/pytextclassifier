@@ -452,7 +452,7 @@ class BertClassificationModel:
             )
             self.args.wandb_project = None
         if multi_label:
-            self.weight = None  # Not implemented for multilabel
+            self.weight = None  # Not implemented for multi label
         self.multi_label = multi_label
 
     def train_model(
@@ -1984,7 +1984,13 @@ class BertClassificationModel:
             inverse_labels_map = {
                 value: key for key, value in self.args.labels_map.items()
             }
-            preds = [inverse_labels_map[pred] for pred in preds]
+            if self.multi_label:
+                preds = [
+                    [inverse_labels_map[i] for i, label in enumerate(example) if label]
+                    for example in preds
+                ]
+            else:
+                preds = [inverse_labels_map[pred] for pred in preds]
 
         if self.config.output_hidden_states:
             return preds, model_outputs, all_embedding_outputs, all_layer_hidden_states

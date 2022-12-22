@@ -317,7 +317,11 @@ def build_classification_dataset(
         # If labels_map is defined, then labels need to be replaced with ints
         if args.labels_map and not args.regression:
             if multi_label:
-                labels = [[args.labels_map[l] for l in label] for label in labels]
+                if isinstance(labels[0], str):
+                    labels = [[int(1) if i in label.split(args.labels_sep) else int(0) for i in
+                                         args.labels_list] for label in labels]
+                else:
+                    labels = [[args.labels_map[l] for l in label] for label in labels]
             else:
                 labels = [args.labels_map[label] for label in labels]
 
@@ -395,7 +399,10 @@ class ClassificationDataset(Dataset):
 
 def map_labels_to_numeric(example, multi_label, args):
     if multi_label:
-        example["labels"] = [args.labels_map[label] for label in example["labels"]]
+        if isinstance(example["labels"][0], str):
+            example["labels"] = [int(1) if i in example["labels"].split(args.labels_sep) else int(0) for i in args.labels_list]
+        else:
+            example["labels"] = [args.labels_map[label] for label in example["labels"]]
     else:
         example["labels"] = args.labels_map[example["labels"]]
 
@@ -847,9 +854,14 @@ class LazyClassificationDataset(Dataset):
 
             # If labels_map is defined, then labels need to be replaced with ints
             if self.args.labels_map:
-                label = self.args.labels_map[label]
+                if self.args.multi_label:
+                    label = [self.args.labels_map[l] for l in label.split(self.args.labels_sep)]
+                else:
+                    label = self.args.labels_map[label]
             if self.args.regression:
                 label = torch.tensor(float(label), dtype=torch.float)
+            elif self.args.multi_label:
+                label = torch.tensor([int(l) for l in label], dtype=torch.long)
             else:
                 label = torch.tensor(int(label), dtype=torch.long)
 

@@ -35,6 +35,7 @@ class BertClassifier(ClassifierABC):
             batch_size=64,
             max_seq_length=128,
             multi_label=False,
+            labels_sep=',',
             args=None,
     ):
         """
@@ -47,6 +48,7 @@ class BertClassifier(ClassifierABC):
         @param batch_size:
         @param max_seq_length:
         @param multi_label:
+        @param labels_sep:
         @param args:
         """
         default_args = {
@@ -55,6 +57,7 @@ class BertClassifier(ClassifierABC):
             "num_train_epochs": num_epochs,
             "train_batch_size": batch_size,
             "best_model_dir": os.path.join(model_dir, 'best_model'),
+            "labels_sep": labels_sep,
         }
         train_args = BertClassificationArgs()
         if args and isinstance(args, dict):
@@ -78,6 +81,7 @@ class BertClassifier(ClassifierABC):
         self.train_args = train_args
         self.use_cuda = use_cuda
         self.multi_label = multi_label
+        self.labels_sep = labels_sep
         self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab.json')
         self.is_trained = False
 
@@ -90,7 +94,7 @@ class BertClassifier(ClassifierABC):
             header=None,
             names=('labels', 'text'),
             delimiter='\t',
-            test_size=0.1
+            test_size=0.1,
     ):
         """
         Train model with data_list_or_path and save model to model_dir
@@ -105,14 +109,12 @@ class BertClassifier(ClassifierABC):
         SEED = 1
         set_seed(SEED)
         # load data
-        X, y, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter)
+        X, y, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter,
+                                  labels_sep=self.labels_sep)
         if self.model_dir:
             os.makedirs(self.model_dir, exist_ok=True)
-        labels_map = {}
-        labels_list = []
-        if not self.multi_label:
-            labels_map = self.build_labels_map(y, self.label_vocab_path)
-            labels_list = sorted(list(labels_map.keys()))
+        labels_map = self.build_labels_map(y, self.label_vocab_path, self.multi_label, self.labels_sep)
+        labels_list = sorted(list(labels_map.keys()))
         if test_size > 0:
             train_data, dev_data = train_test_split(data_df, test_size=test_size, random_state=SEED)
         else:
@@ -159,7 +161,8 @@ class BertClassifier(ClassifierABC):
 
     def evaluate_model(self, data_list_or_path, header=None,
                        names=('labels', 'text'), delimiter='\t'):
-        X_test, y_test, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter)
+        X_test, y_test, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter,
+                                            labels_sep=self.labels_sep)
         if not self.is_trained:
             self.load_model()
         result, model_outputs, wrong_predictions = self.model.eval_model(
@@ -175,13 +178,10 @@ class BertClassifier(ClassifierABC):
         """
         model_path = os.path.join(self.model_dir, 'pytorch_model.bin')
         if os.path.exists(model_path):
-            labels_map = {}
-            labels_list = []
-            if not self.multi_label:
-                labels_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
-                labels_list = sorted(list(labels_map.keys()))
-                num_classes = len(labels_map)
-                assert num_classes == self.num_classes, f'num_classes not match, {num_classes} != {self.num_classes}'
+            labels_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
+            labels_list = sorted(list(labels_map.keys()))
+            num_classes = len(labels_map)
+            assert num_classes == self.num_classes, f'num_classes not match, {num_classes} != {self.num_classes}'
             self.train_args.update_from_dict({'labels_map': labels_map, 'labels_list': labels_list})
             self.model = BertClassificationModel(
                 model_type=self.model_type,
@@ -197,8 +197,29 @@ class BertClassifier(ClassifierABC):
             self.is_trained = False
         return self.is_trained
 
-    def build_labels_map(self, y, label_vocab_path):
-        id_label_map = {id: v for id, v in enumerate(set(y.tolist()))}
+    @staticmethod
+    def build_labels_map(y, label_vocab_path, multi_label=False, labels_sep=','):
+        """
+        Build labels map
+        @param y:
+        @param label_vocab_path:
+        @param multi_label:
+        @param labels_sep:
+        @return:
+        """
+        if multi_label:
+            labels = set()
+            for label in y.tolist():
+                if isinstance(label, str):
+                    labels.update(label.split(labels_sep))
+                elif isinstance(label, list):
+                    labels.update(label)
+                else:
+                    labels.add(label)
+        else:
+            labels = set(y.tolist())
+        labels = sorted(list(labels))
+        id_label_map = {id: v for id, v in enumerate(labels)}
         label_id_map = {v: k for k, v in id_label_map.items()}
         json.dump(label_id_map, open(label_vocab_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=4)
         logger.debug(f"label vocab size: {len(label_id_map)}, label_vocab_path: {label_vocab_path}")
