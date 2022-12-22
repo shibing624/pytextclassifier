@@ -181,7 +181,8 @@ class BertClassifier(ClassifierABC):
             labels_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
             labels_list = sorted(list(labels_map.keys()))
             num_classes = len(labels_map)
-            assert num_classes == self.num_classes, f'num_classes not match, {num_classes} != {self.num_classes}'
+            if not self.multi_label:
+                assert num_classes == self.num_classes, f'num_classes not match, {num_classes} != {self.num_classes}'
             self.train_args.update_from_dict({'labels_map': labels_map, 'labels_list': labels_list})
             self.model = BertClassificationModel(
                 model_type=self.model_type,
