@@ -134,7 +134,6 @@ class BertClassifier(ClassifierABC):
         # train model
         if self.train_args.lazy_loading:
             train_data = data_list_or_path
-            dev_data = dev_data_list_or_path
         if dev_data is not None and dev_data.size:
             logger.debug(f"dev_data size: {len(dev_data)}")
             logger.debug(f'dev_data sample:\n{dev_data[:3]}')

@@ -454,6 +454,7 @@ class BertClassificationModel:
         if multi_label:
             self.weight = None  # Not implemented for multi label
         self.multi_label = multi_label
+        self.args.multi_label = multi_label
 
     def train_model(
             self,
