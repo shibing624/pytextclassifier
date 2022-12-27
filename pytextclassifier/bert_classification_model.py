@@ -1613,13 +1613,25 @@ class BertClassificationModel:
                     ]
                     for example in preds
                 ]
+                pred_labels = [
+                    [
+                        self._threshold(pred, threshold_values[i])
+                        for i, pred in enumerate(example)
+                    ]
+                    for example in preds
+                ]
             else:
                 mismatched = labels != [
                     [self._threshold(pred, threshold_values) for pred in example]
                     for example in preds
                 ]
+                pred_labels = [
+                    [self._threshold(pred, threshold_values) for pred in example]
+                    for example in preds
+                ]
         else:
             mismatched = labels != preds
+            pred_labels = preds
 
         if eval_examples:
             if not isinstance(eval_examples[0], InputExample):
@@ -1655,7 +1667,16 @@ class BertClassificationModel:
 
         if self.multi_label:
             label_ranking_score = label_ranking_average_precision_score(labels, preds)
-            return {**{"LRAP": label_ranking_score}, **extra_metrics}, wrong
+            acc = accuracy_score(labels, np.array(pred_labels))
+            precision, recall, f_score, true_sum = precision_recall_fscore_support(
+                labels, np.array(pred_labels), average='weighted')
+            return {**{
+                "LRAP": label_ranking_score, 
+                "acc": acc, 
+                "precision": precision,
+                "recall": recall,
+                "f1": f_score,
+                }, **extra_metrics}, wrong
         elif self.args.regression:
             return {**extra_metrics}, wrong
 
