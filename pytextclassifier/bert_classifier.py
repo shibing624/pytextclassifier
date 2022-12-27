@@ -160,7 +160,7 @@ class BertClassifier(ClassifierABC):
             return predictions, predict_probs
 
     def evaluate_model(self, data_list_or_path, header=None,
-                       names=('labels', 'text'), delimiter='\t'):
+                       names=('labels', 'text'), delimiter='\t', **kwargs):
         X_test, y_test, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter,
                                             labels_sep=self.labels_sep)
         if not self.is_trained:
@@ -168,6 +168,7 @@ class BertClassifier(ClassifierABC):
         result, model_outputs, wrong_predictions = self.model.eval_model(
             data_df,
             output_dir=self.model_dir,
+            **kwargs,
         )
         return result
 
