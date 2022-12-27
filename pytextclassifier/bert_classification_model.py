@@ -1661,7 +1661,7 @@ class BertClassificationModel:
 
         mcc = matthews_corrcoef(labels, preds)
         acc = accuracy_score(labels, preds)
-        classification_report_str = classification_report(labels, preds)
+        classification_report_str = classification_report(labels, preds, digits=4, output_dict=True)
 
         if self.model.num_labels == 2:
             tn, fp, fn, tp = confusion_matrix(labels, preds, labels=[0, 1]).ravel()
@@ -1694,7 +1694,7 @@ class BertClassificationModel:
                             "precision": precision,
                             "recall": recall,
                             "f1": f_score,
-                            # "classification_report": classification_report_str,
+                            "classification_report": classification_report_str,
                         },
                         **extra_metrics,
                     },
@@ -1709,7 +1709,7 @@ class BertClassificationModel:
                 "precision": precision,
                 "recall": recall,
                 "f1": f_score,
-                # "classification_report": classification_report_str,
+                "classification_report": classification_report_str,
             }, **extra_metrics}, wrong
 
     def predict(self, to_predict):
