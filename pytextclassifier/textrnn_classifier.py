@@ -229,7 +229,7 @@ class TextRNNClassifier(ClassifierABC):
         SEED = 1
         set_seed(SEED)
         # load data
-        X, y, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter)
+        X, y, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter, is_train=True)
         model_dir = self.model_dir
         if model_dir:
             os.makedirs(model_dir, exist_ok=True)

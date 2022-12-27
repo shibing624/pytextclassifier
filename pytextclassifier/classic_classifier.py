@@ -140,7 +140,7 @@ class ClassicClassifier(ClassifierABC):
         @return:
         """
         # load data
-        X, y, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter)
+        X, y, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter, is_train=True)
         # split validation set
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=1)
         # train model

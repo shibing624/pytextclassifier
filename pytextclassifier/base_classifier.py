@@ -9,7 +9,7 @@ from loguru import logger
 
 
 def load_data(data_list_or_path, header=None, names=('labels', 'text'), delimiter='\t',
-              labels_sep=','):
+              labels_sep=',', is_train=False):
     """
     Encoding data_list text
     @param data_list_or_path: list of (label, text), eg: [(label, text), (label, text) ...]
@@ -17,6 +17,7 @@ def load_data(data_list_or_path, header=None, names=('labels', 'text'), delimite
     @param names: read_csv names
     @param delimiter: read_csv sep
     @param labels_sep: multi label split
+    @param is_train: is train data
     @return: X, y, data_df
     """
     if isinstance(data_list_or_path, list):
@@ -40,7 +41,8 @@ def load_data(data_list_or_path, header=None, names=('labels', 'text'), delimite
         num_classes = len(labels)
         labels = sorted(list(labels))
         logger.debug(f'loaded data list, X size: {len(X)}, y size: {len(y)}')
-        logger.debug('num_classes: %d, labels: %s' % (num_classes, labels))
+        if is_train:
+            logger.debug('num_classes: %d, labels: %s' % (num_classes, labels))
     assert len(X) == len(y)
 
     return X, y, data_df

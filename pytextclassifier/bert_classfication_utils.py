@@ -857,7 +857,11 @@ class LazyClassificationDataset(Dataset):
             # If labels_map is defined, then labels need to be replaced with ints
             if self.args.labels_map:
                 if self.args.multi_label:
-                    label = [self.args.labels_map[l] for l in label.split(self.args.labels_sep)]
+                    if isinstance(label[0], str):
+                        label = [int(1) if i in label.split(self.args.labels_sep) else int(0) for i in
+                                 self.args.labels_map.keys()]
+                    else:
+                        label = [self.args.labels_map[l] for l in label]
                 else:
                     label = self.args.labels_map[label]
             if self.args.regression:
