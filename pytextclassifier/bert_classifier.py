@@ -131,7 +131,7 @@ class BertClassifier(ClassifierABC):
                 dev_data = None
         logger.debug(f"train_data size: {len(train_data)}")
         logger.debug(f'train_data sample:\n{train_data[:3]}')
-        if dev_data is not None and dev.size:
+        if dev_data is not None and dev_data.size:
             logger.debug(f"dev_data size: {len(dev_data)}")
             logger.debug(f'dev_data sample:\n{dev_data[:3]}')
         # train model
