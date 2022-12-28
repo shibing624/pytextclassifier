@@ -171,12 +171,15 @@ class BertClassifier(ClassifierABC):
 
     def evaluate_model(self, data_list_or_path, header=None,
                        names=('labels', 'text'), delimiter='\t', **kwargs):
-        X_test, y_test, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter,
+        if self.train_args.lazy_loading:
+            eval_df = data_list_or_path
+        else:
+            X_test, y_test, eval_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter,
                                             labels_sep=self.labels_sep)
         if not self.is_trained:
             self.load_model()
         result, model_outputs, wrong_predictions = self.model.eval_model(
-            data_df,
+            eval_df,
             output_dir=self.model_dir,
             **kwargs,
         )
