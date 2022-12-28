@@ -307,20 +307,24 @@ if __name__ == '__main__':
         ('sports', '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'),
     ]
     acc_score = m.evaluate_model(test_data)
-    print(f'acc_score: {acc_score}')  # 1.0
-
-    #### train model with 1w data file
+    print(f'acc_score: {acc_score}')
+    
+    # train model with 1w data file and 10 classes
     print('-' * 42)
     m = BertClassifier(model_dir='models/bert-chinese', num_classes=10,
-                       model_type='bert', model_name='bert-base-chinese', num_epochs=2)
+                       model_type='bert', model_name='bert-base-chinese', num_epochs=2,
+                       args={"no_cache": True, "lazy_loading": True, "lazy_text_column": 1, "lazy_labels_column": 0, })
     data_file = 'thucnews_train_1w.txt'
-    m.train(data_file)  # fine tune 2 轮
+    # 如果训练数据超过百万条，建议使用lazy_loading模式，减少内存占用
+    m.train(data_file, test_size=0, names=('labels', 'text'))
     m.load_model()
     predict_label, predict_proba = m.predict(
         ['顺义北京苏活88平米起精装房在售',
-         '美EB-5项目“15日快速移民”将推迟'])
+         '美EB-5项目“15日快速移民”将推迟',
+         '恒生AH溢指收平 A股对H股折价1.95%'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
 ```
+PS：如果训练数据超过百万条，建议使用lazy_loading模式，减少内存占用
 
 #### 多标签分类模型
 分类可以分为多分类和多标签分类。多分类的标签是排他的，而多标签分类的所有标签是不排他的。

@@ -42,6 +42,7 @@ if __name__ == '__main__':
                        model_type='bert', model_name='bert-base-chinese', num_epochs=2,
                        args={"no_cache": True, "lazy_loading": True, "lazy_text_column": 1, "lazy_labels_column": 0, })
     data_file = 'thucnews_train_1w.txt'
+    # 如果训练数据超过百万条，建议使用lazy_loading模式，减少内存占用
     m.train(data_file, test_size=0, names=('labels', 'text'))
     m.load_model()
     predict_label, predict_proba = m.predict(
