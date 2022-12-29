@@ -14,13 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import collections
 import json
 import linecache
 import os
 import sys
 import warnings
-from collections import Counter, Iterable
+
+try:
+    from collections import Iterable, Mapping
+except ImportError:
+    from collections.abc import Iterable, Mapping
 from dataclasses import asdict, dataclass, field
 from io import open
 from multiprocessing import Pool
@@ -319,7 +322,7 @@ def build_classification_dataset(
             if multi_label:
                 if isinstance(labels[0], str):
                     labels = [[int(1) if i in label.split(args.labels_sep) else int(0) for i in
-                                         args.labels_list] for label in labels]
+                               args.labels_list] for label in labels]
                 elif isinstance(labels[0], list) and isinstance(labels[0][0], int):
                     labels = labels
                 else:
@@ -402,7 +405,8 @@ class ClassificationDataset(Dataset):
 def map_labels_to_numeric(example, multi_label, args):
     if multi_label:
         if isinstance(example["labels"][0], str):
-            example["labels"] = [int(1) if i in example["labels"].split(args.labels_sep) else int(0) for i in args.labels_list]
+            example["labels"] = [int(1) if i in example["labels"].split(args.labels_sep) else int(0) for i in
+                                 args.labels_list]
         else:
             example["labels"] = [args.labels_map[label] for label in example["labels"]]
     else:
@@ -907,11 +911,11 @@ class LazyClassificationDataset(Dataset):
 
 def flatten_results(results, parent_key="", sep="/"):
     out = []
-    if isinstance(results, collections.Mapping):
+    if isinstance(results, Mapping):
         for key, value in results.items():
             pkey = parent_key + sep + str(key) if parent_key else str(key)
             out.extend(flatten_results(value, parent_key=pkey).items())
-    elif isinstance(results, collections.Iterable):
+    elif isinstance(results, Iterable):
         for key, value in enumerate(results):
             pkey = parent_key + sep + str(key) if parent_key else str(key)
             out.extend(flatten_results(value, parent_key=pkey).items())
@@ -965,10 +969,12 @@ class FocalLoss(nn.Module):
 
     def __init__(
             self,
-            alpha: Optional[Union[float, Iterable]] = None,
+            alpha: Optional[Union[float, Iterable]] = 0.25,
             gamma: Real = 2.0,
             reduction: str = "mean",
             ignore_index: int = -100,
+            epsilon=1.e-9,
+            activation_type='softmax',
     ) -> None:
         super(FocalLoss, self).__init__()
         if (
@@ -990,8 +996,16 @@ class FocalLoss(nn.Module):
         self.gamma: Real = gamma
         self.reduction: str = reduction
         self.ignore_index: int = ignore_index
+        self.epsilon = epsilon
+        self.activation_type: str = activation_type
 
     def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass of the criterion.
+        @param input: model's output, shape [N, C] meaning N: batch_size and C: num_classes
+        @param target: ground truth, shape [N], N: batch_size
+        @return: shape of [N]
+        """
         if not torch.is_tensor(input):
             raise TypeError(
                 "Input type is not a torch.Tensor. Got {}".format(type(input))
@@ -1018,14 +1032,25 @@ class FocalLoss(nn.Module):
         input_mask = target != self.ignore_index
         target = target[input_mask]
         input = input[input_mask]
-        # compute softmax over the classes axis
-        pt = F.softmax(input, dim=1)
-        logpt = F.log_softmax(input, dim=1)
+        if self.activation_type == 'sigmoid':
+            multi_hot_key = target
+            logits = torch.sigmoid(input)
+            zero_hot_key = 1 - multi_hot_key
+            focal_loss = -self.alpha * multi_hot_key * \
+                         torch.pow((1 - logits), self.gamma) * \
+                         (logits + self.epsilon).log()
+            focal_loss += -(1 - self.alpha) * zero_hot_key * \
+                          torch.pow(logits, self.gamma) * \
+                          (1 - logits + self.epsilon).log()
+        else:
+            # compute softmax over the classes axis
+            pt = F.softmax(input, dim=1)
+            logpt = F.log_softmax(input, dim=1)
 
-        # compute focal loss
-        pt = pt.gather(1, target.unsqueeze(-1)).squeeze()
-        logpt = logpt.gather(1, target.unsqueeze(-1)).squeeze()
-        focal_loss = -1 * (1 - pt) ** self.gamma * logpt
+            # compute focal loss
+            pt = pt.gather(1, target.unsqueeze(-1)).squeeze()
+            logpt = logpt.gather(1, target.unsqueeze(-1)).squeeze()
+            focal_loss = -1 * (1 - pt) ** self.gamma * logpt
 
         weights = torch.ones_like(
             focal_loss, dtype=focal_loss.dtype, device=focal_loss.device
@@ -1059,7 +1084,7 @@ class FocalLoss(nn.Module):
 def init_loss(weight, device, args):
     if weight and args.loss_type:
         warnings.warn(
-            f"weight and args.loss_type parametters are set at the same time"
+            f"weight and args.loss_type parameters are set at the same time"
             f"will use weighted cross entropy loss. To use {args.loss_type} set weight to None"
         )
     if weight:
