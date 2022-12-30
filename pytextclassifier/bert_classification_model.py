@@ -2064,8 +2064,10 @@ class BertClassificationModel:
         if loss_fct:
             logits = outputs[1]
             labels = inputs["labels"]
-
-            loss = loss_fct(logits.view(-1, num_labels), labels.view(-1))
+            if self.multi_label:
+                loss = loss_fct(logits.view(-1, num_labels), labels.view(-1, num_labels))
+            else:
+                loss = loss_fct(logits.view(-1, num_labels), labels.view(-1))
         return (loss, *outputs[1:])
 
     def _threshold(self, x, threshold):

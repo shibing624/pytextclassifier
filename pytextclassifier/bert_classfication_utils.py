@@ -1010,16 +1010,6 @@ class FocalLoss(nn.Module):
             raise TypeError(
                 "Input type is not a torch.Tensor. Got {}".format(type(input))
             )
-        if input.shape[0] != target.shape[0]:
-            raise ValueError(
-                f"First dimension of inputs and targets should be same shape. "
-                f"Got: {input.shape} and {target.shape}"
-            )
-        if len(input.shape) != 2 or len(target.shape) != 1:
-            raise ValueError(
-                f"input tensors should be of shape (N, C) and (N,). "
-                f"Got: {input.shape} and {target.shape}"
-            )
         if input.device != target.device:
             raise ValueError(
                 "input and target must be in the same device. Got: {}".format(
@@ -1032,6 +1022,7 @@ class FocalLoss(nn.Module):
         input_mask = target != self.ignore_index
         target = target[input_mask]
         input = input[input_mask]
+
         if self.activation_type == 'sigmoid':
             multi_hot_key = target
             logits = torch.sigmoid(input)
