@@ -1030,6 +1030,9 @@ class FocalLoss(nn.Module):
             focal_loss += -(1 - self.alpha) * zero_hot_key * \
                           torch.pow(logits, self.gamma) * \
                           (1 - logits + self.epsilon).log()
+            weights = torch.ones_like(
+                focal_loss, dtype=focal_loss.dtype, device=focal_loss.device
+            )
         else:
             input_mask = target != self.ignore_index
             target = target[input_mask]
@@ -1043,16 +1046,16 @@ class FocalLoss(nn.Module):
             logpt = logpt.gather(1, target.unsqueeze(-1)).squeeze()
             focal_loss = -1 * (1 - pt) ** self.gamma * logpt
 
-        weights = torch.ones_like(
-            focal_loss, dtype=focal_loss.dtype, device=focal_loss.device
-        )
-        if self.alpha is not None:
-            if isinstance(self.alpha, float):
-                alpha = torch.tensor(self.alpha, device=input.device)
-                weights = torch.where(target > 0, 1 - alpha, alpha)
-            elif torch.is_tensor(self.alpha):
-                alpha = self.alpha.to(input.device)
-                weights = alpha.gather(0, target)
+            weights = torch.ones_like(
+                focal_loss, dtype=focal_loss.dtype, device=focal_loss.device
+            )
+            if self.alpha is not None:
+                if isinstance(self.alpha, float):
+                    alpha = torch.tensor(self.alpha, device=input.device)
+                    weights = torch.where(target > 0, 1 - alpha, alpha)
+                elif torch.is_tensor(self.alpha):
+                    alpha = self.alpha.to(input.device)
+                    weights = alpha.gather(0, target)
 
         tmp_loss = focal_loss * weights
         if self.reduction == "none":
