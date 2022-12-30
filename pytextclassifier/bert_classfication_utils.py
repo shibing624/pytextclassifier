@@ -969,7 +969,7 @@ class FocalLoss(nn.Module):
 
     def __init__(
             self,
-            alpha: Optional[Union[float, Iterable]] = 0.25,
+            alpha: Optional[Union[float, Iterable]] = 0.5,
             gamma: Real = 2.0,
             reduction: str = "mean",
             ignore_index: int = -100,
@@ -1019,9 +1019,6 @@ class FocalLoss(nn.Module):
 
         # filter labels
         target = target.type(torch.long)
-        input_mask = target != self.ignore_index
-        target = target[input_mask]
-        input = input[input_mask]
 
         if self.activation_type == 'sigmoid':
             multi_hot_key = target
@@ -1034,6 +1031,9 @@ class FocalLoss(nn.Module):
                           torch.pow(logits, self.gamma) * \
                           (1 - logits + self.epsilon).log()
         else:
+            input_mask = target != self.ignore_index
+            target = target[input_mask]
+            input = input[input_mask]
             # compute softmax over the classes axis
             pt = F.softmax(input, dim=1)
             logpt = F.log_softmax(input, dim=1)
