@@ -451,8 +451,6 @@ class BertClassificationModel:
                 "wandb_project specified but wandb is not available. Wandb disabled."
             )
             self.args.wandb_project = None
-        if multi_label:
-            self.weight = None  # Not implemented for multi label
         self.multi_label = multi_label
         self.args.multi_label = multi_label
 
