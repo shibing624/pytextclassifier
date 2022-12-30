@@ -362,7 +362,7 @@ class BertClassificationModel:
         logger.debug(f"Device: {self.device}")
 
         self.loss_fct = init_loss(
-            weight=self.weight, device=self.device, args=self.args
+            weight=self.weight, device=self.device, args=self.args, multi_label=multi_label
         )
 
         if self.args.onnx:

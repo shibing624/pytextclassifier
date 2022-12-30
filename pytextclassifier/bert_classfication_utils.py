@@ -1072,17 +1072,23 @@ class FocalLoss(nn.Module):
         return loss
 
 
-def init_loss(weight, device, args):
+def init_loss(weight, device, args, multi_label=False):
     if weight and args.loss_type:
         warnings.warn(
             f"weight and args.loss_type parameters are set at the same time"
             f"will use weighted cross entropy loss. To use {args.loss_type} set weight to None"
         )
     if weight:
-        loss_fct = nn.CrossEntropyLoss(weight=torch.Tensor(weight).to(device))
+        if multi_label:
+            loss_fct = nn.BCEWithLogitsLoss(weight=torch.Tensor(weight).to(device))
+        else:
+            loss_fct = nn.CrossEntropyLoss(weight=torch.Tensor(weight).to(device))
     elif args.loss_type:
         if args.loss_type == "focal":
-            loss_fct = FocalLoss(**args.loss_args)
+            if multi_label:
+                loss_fct = FocalLoss(activation_type='sigmoid', **args.loss_args)
+            else:
+                loss_fct = FocalLoss(activation_type='softmax', **args.loss_args)
         else:
             raise NotImplementedError(f"unknown {args.loss_type} loss function")
     else:
