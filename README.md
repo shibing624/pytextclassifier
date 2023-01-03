@@ -11,7 +11,7 @@
 PyTextClassifier, Python Text Classifier. It can be applied to the fields of sentiment polarity analysis, text risk classification and so on,
 and it supports multiple classification algorithms and clustering algorithms.
 
-文本分类器，提供多种文本分类和聚类算法，支持文本极性情感分类，文本风险类型分类等文本分类和聚类应用，开箱即用。python3开发。
+文本分类器，提供多种文本分类和聚类算法，支持句子和文档级的文本分类任务，支持二分类、多分类、多标签分类、多层级分类和Kmeans聚类，开箱即用。python3开发。
 
 
 **Guide**
@@ -42,7 +42,7 @@ Functions：
   - [x] Xgboost
   - [x] Support Vector Machine(SVM)
   - [x] TextCNN
-  - [x] TextRNN_Att
+  - [x] TextRNN
   - [x] Fasttext
   - [x] BERT
 
