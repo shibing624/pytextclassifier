@@ -34,8 +34,6 @@ from typing import Optional, Union
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from datasets import Dataset as HFDataset
-from datasets import load_dataset
 from torch.utils.data import Dataset
 from tqdm.auto import tqdm
 from loguru import logger
@@ -416,6 +414,8 @@ def map_labels_to_numeric(example, multi_label, args):
 
 
 def load_hf_dataset(data, tokenizer, args, multi_label):
+    from datasets import Dataset as HFDataset
+    from datasets import load_dataset
     if isinstance(data, str):
         dataset = load_dataset(
             "csv",
