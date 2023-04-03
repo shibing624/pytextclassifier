@@ -182,7 +182,7 @@ class BertClassificationModel:
                 "albert": (
                     AlbertConfig,
                     AlbertForMultiLabelSequenceClassification,
-                    AlbertTokenizer,
+                    AutoTokenizer,
                 ),
                 "bert": (
                     BertConfig,
@@ -233,7 +233,7 @@ class BertClassificationModel:
             }
         else:
             MODEL_CLASSES = {
-                "albert": (AlbertConfig, AlbertForSequenceClassification, AlbertTokenizer),
+                "albert": (AlbertConfig, AlbertForSequenceClassification, AutoTokenizer),
                 "auto": (AutoConfig, AutoModelForSequenceClassification, AutoTokenizer),
                 "bert": (BertConfig, BertForSequenceClassification, BertTokenizerFast),
                 "bertweet": (
