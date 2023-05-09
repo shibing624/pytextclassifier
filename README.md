@@ -1,3 +1,12 @@
+<div align="center">
+  <a href="https://github.com/shibing624/pytextclassifier">
+    <img src="https://github.com/shibing624/pytextclassifier/blob/master/docs/logo.png" alt="Logo" height="156">
+  </a>
+</div>
+
+-----------------
+
+# PyTextClassifier: Python Text Classifier
 [![PyPI version](https://badge.fury.io/py/pytextclassifier.svg)](https://badge.fury.io/py/pytextclassifier)
 [![Downloads](https://pepy.tech/badge/pytextclassifier)](https://pepy.tech/project/pytextclassifier)
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
@@ -7,12 +16,15 @@
 [![GitHub issues](https://img.shields.io/github/issues/shibing624/pytextclassifier.svg)](https://github.com/shibing624/pytextclassifier/issues)
 [![Wechat Group](http://vlog.sfyc.ltd/wechat_everyday/wxgroup_logo.png?imageView2/0/w/60/h/20)](#Contact)
 
-# PyTextClassifier
-PyTextClassifier, Python Text Classifier. It can be applied to the fields of sentiment polarity analysis, text risk classification and so on,
+
+## Introduction
+PyTextClassifier: Python Text Classifier. It can be applied to the fields of sentiment polarity analysis, text risk classification and so on,
 and it supports multiple classification algorithms and clustering algorithms.
 
-文本分类器，提供多种文本分类和聚类算法，支持句子和文档级的文本分类任务，支持二分类、多分类、多标签分类、多层级分类和Kmeans聚类，开箱即用。python3开发。
+**pytextclassifier** is a python Open Source Toolkit for text classification. The goal is to implement
+text analysis algorithm, so to achieve the use in the production environment.
 
+文本分类器，提供多种文本分类和聚类算法，支持句子和文档级的文本分类任务，支持二分类、多分类、多标签分类、多层级分类和Kmeans聚类，开箱即用。python3开发。
 
 **Guide**
 
@@ -24,10 +36,7 @@ and it supports multiple classification algorithms and clustering algorithms.
 - [Citation](#Citation)
 - [Reference](#reference)
 
-# Feature
-
-**pytextclassifier** is a python Open Source Toolkit for text classification. The goal is to implement
-text analysis algorithm, so as to achieve the use in the production environment.
+## Feature
 
 **pytextclassifier** has the characteristics
 of clear algorithm, high performance and customizable corpus.
@@ -51,7 +60,7 @@ Functions：
 
 While providing rich functions, **pytextclassifier** internal modules adhere to low coupling, model adherence to inert loading, dictionary publication, and easy to use.
 
-# Install
+## Install
 
 - Requirements and Installation
 
@@ -69,12 +78,12 @@ python3 setup.py install
 ```
 
 
-# Usage
-# Text Classifier
+## Usage
+### Text Classifier
 
-## English Text Classifier
+### English Text Classifier
 
-Including model training, saving, predict, evaluate, for example [examples/lr_en_classification_demo.py](examples/lr_en_classification_demo.py):
+Including model training, saving, predict, evaluate, for example [examples/lr_en_classification_demo.py](https://github.com/shibing624/pytextclassifier/blob/master/examples/lr_en_classification_demo.py):
 
 ```python
 import sys
@@ -116,11 +125,11 @@ predict_label: ['education'], predict_proba: [0.5378236358492112]
 acc_score: 1.0
 ```
 
-## Chinese Text Classifier(中文文本分类)
+### Chinese Text Classifier(中文文本分类)
 
 Text classification compatible with Chinese and English corpora.
 
-example [examples/lr_classification_demo.py](examples/lr_classification_demo.py)
+example [examples/lr_classification_demo.py](https://github.com/shibing624/pytextclassifier/blob/master/examples/lr_classification_demo.py)
 
 ```python
 import sys
@@ -176,9 +185,9 @@ acc_score: 1.0
 predict_label: ['realty' 'education'], predict_proba: [0.7302956923617372, 0.2565005445322923]
 ```
 
-## Visual Feature Importance
+### Visual Feature Importance
 
-Show feature weights of model, and prediction word weight, for example [examples/visual_feature_importance.ipynb](examples/visual_feature_importance.ipynb)
+Show feature weights of model, and prediction word weight, for example [examples/visual_feature_importance.ipynb](https://github.com/shibing624/pytextclassifier/blob/master/examples/visual_feature_importance.ipynb)
 
 ```python
 import sys
@@ -210,7 +219,7 @@ output:
 
 ![img.png](docs/img.png)
 
-## Deep Classification model
+### Deep Classification model
 
 本项目支持以下深度分类模型：FastText、TextCNN、TextRNN、Bert模型，`import`模型对应的方法来调用：
 ```python
@@ -221,7 +230,7 @@ from pytextclassifier import FastTextClassifier, TextCNNClassifier, TextRNNClass
 
 ### FastText 模型
 
-训练和预测`FastText`模型示例[examples/fasttext_classification_demo.py](examples/fasttext_classification_demo.py)
+训练和预测`FastText`模型示例[examples/fasttext_classification_demo.py](https://github.com/shibing624/pytextclassifier/blob/master/examples/fasttext_classification_demo.py)
 
 ```python
 import sys
@@ -274,7 +283,7 @@ if __name__ == '__main__':
 ### BERT 类模型
 
 #### 多分类模型
-训练和预测`BERT`多分类模型，示例[examples/bert_classification_zh_demo.py](examples/bert_classification_zh_demo.py)
+训练和预测`BERT`多分类模型，示例[examples/bert_classification_zh_demo.py](https://github.com/shibing624/pytextclassifier/blob/master/examples/bert_classification_zh_demo.py)
 
 ```python
 import sys
@@ -398,7 +407,7 @@ if __name__ == '__main__':
 
 ### Dataset
 
-1. THUCNews中文文本数据集（1.56GB）：官方[下载地址](http://thuctc.thunlp.org/)，抽样了10万条THUCNews中文文本10分类数据集（6MB），地址：[examples/thucnews_train_10w.txt](examples/thucnews_train_10w.txt)。
+1. THUCNews中文文本数据集（1.56GB）：官方[下载地址](http://thuctc.thunlp.org/)，抽样了10万条THUCNews中文文本10分类数据集（6MB），地址：[examples/thucnews_train_10w.txt](https://github.com/shibing624/pytextclassifier/blob/master/examples/thucnews_train_10w.txt)。
 2. TNEWS今日头条中文新闻（短文本）分类 Short Text Classificaiton for News，该数据集(5.1MB)来自今日头条的新闻版块，共提取了15个类别的新闻，包括旅游，教育，金融，军事等，地址：[tnews_public.zip](https://storage.googleapis.com/cluebenchmark/tasks/tnews_public.zip)
 
 ### Evaluation Result
@@ -448,7 +457,7 @@ python -m pytextclassifier.fasttext_classifier -h
 ## Text Cluster
 
 
-Text clustering, for example [examples/cluster_demo.py](examples/cluster_demo.py)
+Text clustering, for example [examples/cluster_demo.py](https://github.com/shibing624/pytextclassifier/blob/master/examples/cluster_demo.py)
 
 ```python
 import sys
@@ -491,10 +500,10 @@ TextCluster instance (MiniBatchKMeans(n_clusters=2, n_init=10), <pytextclassifie
 ```
 clustering plot image:
 
-![cluster_image](docs/cluster_train_seg_samples.png)
+![cluster_image](https://github.com/shibing624/pytextclassifier/blob/master/docs/cluster_train_seg_samples.png)
 
 
-# Contact
+## Contact
 
 - Issue(建议)：[![GitHub issues](https://img.shields.io/github/issues/shibing624/pytextclassifier.svg)](https://github.com/shibing624/pytextclassifier/issues)
 - 邮件我：xuming: xuming624@qq.com
@@ -502,7 +511,7 @@ clustering plot image:
 <img src="docs/wechat.jpeg" width="200" />
 
 
-# Citation
+## Citation
 
 如果你在研究中使用了pytextclassifier，请按如下格式引用：
 
@@ -522,7 +531,7 @@ BibTeX:
 ```
 
 
-# License
+## License
 
 
 授权协议为 [The Apache License 2.0](LICENSE)，可免费用做商业用途。请在产品说明中附加**pytextclassifier**的链接和授权协议。
@@ -536,7 +545,3 @@ BibTeX:
 
 之后即可提交PR。
 
-
-# Reference
-
-- SentimentPolarityAnalysis
