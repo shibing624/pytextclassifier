@@ -9,7 +9,7 @@ sys.path.append('..')
 from pytextclassifier import ClassicClassifier
 
 if __name__ == '__main__':
-    m = ClassicClassifier(model_dir='models/lr-toy', model_name_or_model='lr')
+    m = ClassicClassifier(output_dir='models/lr-toy', model_name_or_model='lr')
     # 经典分类方法，支持的模型包括：lr, random_forest, decision_tree, knn, bayes, svm, xgboost
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     # train model with 1w data
     print('-' * 42)
-    m = ClassicClassifier(model_dir='models/lr', model_name_or_model='lr')
+    m = ClassicClassifier(output_dir='models/lr', model_name_or_model='lr')
     data_file = 'thucnews_train_1w.txt'
     m.train(data_file)
     m.load_model()

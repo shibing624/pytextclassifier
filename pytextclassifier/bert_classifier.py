@@ -27,8 +27,8 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 class BertClassifier(ClassifierABC):
     def __init__(
             self,
-            model_dir,
             num_classes,
+            output_dir="outputs",
             model_type='bert',
             model_name='bert-base-chinese',
             num_epochs=3,
@@ -38,9 +38,10 @@ class BertClassifier(ClassifierABC):
             labels_sep=',',
             args=None,
     ):
+
         """
         Init classification model
-        @param model_dir: str, model dir
+        @param output_dir: output model dir
         @param model_type: support 'bert', 'albert', 'roberta', 'xlnet'
         @param model_name:
         @param num_classes:
@@ -52,11 +53,11 @@ class BertClassifier(ClassifierABC):
         @param args:
         """
         default_args = {
-            "output_dir": model_dir,
+            "output_dir": output_dir,
             "max_seq_length": max_seq_length,
             "num_train_epochs": num_epochs,
             "train_batch_size": batch_size,
-            "best_model_dir": os.path.join(model_dir, 'best_model'),
+            "best_model_dir": os.path.join(output_dir, 'best_model'),
             "labels_sep": labels_sep,
         }
         train_args = BertClassificationArgs()
@@ -72,7 +73,7 @@ class BertClassifier(ClassifierABC):
             args=train_args,
             use_cuda=use_cuda,
         )
-        self.model_dir = model_dir
+        self.output_dir = output_dir
         self.model_type = model_type
         self.num_classes = num_classes
         self.batch_size = batch_size
@@ -82,7 +83,7 @@ class BertClassifier(ClassifierABC):
         self.use_cuda = use_cuda
         self.multi_label = multi_label
         self.labels_sep = labels_sep
-        self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab.json')
+        self.label_vocab_path = os.path.join(self.output_dir, 'label_vocab.json')
         self.is_trained = False
 
     def __str__(self):
@@ -98,7 +99,7 @@ class BertClassifier(ClassifierABC):
             test_size=0.1,
     ):
         """
-        Train model with data_list_or_path and save model to model_dir
+        Train model with data_list_or_path and save model to output_dir
         @param data_list_or_path:
         @param dev_data_list_or_path:
         @param header:
@@ -113,8 +114,8 @@ class BertClassifier(ClassifierABC):
         # load data
         X, y, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter,
                                   labels_sep=self.labels_sep, is_train=True)
-        if self.model_dir:
-            os.makedirs(self.model_dir, exist_ok=True)
+        if self.output_dir:
+            os.makedirs(self.output_dir, exist_ok=True)
         labels_map = self.build_labels_map(y, self.label_vocab_path, self.multi_label, self.labels_sep)
         labels_list = sorted(list(labels_map.keys()))
         if dev_data_list_or_path is not None:
@@ -171,26 +172,35 @@ class BertClassifier(ClassifierABC):
 
     def evaluate_model(self, data_list_or_path, header=None,
                        names=('labels', 'text'), delimiter='\t', **kwargs):
+        """
+        Evaluate model with data_list_or_path
+        @param data_list_or_path:
+        @param header:
+        @param names:
+        @param delimiter:
+        @param kwargs:
+        @return:
+        """
         if self.train_args.lazy_loading:
             eval_df = data_list_or_path
         else:
             X_test, y_test, eval_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter,
-                                            labels_sep=self.labels_sep)
+                                                labels_sep=self.labels_sep)
         if not self.is_trained:
             self.load_model()
         result, model_outputs, wrong_predictions = self.model.eval_model(
             eval_df,
-            output_dir=self.model_dir,
+            output_dir=self.output_dir,
             **kwargs,
         )
         return result
 
     def load_model(self):
         """
-        Load model from model_dir
+        Load model from output_dir
         @return:
         """
-        model_path = os.path.join(self.model_dir, 'pytorch_model.bin')
+        model_path = os.path.join(self.output_dir, 'pytorch_model.bin')
         if os.path.exists(model_path):
             labels_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
             labels_list = sorted(list(labels_map.keys()))
@@ -199,7 +209,7 @@ class BertClassifier(ClassifierABC):
             self.train_args.update_from_dict({'labels_map': labels_map, 'labels_list': labels_list})
             self.model = BertClassificationModel(
                 model_type=self.model_type,
-                model_name=self.model_dir,
+                model_name=self.output_dir,
                 num_labels=self.num_classes,
                 multi_label=self.multi_label,
                 args=self.train_args,
@@ -246,10 +256,10 @@ if __name__ == '__main__':
                         help='pretrained huggingface model type')
     parser.add_argument('--pretrain_model_name', default='bert-base-chinese', type=str,
                         help='pretrained huggingface model name')
-    parser.add_argument('--model_dir', default='models/bert', type=str, help='save model dir')
+    parser.add_argument('--output_dir', default='models/bert', type=str, help='save model dir')
     parser.add_argument('--data_path', default=os.path.join(pwd_path, '../examples/thucnews_train_1w.txt'),
                         type=str, help='sample data file path')
-    parser.add_argument('--num_classes', default=10, type=int, help='number of classes')
+    parser.add_argument('--num_classes', default=10, type=int, help='number of label classes')
     parser.add_argument('--num_epochs', default=3, type=int, help='train epochs')
     parser.add_argument('--batch_size', default=64, type=int, help='train batch size')
     parser.add_argument('--max_seq_length', default=128, type=int, help='max seq length, trim longer sentence.')
@@ -257,8 +267,8 @@ if __name__ == '__main__':
     print(args)
     # create model
     m = BertClassifier(
-        model_dir=args.model_dir,
         num_classes=args.num_classes,
+        output_dir=args.output_dir,
         model_type=args.pretrain_model_type,
         model_name=args.pretrain_model_name,
         num_epochs=args.num_epochs,
@@ -268,7 +278,7 @@ if __name__ == '__main__':
     )
     # train model
     m.train(data_list_or_path=args.data_path)
-    # load trained best model and predict
+    # load trained model and predict
     m.load_model()
     print('best model loaded from file, and predict')
     X, y, _ = load_data(args.data_path)

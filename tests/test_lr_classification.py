@@ -14,7 +14,7 @@ from pytextclassifier import ClassicClassifier
 
 class BaseTestCase(unittest.TestCase):
     def test_classifier(self):
-        m = ClassicClassifier(model_dir='models/lr', model_name_or_model='lr')
+        m = ClassicClassifier(output_dir='models/lr', model_name_or_model='lr')
         data = [
             ('education', 'Student debt to cost Britain billions within decades'),
             ('education', 'Chinese education for TV experiment'),

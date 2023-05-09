@@ -36,7 +36,7 @@ def load_jd_data(file_path):
 if __name__ == '__main__':
     # model_type: support 'bert', 'albert', 'roberta', 'xlnet'
     # model_name: support 'bert-base-chinese', 'bert-base-cased', 'bert-base-multilingual-cased' ...
-    m = BertClassifier(model_dir='models/multilabel-bert-zh-model', num_classes=15,
+    m = BertClassifier(output_dir='models/multilabel-bert-zh-model', num_classes=15,
                        model_type='bert', model_name='bert-base-chinese', num_epochs=2, multi_label=True)
     # Train and Evaluation data needs to be in a Pandas Dataframe containing at least two columns, a 'text' and a 'labels' column. The `labels` column should contain multi-hot encoded lists.
     train_data = [

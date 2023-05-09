@@ -3,10 +3,6 @@
 @author:XuMing(xuming624@qq.com)
 @description:
 """
-
-import sys
-from abc import ABC
-
 import torch
 from torch import nn
 from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss, MSELoss

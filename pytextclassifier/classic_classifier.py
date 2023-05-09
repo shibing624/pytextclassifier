@@ -29,17 +29,23 @@ default_stopwords_path = os.path.join(pwd_path, 'stopwords.txt')
 
 
 class ClassicClassifier(ClassifierABC):
-    def __init__(self, model_dir, model_name_or_model='lr', feature_name_or_feature='tfidf',
-                 stopwords_path=default_stopwords_path, tokenizer=None):
+    def __init__(
+            self,
+            output_dir="outputs",
+            model_name_or_model='lr',
+            feature_name_or_feature='tfidf',
+            stopwords_path=default_stopwords_path,
+            tokenizer=None
+    ):
         """
         经典机器学习分类模型，支持lr, random_forest, decision_tree, knn, bayes, svm, xgboost
-        @param model_dir: 模型保存路径
+        @param output_dir: 模型保存路径
         @param model_name_or_model:
         @param feature_name_or_feature:
         @param stopwords_path:
         @param tokenizer: 切词器，默认为jieba切词
         """
-        self.model_dir = model_dir
+        self.output_dir = output_dir
         if isinstance(model_name_or_model, str):
             model_name = model_name_or_model.lower()
             if model_name not in ['lr', 'random_forest', 'decision_tree', 'knn', 'bayes', 'xgboost', 'svm']:
@@ -131,7 +137,7 @@ class ClassicClassifier(ClassifierABC):
 
     def train(self, data_list_or_path, header=None, names=('labels', 'text'), delimiter='\t', test_size=0.1):
         """
-        Train model with data_list_or_path and save model to model_dir
+        Train model with data_list_or_path and save model to output_dir
         @param data_list_or_path:
         @param header:
         @param names:
@@ -199,13 +205,13 @@ class ClassicClassifier(ClassifierABC):
 
     def load_model(self):
         """
-        Load model from model_dir
+        Load model from output_dir
         @return:
         """
-        model_path = os.path.join(self.model_dir, 'classifier_model.pkl')
+        model_path = os.path.join(self.output_dir, 'classifier_model.pkl')
         if os.path.exists(model_path):
             self.model = self.load_pkl(model_path)
-            feature_path = os.path.join(self.model_dir, 'classifier_feature.pkl')
+            feature_path = os.path.join(self.output_dir, 'classifier_feature.pkl')
             self.feature = self.load_pkl(feature_path)
             logger.info(f'Loaded model: {model_path}.')
             self.is_trained = True
@@ -216,15 +222,15 @@ class ClassicClassifier(ClassifierABC):
 
     def save_model(self):
         """
-        Save model to model_dir
+        Save model to output_dir
         @return:
         """
-        if self.model_dir:
-            os.makedirs(self.model_dir, exist_ok=True)
+        if self.output_dir:
+            os.makedirs(self.output_dir, exist_ok=True)
         if self.is_trained:
-            feature_path = os.path.join(self.model_dir, 'classifier_feature.pkl')
+            feature_path = os.path.join(self.output_dir, 'classifier_feature.pkl')
             self.save_pkl(self.feature, feature_path)
-            model_path = os.path.join(self.model_dir, 'classifier_model.pkl')
+            model_path = os.path.join(self.output_dir, 'classifier_model.pkl')
             self.save_pkl(self.model, model_path)
             logger.info(f'Saved model: {model_path}, feature_path: {feature_path}')
         else:
@@ -235,14 +241,14 @@ class ClassicClassifier(ClassifierABC):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Text Classification')
     parser.add_argument('--model_name', default='lr', type=str, help='model name')
-    parser.add_argument('--model_dir', default='models/lr', type=str, help='model dir')
+    parser.add_argument('--output_dir', default='models/lr', type=str, help='saved model dir')
     parser.add_argument('--feature_name', default='tfidf', type=str, help='feature name')
     parser.add_argument('--data_path', default=os.path.join(pwd_path, '../examples/thucnews_train_1w.txt'),
                         type=str, help='sample data file path')
     args = parser.parse_args()
     print(args)
     # create model
-    m = ClassicClassifier(args.model_dir, model_name_or_model=args.model_name,
+    m = ClassicClassifier(output_dir=args.output_dir, model_name_or_model=args.model_name,
                           feature_name_or_feature=args.feature_name)
     # train model
     m.train(args.data_path)

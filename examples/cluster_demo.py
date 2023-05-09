@@ -9,7 +9,7 @@ sys.path.append('..')
 from pytextclassifier.textcluster import TextCluster
 
 if __name__ == '__main__':
-    m = TextCluster(model_dir='models/cluster-toy', n_clusters=2)
+    m = TextCluster(output_dir='models/cluster-toy', n_clusters=2)
     print(m)
     data = [
         'Student debt to cost Britain billions within decades',
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     ########### load chinese train data from 1w data file
     from sklearn.feature_extraction.text import TfidfVectorizer
 
-    tcluster = TextCluster(model_dir='models/cluster', feature=TfidfVectorizer(ngram_range=(1, 2)), n_clusters=10)
+    tcluster = TextCluster(output_dir='models/cluster', feature=TfidfVectorizer(ngram_range=(1, 2)), n_clusters=10)
     data = tcluster.load_file_data('thucnews_train_1w.txt', sep='\t', use_col=1)
     feature, labels = tcluster.train(data[:5000])
     tcluster.show_clusters(feature, labels, 'models/cluster/cluster_train_seg_samples.png')

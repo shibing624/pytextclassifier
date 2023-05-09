@@ -26,8 +26,8 @@ if __name__ == '__main__':
     dev_data = convert_json_to_csv(dev_file)[:None]
     print('train_data head:', train_data[:10])
 
-    m = BertClassifier(model_dir='models/bert-tnews', num_classes=15,
-                       model_type='bert', model_name='bert-base-chinese', 
+    m = BertClassifier(output_dir='models/bert-tnews', num_classes=15,
+                       model_type='bert', model_name='bert-base-chinese',
                        batch_size=32, num_epochs=5)
     m.train(train_data, test_size=0)
     m.load_model()

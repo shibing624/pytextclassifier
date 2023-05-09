@@ -9,7 +9,7 @@ sys.path.append('..')
 from pytextclassifier import FastTextClassifier, load_data
 
 if __name__ == '__main__':
-    m = FastTextClassifier(model_dir='models/fasttext-toy', enable_ngram=False)
+    m = FastTextClassifier(output_dir='models/fasttext-toy', enable_ngram=False)
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     #### train model with 1w data
     print('-' * 42)
     data_file = 'thucnews_train_1w.txt'
-    m = FastTextClassifier(model_dir='models/fasttext')
+    m = FastTextClassifier(output_dir='models/fasttext')
     m.train(data_file, names=('labels', 'text'), num_epochs=3)
     # load best trained model from model_dir
     m.load_model()

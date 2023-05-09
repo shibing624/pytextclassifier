@@ -9,7 +9,7 @@ sys.path.append('..')
 from pytextclassifier import BertClassifier
 
 if __name__ == '__main__':
-    m = BertClassifier(model_dir='models/bert-english-toy', num_classes=2,
+    m = BertClassifier(output_dir='models/bert-english-toy', num_classes=2,
                        model_type='bert', model_name='bert-base-uncased', num_epochs=2)
     data = [
         ('education', 'Student debt to cost Britain billions within decades'),

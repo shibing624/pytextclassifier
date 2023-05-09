@@ -35,7 +35,7 @@ def load_baidu_data(file_path):
 if __name__ == '__main__':
     # model_type: support 'bert', 'albert', 'roberta', 'xlnet'
     # model_name: support 'bert-base-chinese', 'bert-base-cased', 'bert-base-multilingual-cased' ...
-    m = BertClassifier(model_dir='models/hierarchical-bert-zh-model', num_classes=34,
+    m = BertClassifier(output_dir='models/hierarchical-bert-zh-model', num_classes=34,
                        model_type='bert', model_name='bert-base-chinese', num_epochs=2, multi_label=True)
     # Train and Evaluation data needs to be in a Pandas Dataframe containing at least two columns, a 'text' and a 'labels' column. The `labels` column should contain multi-hot encoded lists.
     train_data = [

@@ -15,7 +15,7 @@ import torch
 
 class SaveModelTestCase(unittest.TestCase):
     def test_classifier(self):
-        m = FastTextClassifier(model_dir='models/fasttext')
+        m = FastTextClassifier(output_dir='models/fasttext')
         data = [
             ('education', 'Student debt to cost Britain billions within decades'),
             ('education', 'Chinese education for TV experiment'),

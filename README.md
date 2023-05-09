@@ -76,7 +76,6 @@ python3 setup.py install
 
 Including model training, saving, predict, evaluate, for example [examples/lr_en_classification_demo.py](examples/lr_en_classification_demo.py):
 
-
 ```python
 import sys
 
@@ -84,7 +83,7 @@ sys.path.append('..')
 from pytextclassifier import ClassicClassifier
 
 if __name__ == '__main__':
-    m = ClassicClassifier(model_dir='models/lr', model_name_or_model='lr')
+    m = ClassicClassifier(output_dir='models/lr', model_name_or_model='lr')
     # ClassicClassifier support model_name：lr, random_forest, decision_tree, knn, bayes, svm, xgboost
     print(m)
     data = [
@@ -130,7 +129,7 @@ sys.path.append('..')
 from pytextclassifier import ClassicClassifier
 
 if __name__ == '__main__':
-    m = ClassicClassifier(model_dir='models/lr-toy', model_name_or_model='lr')
+    m = ClassicClassifier(output_dir='models/lr-toy', model_name_or_model='lr')
     # 经典分类方法，支持的模型包括：lr, random_forest, decision_tree, knn, bayes, svm, xgboost
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
@@ -157,7 +156,7 @@ if __name__ == '__main__':
 
     #### train model with 1w data
     print('-' * 42)
-    m = ClassicClassifier(model_dir='models/lr', model_name_or_model='lr')
+    m = ClassicClassifier(output_dir='models/lr', model_name_or_model='lr')
     data_file = 'thucnews_train_1w.txt'
     m.train(data_file)
     m.load_model()
@@ -180,6 +179,7 @@ predict_label: ['realty' 'education'], predict_proba: [0.7302956923617372, 0.256
 ## Visual Feature Importance
 
 Show feature weights of model, and prediction word weight, for example [examples/visual_feature_importance.ipynb](examples/visual_feature_importance.ipynb)
+
 ```python
 import sys
 
@@ -187,7 +187,7 @@ sys.path.append('..')
 from pytextclassifier import ClassicClassifier
 import jieba
 
-tc = ClassicClassifier(model_dir='models/lr-toy', model_name_or_model='lr')
+tc = ClassicClassifier(output_dir='models/lr-toy', model_name_or_model='lr')
 data = [
     ('education', '名师指导托福语法技巧：名词的复数形式'),
     ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
@@ -197,6 +197,7 @@ data = [
 ]
 tc.train(data)
 import eli5
+
 infer_data = ['高考指导托福语法技巧国际认可',
               '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜']
 eli5.show_weights(tc.model, vec=tc.feature)
@@ -229,7 +230,7 @@ sys.path.append('..')
 from pytextclassifier import FastTextClassifier, load_data
 
 if __name__ == '__main__':
-    m = FastTextClassifier(model_dir='models/fasttext-toy')
+    m = FastTextClassifier(output_dir='models/fasttext-toy')
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
@@ -255,7 +256,7 @@ if __name__ == '__main__':
     #### train model with 1w data
     print('-' * 42)
     data_file = 'thucnews_train_1w.txt'
-    m = FastTextClassifier(model_dir='models/fasttext')
+    m = FastTextClassifier(output_dir='models/fasttext')
     m.train(data_file, names=('labels', 'text'), num_epochs=3)
     # load best trained model from model_dir
     m.load_model()
@@ -282,7 +283,7 @@ sys.path.append('..')
 from pytextclassifier import BertClassifier
 
 if __name__ == '__main__':
-    m = BertClassifier(model_dir='models/bert-chinese-toy', num_classes=2,
+    m = BertClassifier(output_dir='models/bert-chinese-toy', num_classes=2,
                        model_type='bert', model_name='bert-base-chinese', num_epochs=2)
     # model_type: support 'bert', 'albert', 'roberta', 'xlnet'
     # model_name: support 'bert-base-chinese', 'bert-base-cased', 'bert-base-multilingual-cased' ...
@@ -308,10 +309,10 @@ if __name__ == '__main__':
     ]
     acc_score = m.evaluate_model(test_data)
     print(f'acc_score: {acc_score}')
-    
+
     # train model with 1w data file and 10 classes
     print('-' * 42)
-    m = BertClassifier(model_dir='models/bert-chinese', num_classes=10,
+    m = BertClassifier(output_dir='models/bert-chinese', num_classes=10,
                        model_type='bert', model_name='bert-base-chinese', num_epochs=2,
                        args={"no_cache": True, "lazy_loading": True, "lazy_text_column": 1, "lazy_labels_column": 0, })
     data_file = 'thucnews_train_1w.txt'
@@ -333,7 +334,6 @@ PS：如果训练数据超过百万条，建议使用lazy_loading模式，减少
 比如一首歌的标签可以是流行、轻快，一部电影的标签可以是动作、喜剧、搞笑等，这都是多标签分类的情况。
 
 训练和预测`BERT`多标签分类模型，示例[examples/bert_multilabel_classification_zh_demo.py.py](https://github.com/shibing624/pytextclassifier/blob/master/examples/bert_multilabel_classification_zh_demo.py)
-
 
 ```python
 import sys
@@ -369,7 +369,7 @@ def load_jd_data(file_path):
 if __name__ == '__main__':
     # model_type: support 'bert', 'albert', 'roberta', 'xlnet'
     # model_name: support 'bert-base-chinese', 'bert-base-cased', 'bert-base-multilingual-cased' ...
-    m = BertClassifier(model_dir='models/multilabel-bert-zh-model', num_classes=15,
+    m = BertClassifier(output_dir='models/multilabel-bert-zh-model', num_classes=15,
                        model_type='bert', model_name='bert-base-chinese', num_epochs=2, multi_label=True)
     # Train and Evaluation data needs to be in a Pandas Dataframe containing at least two columns, a 'text' and a 'labels' column. The `labels` column should contain multi-hot encoded lists.
     train_data = [
@@ -449,6 +449,7 @@ python -m pytextclassifier.fasttext_classifier -h
 
 
 Text clustering, for example [examples/cluster_demo.py](examples/cluster_demo.py)
+
 ```python
 import sys
 
@@ -456,7 +457,7 @@ sys.path.append('..')
 from pytextclassifier.textcluster import TextCluster
 
 if __name__ == '__main__':
-    m = TextCluster(model_dir='models/cluster-toy', n_clusters=2)
+    m = TextCluster(output_dir='models/cluster-toy', n_clusters=2)
     print(m)
     data = [
         'Student debt to cost Britain billions within decades',
@@ -474,7 +475,7 @@ if __name__ == '__main__':
     ########### load chinese train data from 1w data file
     from sklearn.feature_extraction.text import TfidfVectorizer
 
-    tcluster = TextCluster(model_dir='models/cluster', feature=TfidfVectorizer(ngram_range=(1, 2)), n_clusters=10)
+    tcluster = TextCluster(output_dir='models/cluster', feature=TfidfVectorizer(ngram_range=(1, 2)), n_clusters=10)
     data = tcluster.load_file_data('thucnews_train_1w.txt', sep='\t', use_col=1)
     feature, labels = tcluster.train(data[:5000])
     tcluster.show_clusters(feature, labels, 'models/cluster/cluster_train_seg_samples.png')

@@ -520,7 +520,7 @@ def convert_example_to_feature(
     # it easier for the model to learn the concept of sequences.
     #
     # For classification tasks, the first vector (corresponding to [CLS]) is
-    # used as as the "sentence vector". Note that this only makes sense because
+    # used as the "sentence vector". Note that this only makes sense because
     # the entire model is fine-tuned.
     tokens = tokens_a + [sep_token]
     segment_ids = [sequence_a_segment_id] * len(tokens)

@@ -11,7 +11,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 if __name__ == '__main__':
     vec = CountVectorizer(ngram_range=(1, 3))
-    m = ClassicClassifier(model_dir='models/lr-vec', model_name_or_model='lr', feature_name_or_feature=vec)
+    m = ClassicClassifier(output_dir='models/lr-vec', model_name_or_model='lr', feature_name_or_feature=vec)
 
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),

@@ -4,11 +4,14 @@
 @description: 
 """
 import os
+import sys
 from codecs import open
 import pickle
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 from loguru import logger
+
+sys.path.append('..')
 from pytextclassifier.tokenizer import Tokenizer
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
@@ -18,12 +21,12 @@ default_stopwords_path = os.path.join(pwd_path, 'stopwords.txt')
 class TextCluster(object):
     def __init__(
             self,
-            model_dir,
+            output_dir="outputs",
             model=None, tokenizer=None, feature=None,
             stopwords_path=default_stopwords_path,
             n_clusters=3, n_init=10, ngram_range=(1, 2), **kwargs
     ):
-        self.model_dir = model_dir
+        self.output_dir = output_dir
         self.model = model if model else MiniBatchKMeans(n_clusters=n_clusters, n_init=n_init)
         self.tokenizer = tokenizer if tokenizer else Tokenizer()
         self.feature = feature if feature else TfidfVectorizer(ngram_range=ngram_range, **kwargs)
@@ -134,12 +137,12 @@ class TextCluster(object):
         self.model.fit(feature)
         labels = self.model.labels_
         logger.debug('cluster labels:{}'.format(labels))
-        model_dir = self.model_dir
-        if model_dir:
-            os.makedirs(model_dir, exist_ok=True)
-        feature_path = os.path.join(model_dir, 'cluster_feature.pkl')
+        output_dir = self.output_dir
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
+        feature_path = os.path.join(output_dir, 'cluster_feature.pkl')
         self.save_pkl(self.feature, feature_path)
-        model_path = os.path.join(model_dir, 'cluster_model.pkl')
+        model_path = os.path.join(output_dir, 'cluster_model.pkl')
         self.save_pkl(self.model, model_path)
         logger.info('save done. feature path: {}, model path: {}'.format(feature_path, model_path))
 
@@ -174,23 +177,23 @@ class TextCluster(object):
 
     def load_model(self):
         """
-        Load model from model_dir
-        :param model_dir: path
+        Load model from output_dir
+        :param output_dir: path
         :return: None
         """
-        model_path = os.path.join(self.model_dir, 'cluster_model.pkl')
+        model_path = os.path.join(self.output_dir, 'cluster_model.pkl')
         if not os.path.exists(model_path):
             raise ValueError("model is not found. please train and save model first.")
         self.model = self.load_pkl(model_path)
-        feature_path = os.path.join(self.model_dir, 'cluster_feature.pkl')
+        feature_path = os.path.join(self.output_dir, 'cluster_feature.pkl')
         self.feature = self.load_pkl(feature_path)
         self.is_trained = True
-        logger.info('model loaded {}'.format(self.model_dir))
+        logger.info('model loaded {}'.format(self.output_dir))
         return self.is_trained
 
 
 if __name__ == '__main__':
-    m = TextCluster(model_dir='models/cluster', n_clusters=2)
+    m = TextCluster(output_dir='models/cluster', n_clusters=2)
     print(m)
     data = [
         'Student debt to cost Britain billions within decades',

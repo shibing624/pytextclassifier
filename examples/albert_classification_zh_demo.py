@@ -9,7 +9,7 @@ sys.path.append('..')
 from pytextclassifier import BertClassifier
 
 if __name__ == '__main__':
-    m = BertClassifier(model_dir='models/albert-chinese-toy', num_classes=2,
+    m = BertClassifier(output_dir='models/albert-chinese-toy', num_classes=2,
                        model_type='albert', model_name='uer/albert-base-chinese-cluecorpussmall', num_epochs=2)
     # model_type: support 'bert', 'albert', 'roberta', 'xlnet'
     # model_name: support 'bert-base-chinese', 'bert-base-cased', 'bert-base-multilingual-cased' ...
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     # train model with 1w data file and 10 classes
     print('-' * 42)
-    m = BertClassifier(model_dir='models/albert-chinese', num_classes=10,
+    m = BertClassifier(output_dir='models/albert-chinese', num_classes=10,
                        model_type='albert', model_name='uer/albert-base-chinese-cluecorpussmall', num_epochs=2,
                        args={"no_cache": True, "lazy_loading": True, "lazy_text_column": 1, "lazy_labels_column": 0, })
     data_file = 'thucnews_train_1w.txt'

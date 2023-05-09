@@ -166,7 +166,7 @@ class TextRNNAttModel(nn.Module):
 class TextRNNClassifier(ClassifierABC):
     def __init__(
             self,
-            model_dir,
+            output_dir="outputs",
             hidden_size=128,
             num_layers=2,
             dropout_rate=0.5, batch_size=64, max_seq_length=128,
@@ -175,7 +175,7 @@ class TextRNNClassifier(ClassifierABC):
     ):
         """
         Init the TextRNNClassifier
-        @param model_dir: 模型保存路径
+        @param output_dir: 模型保存路径
         @param hidden_size: lstm隐藏层
         @param num_layers: lstm层数
         @param dropout_rate:
@@ -187,7 +187,7 @@ class TextRNNClassifier(ClassifierABC):
         @param pad_token:
         @param tokenizer: 切词器，默认为字粒度切分
         """
-        self.model_dir = model_dir
+        self.output_dir = output_dir
         self.is_trained = False
         self.model = None
         logger.debug(f'device: {device}')
@@ -213,7 +213,7 @@ class TextRNNClassifier(ClassifierABC):
             require_improvement=1000, evaluate_during_training_steps=100
     ):
         """
-        Train model with data_list_or_path and save model to model_dir
+        Train model with data_list_or_path and save model to output_dir
         @param data_list_or_path:
         @param header:
         @param names:
@@ -230,12 +230,12 @@ class TextRNNClassifier(ClassifierABC):
         set_seed(SEED)
         # load data
         X, y, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter, is_train=True)
-        model_dir = self.model_dir
-        if model_dir:
-            os.makedirs(model_dir, exist_ok=True)
-        word_vocab_path = os.path.join(model_dir, 'word_vocab.json')
-        label_vocab_path = os.path.join(model_dir, 'label_vocab.json')
-        save_model_path = os.path.join(model_dir, 'model.pth')
+        output_dir = self.output_dir
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
+        word_vocab_path = os.path.join(output_dir, 'word_vocab.json')
+        label_vocab_path = os.path.join(output_dir, 'label_vocab.json')
+        save_model_path = os.path.join(output_dir, 'model.pth')
 
         dataset, self.word_id_map, self.label_id_map = build_dataset(
             self.tokenizer, X, y,
@@ -377,6 +377,14 @@ class TextRNNClassifier(ClassifierABC):
 
     def evaluate_model(self, data_list_or_path, header=None,
                        names=('labels', 'text'), delimiter='\t'):
+        """
+        Evaluate model.
+        @param data_list_or_path:
+        @param header:
+        @param names:
+        @param delimiter:
+        @return:
+        """
         X_test, y_test, df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter)
         self.load_model()
         data, word_id_map, label_id_map = build_dataset(
@@ -418,13 +426,13 @@ class TextRNNClassifier(ClassifierABC):
 
     def load_model(self):
         """
-        Load model from model_dir
+        Load model from output_dir
         @return:
         """
-        model_path = os.path.join(self.model_dir, 'model.pth')
+        model_path = os.path.join(self.output_dir, 'model.pth')
         if os.path.exists(model_path):
-            self.word_vocab_path = os.path.join(self.model_dir, 'word_vocab.json')
-            self.label_vocab_path = os.path.join(self.model_dir, 'label_vocab.json')
+            self.word_vocab_path = os.path.join(self.output_dir, 'word_vocab.json')
+            self.label_vocab_path = os.path.join(self.output_dir, 'label_vocab.json')
             self.word_id_map = load_vocab(self.word_vocab_path)
             self.label_id_map = load_vocab(self.label_vocab_path)
             vocab_size = len(self.word_id_map)
@@ -447,16 +455,16 @@ class TextRNNClassifier(ClassifierABC):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Text Classification')
-    parser.add_argument('--model_dir', default='models/textrnn', type=str, help='save model dir')
+    parser.add_argument('--output_dir', default='models/textrnn', type=str, help='save model dir')
     parser.add_argument('--data_path', default=os.path.join(pwd_path, '../examples/thucnews_train_1w.txt'),
                         type=str, help='sample data file path')
     args = parser.parse_args()
     print(args)
     # create model
-    m = TextRNNClassifier(args.model_dir)
+    m = TextRNNClassifier(args.output_dir)
     # train model
     m.train(data_list_or_path=args.data_path, num_epochs=3)
-    # load trained best model and predict
+    # load trained the best model and predict
     m.load_model()
     print('best model loaded from file, and predict')
     X, y, _ = load_data(args.data_path)

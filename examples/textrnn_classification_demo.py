@@ -9,7 +9,7 @@ sys.path.append('..')
 from pytextclassifier import TextRNNClassifier
 
 if __name__ == '__main__':
-    m = TextRNNClassifier(model_dir='models/textrnn-toy')
+    m = TextRNNClassifier(output_dir='models/textrnn-toy')
     data = [
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),

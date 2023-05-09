@@ -9,7 +9,7 @@ sys.path.append('..')
 from pytextclassifier import ClassicClassifier
 
 if __name__ == '__main__':
-    m = ClassicClassifier(model_dir='models/random_forest-toy', model_name_or_model='random_forest')
+    m = ClassicClassifier(output_dir='models/random_forest-toy', model_name_or_model='random_forest')
     # 经典分类方法，支持的模型包括：lr, random_forest, decision_tree, knn, bayes, svm, xgboost
     print(m)
     data = [

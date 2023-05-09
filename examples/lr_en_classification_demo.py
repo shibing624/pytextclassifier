@@ -13,7 +13,7 @@ logger.remove()  # Remove default log handler
 logger.add(sys.stderr, level="INFO")  # 设置log级别
 
 if __name__ == '__main__':
-    m = ClassicClassifier(model_dir='models/lr-english-toy', model_name_or_model='lr')
+    m = ClassicClassifier(output_dir='models/lr-english-toy', model_name_or_model='lr')
     # 经典分类方法，支持的模型包括：lr, random_forest, decision_tree, knn, bayes, svm, xgboost
     print(m)
     data = [
