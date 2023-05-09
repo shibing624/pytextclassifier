@@ -435,9 +435,9 @@ BERT-base|0.5609|CLUE Benchmark Leaderboard结果 [CLUEbenchmark](https://github
 - THUCNews数据集评测结果可以基于`examples/thucnews_train_10w.txt`数据用`examples`下的各模型demo复现
 - TNEWS数据集评测结果可以下载TNEWS数据集，运行`examples/bert_classification_tnews_demo.py`复现
 
-### 模型调研
+### 命令行调用
 
-提供分类模型快速调研工具，文件树：
+提供分类模型命令行调用脚本，文件树：
 ```bash
 pytextclassifier
 ├── bert_classifier.py
@@ -447,7 +447,7 @@ pytextclassifier
 └── textrnn_classifier.py
 ```
 
-每个文件对应一个模型，各模型完全独立，可以直接运行，也方便修改，支持通过`argparse` 修改`--data_path`等参数。
+每个文件对应一个模型方法，各模型完全独立，可以直接运行，也方便修改，支持通过`argparse` 修改`--data_path`等参数。
 
 直接在终端调用fasttext模型训练：
 ```bash
@@ -537,7 +537,7 @@ BibTeX:
 授权协议为 [The Apache License 2.0](LICENSE)，可免费用做商业用途。请在产品说明中附加**pytextclassifier**的链接和授权协议。
 
 
-# Contribute
+## Contribute
 项目代码还很粗糙，如果大家对代码有所改进，欢迎提交回本项目，在提交之前，注意以下两点：
 
  - 在`tests`添加相应的单元测试
