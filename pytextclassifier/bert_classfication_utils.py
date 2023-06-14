@@ -850,8 +850,8 @@ class LazyClassificationDataset(Dataset):
     def __getitem__(self, idx):
         line = (
             linecache.getline(self.data_file, idx + 1 + self.start_row)
-                .rstrip("\n")
-                .split(self.delimiter)
+            .rstrip("\n")
+            .split(self.delimiter)
         )
 
         if not self.text_a_column and not self.text_b_column:

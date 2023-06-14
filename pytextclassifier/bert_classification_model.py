@@ -62,7 +62,6 @@ from transformers import (
     XLMForSequenceClassification,
     XLNetTokenizerFast,
     XLNetForSequenceClassification,
-    AlbertTokenizer,
     BertConfig,
     BertTokenizer,
     BertweetTokenizer,
@@ -1670,12 +1669,12 @@ class BertClassificationModel:
             precision, recall, f_score, true_sum = precision_recall_fscore_support(
                 labels, np.array(pred_labels), average='weighted')
             return {**{
-                "LRAP": label_ranking_score, 
-                "acc": acc, 
+                "LRAP": label_ranking_score,
+                "acc": acc,
                 "precision": precision,
                 "recall": recall,
                 "f1": f_score,
-                }, **extra_metrics}, wrong
+            }, **extra_metrics}, wrong
         elif self.args.regression:
             return {**extra_metrics}, wrong
 
