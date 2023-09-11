@@ -28,8 +28,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def build_dataset(
         tokenizer, X, y, word_vocab_path, label_vocab_path, max_vocab_size=10000,
-        max_seq_length=128, unk_token='[UNK]', pad_token='[PAD]',
-        n_gram_vocab=250499, enable_ngram=True
+        max_seq_length=128, unk_token='[UNK]', pad_token='[PAD]'
 ):
     if os.path.exists(word_vocab_path):
         word_id_map = load_vocab(word_vocab_path)
@@ -49,15 +48,6 @@ def build_dataset(
         logger.debug('save label_vocab_path: {}'.format(label_vocab_path))
     logger.debug(f"label vocab size: {len(label_id_map)}, label_vocab_path: {label_vocab_path}")
 
-    def biGramHash(sequence, t, buckets):
-        t1 = sequence[t - 1] if t - 1 >= 0 else 0
-        return (t1 * 14918087) % buckets
-
-    def triGramHash(sequence, t, buckets):
-        t1 = sequence[t - 1] if t - 1 >= 0 else 0
-        t2 = sequence[t - 2] if t - 2 >= 0 else 0
-        return (t2 * 14918087 * 18408749 + t1 * 14918087) % buckets
-
     def load_dataset(X, y, max_seq_length=128):
         contents = []
         for content, label in zip(X, y):
@@ -74,20 +64,7 @@ def build_dataset(
             for word in token:
                 words_line.append(word_id_map.get(word, word_id_map.get(unk_token)))
             label_id = label_id_map.get(label)
-            # fasttext ngram
-            bigram = []
-            trigram = []
-            if enable_ngram:
-                buckets = n_gram_vocab
-                # ------ngram------
-                for i in range(max_seq_length):
-                    bigram.append(biGramHash(words_line, i, buckets))
-                    trigram.append(triGramHash(words_line, i, buckets))
-                # -----------------
-            else:
-                bigram = [0] * max_seq_length
-                trigram = [0] * max_seq_length
-            contents.append((words_line, label_id, seq_len, bigram, trigram))
+            contents.append((words_line, label_id, seq_len, None, None))
         return contents
 
     dataset = load_dataset(X, y, max_seq_length)
@@ -95,7 +72,7 @@ def build_dataset(
 
 
 class DatasetIterater:
-    def __init__(self, dataset, device, batch_size=32):
+    def __init__(self, dataset, device, batch_size=32, enable_ngram=True, n_gram_vocab=250499, max_seq_length=128):
         self.batch_size = batch_size
         self.dataset = dataset
         self.n_batches = len(dataset) // batch_size if len(dataset) > batch_size else 1
@@ -104,13 +81,46 @@ class DatasetIterater:
             self.residue = True
         self.index = 0
         self.device = device
+        self.enable_ngram=enable_ngram
+        self.n_gram_vocab=n_gram_vocab
+        self.max_seq_length=max_seq_length
 
     def _to_tensor(self, datas):
         x = torch.LongTensor([_[0] for _ in datas]).to(self.device)
         y = torch.LongTensor([_[1] for _ in datas]).to(self.device)
-        bigram = torch.LongTensor([_[3] for _ in datas]).to(self.device)
-        trigram = torch.LongTensor([_[4] for _ in datas]).to(self.device)
 
+
+        def biGramHash(sequence, t, buckets):
+            t1 = sequence[t - 1] if t - 1 >= 0 else 0
+            return (t1 * 14918087) % buckets
+
+        def triGramHash(sequence, t, buckets):
+            t1 = sequence[t - 1] if t - 1 >= 0 else 0
+            t2 = sequence[t - 2] if t - 2 >= 0 else 0
+            return (t2 * 14918087 * 18408749 + t1 * 14918087) % buckets
+        
+        #calculate bigram and trigram here fore memory efficiency
+        bigram = []
+        trigram = []
+        for _ in datas:
+            words_line = _[0]
+            bi = []
+            tri = []
+            if self.enable_ngram:
+                buckets = self.n_gram_vocab
+                # ------ngram------
+                for i in range(self.max_seq_length):
+                    bi.append(biGramHash(words_line, i, buckets))
+                    tri.append(triGramHash(words_line, i, buckets))
+                # -----------------
+            else:
+                bi = [0] * self.max_seq_length
+                tri = [0] * self.max_seq_length
+            bigram.append(bi)
+            trigram.append(tri)
+        bigram = torch.LongTensor(bigram).to(self.device)
+        trigram = torch.LongTensor(trigram).to(self.device)
+        
         # pad_token前的长度(超过max_seq_length的设为max_seq_length)
         seq_len = torch.LongTensor([_[2] for _ in datas]).to(self.device)
         return (x, seq_len, bigram, trigram), y
@@ -141,8 +151,13 @@ class DatasetIterater:
             return self.n_batches
 
 
-def build_iterator(dataset, device, batch_size=32):
-    return DatasetIterater(dataset, device, batch_size)
+def build_iterator(dataset, 
+                   device, 
+                   batch_size=32, 
+                   enable_ngram=True, 
+                   n_gram_vocab=250499, 
+                   max_seq_length=128):
+    return DatasetIterater(dataset, device, batch_size, enable_ngram, n_gram_vocab, max_seq_length)
 
 
 class FastTextModel(nn.Module):
@@ -248,6 +263,7 @@ class FastTextClassifier(ClassifierABC):
         set_seed(SEED)
         # load data
         X, y, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter, is_train=True)
+        del data_df
         output_dir = self.output_dir
         if output_dir:
             os.makedirs(output_dir, exist_ok=True)
@@ -261,15 +277,15 @@ class FastTextClassifier(ClassifierABC):
             max_vocab_size=self.max_vocab_size,
             max_seq_length=self.max_seq_length,
             unk_token=self.unk_token,
-            pad_token=self.pad_token,
-            n_gram_vocab=self.n_gram_vocab,
-            enable_ngram=self.enable_ngram
+            pad_token=self.pad_token
         )
         train_data, dev_data = train_test_split(dataset, test_size=test_size, random_state=SEED)
         logger.debug(f"train_data size: {len(train_data)}, dev_data size: {len(dev_data)}")
         logger.debug(f'train_data sample:\n{train_data[:3]}\ndev_data sample:\n{dev_data[:3]}')
-        train_iter = build_iterator(train_data, device, self.batch_size)
-        dev_iter = build_iterator(dev_data, device, self.batch_size)
+        train_iter = build_iterator(train_data, device, self.batch_size, self.enable_ngram, 
+                                    self.n_gram_vocab, self.max_seq_length)
+        dev_iter = build_iterator(dev_data, device, self.batch_size ,self.enable_ngram, 
+                                    self.n_gram_vocab, self.max_seq_length)
         # create model
         vocab_size = len(self.word_id_map)
         num_classes = len(self.label_id_map)
