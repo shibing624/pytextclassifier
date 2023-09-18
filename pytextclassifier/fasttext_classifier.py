@@ -81,14 +81,13 @@ class DatasetIterater:
             self.residue = True
         self.index = 0
         self.device = device
-        self.enable_ngram=enable_ngram
-        self.n_gram_vocab=n_gram_vocab
-        self.max_seq_length=max_seq_length
+        self.enable_ngram = enable_ngram
+        self.n_gram_vocab = n_gram_vocab
+        self.max_seq_length = max_seq_length
 
     def _to_tensor(self, datas):
         x = torch.LongTensor([_[0] for _ in datas]).to(self.device)
         y = torch.LongTensor([_[1] for _ in datas]).to(self.device)
-
 
         def biGramHash(sequence, t, buckets):
             t1 = sequence[t - 1] if t - 1 >= 0 else 0
@@ -98,8 +97,8 @@ class DatasetIterater:
             t1 = sequence[t - 1] if t - 1 >= 0 else 0
             t2 = sequence[t - 2] if t - 2 >= 0 else 0
             return (t2 * 14918087 * 18408749 + t1 * 14918087) % buckets
-        
-        #calculate bigram and trigram here fore memory efficiency
+
+        # calculate bigram and trigram here fore memory efficiency
         bigram = []
         trigram = []
         for _ in datas:
@@ -120,7 +119,7 @@ class DatasetIterater:
             trigram.append(tri)
         bigram = torch.LongTensor(bigram).to(self.device)
         trigram = torch.LongTensor(trigram).to(self.device)
-        
+
         # pad_token前的长度(超过max_seq_length的设为max_seq_length)
         seq_len = torch.LongTensor([_[2] for _ in datas]).to(self.device)
         return (x, seq_len, bigram, trigram), y
@@ -151,12 +150,14 @@ class DatasetIterater:
             return self.n_batches
 
 
-def build_iterator(dataset, 
-                   device, 
-                   batch_size=32, 
-                   enable_ngram=True, 
-                   n_gram_vocab=250499, 
-                   max_seq_length=128):
+def build_iterator(
+        dataset,
+        device,
+        batch_size=32,
+        enable_ngram=True,
+        n_gram_vocab=250499,
+        max_seq_length=128
+):
     return DatasetIterater(dataset, device, batch_size, enable_ngram, n_gram_vocab, max_seq_length)
 
 
@@ -282,10 +283,10 @@ class FastTextClassifier(ClassifierABC):
         train_data, dev_data = train_test_split(dataset, test_size=test_size, random_state=SEED)
         logger.debug(f"train_data size: {len(train_data)}, dev_data size: {len(dev_data)}")
         logger.debug(f'train_data sample:\n{train_data[:3]}\ndev_data sample:\n{dev_data[:3]}')
-        train_iter = build_iterator(train_data, device, self.batch_size, self.enable_ngram, 
+        train_iter = build_iterator(train_data, device, self.batch_size, self.enable_ngram,
                                     self.n_gram_vocab, self.max_seq_length)
-        dev_iter = build_iterator(dev_data, device, self.batch_size ,self.enable_ngram, 
-                                    self.n_gram_vocab, self.max_seq_length)
+        dev_iter = build_iterator(dev_data, device, self.batch_size, self.enable_ngram,
+                                  self.n_gram_vocab, self.max_seq_length)
         # create model
         vocab_size = len(self.word_id_map)
         num_classes = len(self.label_id_map)
@@ -447,8 +448,6 @@ class FastTextClassifier(ClassifierABC):
             max_seq_length=self.max_seq_length,
             unk_token=self.unk_token,
             pad_token=self.pad_token,
-            n_gram_vocab=self.n_gram_vocab,
-            enable_ngram=self.enable_ngram
         )
         data_iter = build_iterator(data, device, self.batch_size)
         return self.evaluate(data_iter)[0]
