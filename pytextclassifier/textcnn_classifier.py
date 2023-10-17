@@ -23,8 +23,8 @@ from pytextclassifier.data_helper import set_seed, build_vocab, load_vocab
 from pytextclassifier.time_util import get_time_spend
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+device = 'cuda' if torch.cuda.is_available() else  ('mps' if torch.backends.mps.is_available() else 'cpu')
+logger.debug(f"Device: {device}")
 
 def build_dataset(tokenizer, X, y, word_vocab_path, label_vocab_path, max_seq_length=128,
                   unk_token='[UNK]', pad_token='[PAD]', max_vocab_size=10000):
