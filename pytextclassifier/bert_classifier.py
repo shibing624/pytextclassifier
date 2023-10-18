@@ -21,6 +21,7 @@ from pytextclassifier.bert_classification_model import BertClassificationModel, 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
 device = 'cuda' if torch.cuda.is_available() else (
     'mps' if hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else 'cpu')
+use_cuda = torch.cuda.is_available()
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
