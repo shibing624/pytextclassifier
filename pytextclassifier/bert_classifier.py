@@ -19,8 +19,10 @@ from pytextclassifier.data_helper import set_seed, load_vocab
 from pytextclassifier.bert_classification_model import BertClassificationModel, BertClassificationArgs
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-use_cuda = torch.cuda.is_available()
+device = 'cuda' if torch.cuda.is_available() else  ('mps' if torch.backends.mps.is_available() else 'cpu')
+logger.debug(f"Device: {device}")
+
+use_cuda = torch.cuda.is_available() or torch.backends.mps.is_available()
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
