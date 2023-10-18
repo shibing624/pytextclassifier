@@ -90,7 +90,10 @@ class ClassicClassifier(ClassifierABC):
         elif model_type == "bayes":
             model = MultinomialNB(alpha=0.1, fit_prior=False)  # 速度快，准确率低。val mean acc:0.62
         elif model_type == "xgboost":
-            from xgboost import XGBClassifier
+            try:
+                from xgboost import XGBClassifier
+            except ImportError:
+                raise ImportError('xgboost not installed, please install it with "pip install xgboost"')
             model = XGBClassifier()  # 速度慢，准确率高。val mean acc:0.95
         elif model_type == "svm":
             model = SVC(kernel='linear', probability=True)  # 速度慢，准确率高，val mean acc:0.945

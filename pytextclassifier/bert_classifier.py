@@ -15,14 +15,12 @@ from sklearn.model_selection import train_test_split
 
 sys.path.append('..')
 from pytextclassifier.base_classifier import ClassifierABC, load_data
-from pytextclassifier.data_helper import set_seed, load_vocab
+from pytextclassifier.data_helper import set_seed
 from pytextclassifier.bert_classification_model import BertClassificationModel, BertClassificationArgs
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
-device = 'cuda' if torch.cuda.is_available() else  ('mps' if torch.backends.mps.is_available() else 'cpu')
-logger.debug(f"Device: {device}")
-
-use_cuda = torch.cuda.is_available() or torch.backends.mps.is_available()
+device = 'cuda' if torch.cuda.is_available() else (
+    'mps' if hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else 'cpu')
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 

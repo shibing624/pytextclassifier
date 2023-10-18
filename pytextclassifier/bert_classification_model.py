@@ -351,15 +351,14 @@ class BertClassificationModel:
                     self.device = torch.device("cuda")
                 else:
                     self.device = torch.device(f"cuda:{cuda_device}")
-            elif torch.backends.mps.is_available():
-                self.device = torch.device("mps")
             else:
                 raise ValueError(
                     "'use_cuda' set to True when cuda is unavailable."
                     " Make sure CUDA is available or set use_cuda=False."
                 )
         else:
-            self.device ='cuda' if torch.cuda.is_available() else  ('mps' if torch.backends.mps.is_available() else 'cpu')
+            self.device = 'cuda' if torch.cuda.is_available() else (
+                'mps' if hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else 'cpu')
         logger.debug(f"Device: {self.device}")
 
         self.loss_fct = init_loss(

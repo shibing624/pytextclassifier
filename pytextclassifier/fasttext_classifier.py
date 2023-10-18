@@ -23,8 +23,9 @@ from pytextclassifier.data_helper import set_seed, build_vocab, load_vocab
 from pytextclassifier.time_util import get_time_spend
 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
-device = 'cuda' if torch.cuda.is_available() else  ('mps' if torch.backends.mps.is_available() else 'cpu')
-logger.debug(f"Device: {device}")
+device = 'cuda' if torch.cuda.is_available() else (
+    'mps' if hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else 'cpu')
+
 
 def build_dataset(
         tokenizer, X, y, word_vocab_path, label_vocab_path, max_vocab_size=10000,
@@ -223,7 +224,7 @@ class FastTextClassifier(ClassifierABC):
         self.output_dir = output_dir
         self.is_trained = False
         self.model = None
-        logger.debug(f'device: {device}')
+        logger.debug(f'Device: {device}')
         self.dropout_rate = dropout_rate
         self.batch_size = batch_size
         self.max_seq_length = max_seq_length
