@@ -113,16 +113,26 @@ class BertClassifier(ClassifierABC):
         SEED = 1
         set_seed(SEED)
         # load data
-        X, y, data_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter,
-                                  labels_sep=self.labels_sep, is_train=True)
+        X, y, data_df = load_data(
+            data_list_or_path,
+            header=header,
+            names=names,
+            delimiter=delimiter,
+            labels_sep=self.labels_sep,
+            is_train=True
+        )
         if self.output_dir:
             os.makedirs(self.output_dir, exist_ok=True)
         labels_map = self.build_labels_map(y, self.label_vocab_path, self.multi_label, self.labels_sep)
         labels_list = sorted(list(labels_map.keys()))
         if dev_data_list_or_path is not None:
-            dev_X, dev_y, dev_df = load_data(dev_data_list_or_path, header=header, names=names,
-                                             delimiter=delimiter, labels_sep=self.labels_sep,
-                                             is_train=False)
+            dev_X, dev_y, dev_df = load_data(
+                dev_data_list_or_path,
+                header=header, names=names,
+                delimiter=delimiter,
+                labels_sep=self.labels_sep,
+                is_train=False
+            )
             train_data = data_df
             dev_data = dev_df
         else:
@@ -171,8 +181,14 @@ class BertClassifier(ClassifierABC):
                              zip(raw_outputs, predictions)]
             return predictions, predict_probs
 
-    def evaluate_model(self, data_list_or_path, header=None,
-                       names=('labels', 'text'), delimiter='\t', **kwargs):
+    def evaluate_model(
+            self,
+            data_list_or_path,
+            header=None,
+            names=('labels', 'text'),
+            delimiter='\t',
+            **kwargs
+    ):
         """
         Evaluate model with data_list_or_path
         @param data_list_or_path:
@@ -185,8 +201,13 @@ class BertClassifier(ClassifierABC):
         if self.train_args.lazy_loading:
             eval_df = data_list_or_path
         else:
-            X_test, y_test, eval_df = load_data(data_list_or_path, header=header, names=names, delimiter=delimiter,
-                                                labels_sep=self.labels_sep)
+            X_test, y_test, eval_df = load_data(
+                data_list_or_path,
+                header=header,
+                names=names,
+                delimiter=delimiter,
+                labels_sep=self.labels_sep
+            )
         if not self.is_trained:
             self.load_model()
         result, model_outputs, wrong_predictions = self.model.eval_model(
@@ -201,8 +222,8 @@ class BertClassifier(ClassifierABC):
         Load model from output_dir
         @return:
         """
-        model_path = os.path.join(self.output_dir, 'pytorch_model.bin')
-        if os.path.exists(model_path):
+        model_config_file = os.path.join(self.output_dir, 'config.json')
+        if os.path.exists(model_config_file):
             labels_map = json.load(open(self.label_vocab_path, 'r', encoding='utf-8'))
             labels_list = sorted(list(labels_map.keys()))
             num_classes = len(labels_map)
@@ -218,7 +239,7 @@ class BertClassifier(ClassifierABC):
             )
             self.is_trained = True
         else:
-            logger.error(f'{model_path} not exists.')
+            logger.error(f'{model_config_file} not exists.')
             self.is_trained = False
         return self.is_trained
 

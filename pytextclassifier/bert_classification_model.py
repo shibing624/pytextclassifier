@@ -91,7 +91,6 @@ from transformers.optimization import (
     get_cosine_with_hard_restarts_schedule_with_warmup,
     get_polynomial_decay_schedule_with_warmup,
 )
-
 sys.path.append('..')
 from pytextclassifier.bert_classfication_utils import (
     BertClassificationArgs,
