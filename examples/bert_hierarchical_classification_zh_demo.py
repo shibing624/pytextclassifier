@@ -54,7 +54,7 @@ if __name__ == '__main__':
     acc_score = m.evaluate_model(train_df[:20])
     print(f'acc_score: {acc_score}')
 
-    # load trained best model from model_dir
+    # load trained best model from output_dir
     m.load_model()
     predict_label, predict_proba = m.predict([
         '马国明承认与黄心颖分手，女方被娱乐圈封杀', 'RedmiBook14集显版明天首发'])

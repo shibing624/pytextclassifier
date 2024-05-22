@@ -34,7 +34,7 @@ if __name__ == '__main__':
     acc_score = m.evaluate_model(eval_df)
     print(f'acc_score: {acc_score}')
 
-    # load trained best model from model_dir
+    # load trained best model from output_dir
     m.load_model()
     predict_label, predict_proba = m.predict(['some new sentence'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')

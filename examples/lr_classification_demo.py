@@ -21,7 +21,7 @@ if __name__ == '__main__':
     ]
     m.train(data)
     print(m)
-    # load best model from model_dir
+    # load best model from output_dir
     m.load_model()
     predict_label, predict_proba = m.predict(['福建春季公务员考试报名18日截止 2月6日考试',
                                               '意甲首轮补赛交战记录:米兰客场8战不败国米10年连胜'])

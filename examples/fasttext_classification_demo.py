@@ -37,7 +37,7 @@ if __name__ == '__main__':
     data_file = 'thucnews_train_1w.txt'
     m = FastTextClassifier(output_dir='models/fasttext')
     m.train(data_file, names=('labels', 'text'), num_epochs=3)
-    # load best trained model from model_dir
+    # load best trained model from output_dir
     m.load_model()
     predict_label, predict_proba = m.predict(
         ['顺义北京苏活88平米起精装房在售',

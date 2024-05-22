@@ -55,7 +55,7 @@ if __name__ == '__main__':
     acc_score = m.evaluate_model(train_df[:20])
     print(f'acc_score: {acc_score}')
 
-    # load trained best model from model_dir
+    # load trained best model from output_dir
     m.load_model()
     predict_label, predict_proba = m.predict(['一个小时房间仍然没暖和', '耗电情况：这个没有注意'])
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')

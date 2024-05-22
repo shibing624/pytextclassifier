@@ -24,7 +24,7 @@ if __name__ == '__main__':
     ]
     # train and save best model
     m.train(data)
-    # load best model from model_dir
+    # load best model from output_dir
     m.load_model()
     predict_label, predict_proba = m.predict([
         'Abbott government spends $8 million on higher education media blitz'])
