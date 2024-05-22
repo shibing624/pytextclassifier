@@ -66,17 +66,13 @@ from transformers import (
     BertTokenizer,
     BertweetTokenizer,
     DistilBertConfig,
-    DistilBertTokenizer,
     ElectraConfig,
-    ElectraTokenizer,
     HerbertTokenizer,
     LongformerConfig,
     LongformerTokenizer,
     RobertaConfig,
-    RobertaTokenizer,
     XLMConfig,
     XLMRobertaConfig,
-    XLMRobertaTokenizer,
     XLMTokenizer,
     XLNetConfig,
     XLNetTokenizer,
@@ -91,6 +87,7 @@ from transformers.optimization import (
     get_cosine_with_hard_restarts_schedule_with_warmup,
     get_polynomial_decay_schedule_with_warmup,
 )
+
 sys.path.append('..')
 from pytextclassifier.bert_classfication_utils import (
     BertClassificationArgs,
@@ -104,13 +101,8 @@ from pytextclassifier.bert_classfication_utils import (
 from pytextclassifier.bert_multi_label_classification_model import (
     AlbertForMultiLabelSequenceClassification,
     BertForMultiLabelSequenceClassification,
-    BertweetForMultiLabelSequenceClassification,
-    DistilBertForMultiLabelSequenceClassification,
-    ElectraForMultiLabelSequenceClassification,
     LongformerForMultiLabelSequenceClassification,
-    RobertaForMultiLabelSequenceClassification,
     XLMForMultiLabelSequenceClassification,
-    XLMRobertaForMultiLabelSequenceClassification,
     XLNetForMultiLabelSequenceClassification
 )
 
@@ -124,16 +116,12 @@ except ImportError:
 MODELS_WITHOUT_CLASS_WEIGHTS_SUPPORT = ["deberta", "mpnet"]
 
 MODELS_WITH_EXTRA_SEP_TOKEN = [
-    "roberta",
-    "camembert",
     "xlmroberta",
     "longformer",
     "mpnet",
 ]
 
 MODELS_WITH_ADD_PREFIX_SPACE = [
-    "roberta",
-    "camembert",
     "xlmroberta",
     "longformer",
     "mpnet",
@@ -187,21 +175,6 @@ class BertClassificationModel:
                     BertForMultiLabelSequenceClassification,
                     BertTokenizer,
                 ),
-                "bertweet": (
-                    RobertaConfig,
-                    BertweetForMultiLabelSequenceClassification,
-                    BertweetTokenizer,
-                ),
-                "distilbert": (
-                    DistilBertConfig,
-                    DistilBertForMultiLabelSequenceClassification,
-                    DistilBertTokenizer,
-                ),
-                "electra": (
-                    ElectraConfig,
-                    ElectraForMultiLabelSequenceClassification,
-                    ElectraTokenizer,
-                ),
                 "herbert": (
                     BertConfig,
                     BertForMultiLabelSequenceClassification,
@@ -212,17 +185,7 @@ class BertClassificationModel:
                     LongformerForMultiLabelSequenceClassification,
                     LongformerTokenizer,
                 ),
-                "roberta": (
-                    RobertaConfig,
-                    RobertaForMultiLabelSequenceClassification,
-                    RobertaTokenizer,
-                ),
                 "xlm": (XLMConfig, XLMForMultiLabelSequenceClassification, XLMTokenizer),
-                "xlmroberta": (
-                    XLMRobertaConfig,
-                    XLMRobertaForMultiLabelSequenceClassification,
-                    XLMRobertaTokenizer,
-                ),
                 "xlnet": (
                     XLNetConfig,
                     XLNetForMultiLabelSequenceClassification,
