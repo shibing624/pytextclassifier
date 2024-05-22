@@ -44,14 +44,14 @@ class BertClassifier(ClassifierABC):
         Init classification model
         @param output_dir: output model dir
         @param model_type: support 'bert', 'albert', 'roberta', 'xlnet'
-        @param model_name:
-        @param num_classes:
-        @param num_epochs:
-        @param batch_size:
-        @param max_seq_length:
-        @param multi_label:
-        @param labels_sep:
-        @param args:
+        @param model_name: support 'bert-base-chinese', 'bert-base-cased', 'bert-base-multilingual-cased' ...
+        @param num_classes: number of label classes
+        @param num_epochs: train epochs
+        @param batch_size: train batch size
+        @param max_seq_length: max seq length, trim longer sentence.
+        @param multi_label: bool, multi label or single label
+        @param labels_sep: label separator, default is ','
+        @param args: dict, train args
         """
         default_args = {
             "output_dir": output_dir,

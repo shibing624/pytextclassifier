@@ -402,6 +402,10 @@ if __name__ == '__main__':
     print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
 ```
 
+#### 多层级分类模型
+**多层级标签分类任务**，如行业分类（一级行业下分二级子行业，再分三级）、产品分类，可以使用多标签分类模型，将多层级标签转换为多标签形式，
+示例[examples/bert_hierarchical_classification_zh_demo.py.py](https://github.com/shibing624/pytextclassifier/blob/master/examples/bert_hierarchical_classification_zh_demo.py)
+
 ## Evaluation
 
 ### Dataset
