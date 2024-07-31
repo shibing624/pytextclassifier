@@ -3,7 +3,7 @@
 @author:XuMing(xuming624@qq.com)
 @description: 
 """
-__version__ = '1.3.9'
+__version__ = '1.4.0'
 
 from pytextclassifier.classic_classifier import ClassicClassifier
 from pytextclassifier.fasttext_classifier import FastTextClassifier
