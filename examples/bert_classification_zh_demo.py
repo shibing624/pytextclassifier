@@ -3,6 +3,7 @@
 @author:XuMing(xuming624@qq.com)
 @description: 
 """
+import shutil
 import sys
 
 sys.path.append('..')
@@ -17,9 +18,17 @@ if __name__ == '__main__':
         ('education', '名师指导托福语法技巧：名词的复数形式'),
         ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
         ('education', '公务员考虑越来越吃香，这是怎么回事？'),
+        ('education', '公务员考虑越来越吃香，这是怎么回事1？'),
+        ('education', '公务员考虑越来越吃香，这是怎么回事2？'),
+        ('education', '公务员考虑越来越吃香，这是怎么回事3？'),
+        ('education', '公务员考虑越来越吃香，这是怎么回事4？'),
         ('sports', '图文：法网孟菲尔斯苦战进16强 孟菲尔斯怒吼'),
         ('sports', '四川丹棱举行全国长距登山挑战赛 近万人参与'),
-        ('sports', '米兰客场8战不败国米10年连胜'),
+        ('sports', '米兰客场8战不败国米10年连胜1'),
+        ('sports', '米兰客场8战不败国米10年连胜2'),
+        ('sports', '米兰客场8战不败国米10年连胜3'),
+        ('sports', '米兰客场8战不败国米10年连胜4'),
+        ('sports', '米兰客场8战不败国米10年连胜5'),
     ]
     m.train(data)
     print(m)
@@ -44,6 +53,20 @@ if __name__ == '__main__':
     data_file = 'thucnews_train_1w.txt'
     # 如果训练数据超过百万条，建议使用lazy_loading模式，减少内存占用
     m.train(data_file, test_size=0, names=('labels', 'text'))
+    m.load_model()
+    predict_label, predict_proba = m.predict(
+        ['顺义北京苏活88平米起精装房在售',
+         '美EB-5项目“15日快速移民”将推迟',
+         '恒生AH溢指收平 A股对H股折价1.95%'])
+    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
+
+    # convert to onnx, and load onnx model to predict, speed up 10x
+    save_onnx_dir = 'models/onnx'
+    m.model.convert_to_onnx(save_onnx_dir)
+    # copy label_vocab.json to save_onnx_dir
+    shutil.copy('models/bert-chinese/label_vocab.json', save_onnx_dir)
+    m = BertClassifier(output_dir=save_onnx_dir, num_classes=10, model_type='bert', model_name=save_onnx_dir,
+                       args={"onnx": True})
     m.load_model()
     predict_label, predict_proba = m.predict(
         ['顺义北京苏活88平米起精装房在售',

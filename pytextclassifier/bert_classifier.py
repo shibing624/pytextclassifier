@@ -21,7 +21,7 @@ from pytextclassifier.bert_classification_model import BertClassificationModel, 
 pwd_path = os.path.abspath(os.path.dirname(__file__))
 device = 'cuda' if torch.cuda.is_available() else (
     'mps' if hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else 'cpu')
-use_cuda = torch.cuda.is_available()
+default_use_cuda = torch.cuda.is_available()
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
@@ -37,6 +37,7 @@ class BertClassifier(ClassifierABC):
             max_seq_length=128,
             multi_label=False,
             labels_sep=',',
+            use_cuda=None,
             args=None,
     ):
 
@@ -51,6 +52,7 @@ class BertClassifier(ClassifierABC):
         @param max_seq_length: max seq length, trim longer sentence.
         @param multi_label: bool, multi label or single label
         @param labels_sep: label separator, default is ','
+        @param use_cuda: bool, use cuda or not
         @param args: dict, train args
         """
         default_args = {
@@ -65,6 +67,8 @@ class BertClassifier(ClassifierABC):
         if args and isinstance(args, dict):
             train_args.update_from_dict(args)
         train_args.update_from_dict(default_args)
+        if use_cuda is None:
+            use_cuda = default_use_cuda
 
         self.model = BertClassificationModel(
             model_type=model_type,
