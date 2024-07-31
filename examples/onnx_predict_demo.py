@@ -51,8 +51,8 @@ if __name__ == '__main__':
     save_onnx_dir = 'models/onnx'
     m.model.convert_to_onnx(save_onnx_dir)
     # copy label_vocab.json to save_onnx_dir
-    if os.path.exists(m.model.label_vocab_path):
-        shutil.copy(m.model.label_vocab_path, save_onnx_dir)
+    if os.path.exists(m.label_vocab_path):
+        shutil.copy(m.label_vocab_path, save_onnx_dir)
 
     # Manually delete the model and clear CUDA cache
     del m
