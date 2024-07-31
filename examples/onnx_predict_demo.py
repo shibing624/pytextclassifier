@@ -48,7 +48,7 @@ if __name__ == '__main__':
     print(f'Standard BERT model prediction time: {elapsed_time_bert} seconds')
 
     # convert to onnx, and load onnx model to predict, speed up 10x
-    save_onnx_dir = 'models/onnx'
+    save_onnx_dir = 'models/bert-chinese-v1/onnx'
     m.model.convert_to_onnx(save_onnx_dir)
     # copy label_vocab.json to save_onnx_dir
     if os.path.exists(m.label_vocab_path):

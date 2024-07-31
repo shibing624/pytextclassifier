@@ -411,8 +411,8 @@ if __name__ == '__main__':
 
 支持将训练好的模型导出为ONNX格式，以便推理加速，或者在其他环境如C++部署模型调用，示例[examples/onnx_predict_demo.py](https://github.com/shibing624/pytextclassifier/blob/master/examples/onnx_predict_demo.py)
 
-- GPU环境下导出ONNX模型，可以获得10倍以上的推理加速
-- CPU环境下导出ONNX模型，可以获得5倍以上的推理加速
+- GPU环境下导出ONNX模型，可以获得10倍以上的推理加速，需要安装`onnxruntime-gpu`库：`pip install onnxruntime-gpu`
+- CPU环境下导出ONNX模型，可以获得5倍以上的推理加速，需要安装`onnxruntime`库：`pip install onnxruntime`
 
 
 ## Evaluation
