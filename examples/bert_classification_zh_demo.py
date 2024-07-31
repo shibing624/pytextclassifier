@@ -3,7 +3,6 @@
 @author:XuMing(xuming624@qq.com)
 @description: 
 """
-import shutil
 import sys
 
 sys.path.append('..')
@@ -53,20 +52,6 @@ if __name__ == '__main__':
     data_file = 'thucnews_train_1w.txt'
     # 如果训练数据超过百万条，建议使用lazy_loading模式，减少内存占用
     m.train(data_file, test_size=0, names=('labels', 'text'))
-    m.load_model()
-    predict_label, predict_proba = m.predict(
-        ['顺义北京苏活88平米起精装房在售',
-         '美EB-5项目“15日快速移民”将推迟',
-         '恒生AH溢指收平 A股对H股折价1.95%'])
-    print(f'predict_label: {predict_label}, predict_proba: {predict_proba}')
-
-    # convert to onnx, and load onnx model to predict, speed up 10x
-    save_onnx_dir = 'models/onnx'
-    m.model.convert_to_onnx(save_onnx_dir)
-    # copy label_vocab.json to save_onnx_dir
-    shutil.copy('models/bert-chinese/label_vocab.json', save_onnx_dir)
-    m = BertClassifier(output_dir=save_onnx_dir, num_classes=10, model_type='bert', model_name=save_onnx_dir,
-                       args={"onnx": True})
     m.load_model()
     predict_label, predict_proba = m.predict(
         ['顺义北京苏活88平米起精装房在售',

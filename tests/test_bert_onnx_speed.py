@@ -3,10 +3,13 @@
 @author:XuMing(xuming624@qq.com)
 @description: 
 """
+import os.path
 import shutil
 import sys
 import time
 import unittest
+
+import torch
 
 sys.path.append('..')
 from pytextclassifier import BertClassifier
@@ -15,7 +18,7 @@ from pytextclassifier import BertClassifier
 class ModelSpeedTestCase(unittest.TestCase):
     def test_classifier(self):
         m = BertClassifier(output_dir='models/bert-chinese', num_classes=2,
-                           model_type='bert', model_name='bert-base-chinese', num_epochs=2)
+                           model_type='bert', model_name='bert-base-chinese', num_epochs=1)
         data = [
             ('education', '名师指导托福语法技巧：名词的复数形式'),
             ('education', '中国高考成绩海外认可 是“狼来了”吗？'),
@@ -51,7 +54,13 @@ class ModelSpeedTestCase(unittest.TestCase):
         save_onnx_dir = 'models/onnx'
         m.model.convert_to_onnx(save_onnx_dir)
         # copy label_vocab.json to save_onnx_dir
-        shutil.copy('models/bert-chinese/label_vocab.json', save_onnx_dir)
+        if os.path.exists(m.model.label_vocab_path):
+            shutil.copy(m.model.label_vocab_path, save_onnx_dir)
+
+        # Manually delete the model and clear CUDA cache
+        del m
+        torch.cuda.empty_cache()
+
         m = BertClassifier(output_dir=save_onnx_dir, num_classes=2, model_type='bert', model_name=save_onnx_dir,
                            args={"onnx": True})
         m.load_model()

@@ -406,6 +406,15 @@ if __name__ == '__main__':
 **多层级标签分类任务**，如行业分类（一级行业下分二级子行业，再分三级）、产品分类，可以使用多标签分类模型，将多层级标签转换为多标签形式，
 示例[examples/bert_hierarchical_classification_zh_demo.py.py](https://github.com/shibing624/pytextclassifier/blob/master/examples/bert_hierarchical_classification_zh_demo.py)
 
+
+#### ONNX推理加速
+
+支持将训练好的模型导出为ONNX格式，以便推理加速，或者在其他环境如C++部署模型调用，示例[examples/onnx_predict_demo.py](https://github.com/shibing624/pytextclassifier/blob/master/examples/onnx_predict_demo.py)
+
+- GPU环境下导出ONNX模型，可以获得10倍以上的推理加速
+- CPU环境下导出ONNX模型，可以获得5倍以上的推理加速
+
+
 ## Evaluation
 
 ### Dataset
