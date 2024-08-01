@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 @author:XuMing(xuming624@qq.com)
-@description: 
+@description:
 """
+
+import os
 import shutil
 import sys
 import time
@@ -22,15 +24,22 @@ class ModelSpeedTestCase(unittest.TestCase):
         # Helper function to calculate QPS and 95th percentile latency
         def calculate_metrics(times):
             completion_times = np.array(times)
-            total_requests = len(completion_times)
+            total_requests = 300
+
+            # 平均每秒请求数（QPS），计算公式为总请求数除以总耗时
             average_qps = total_requests / np.sum(completion_times)
-            sorted_times = np.sort(completion_times)
-            p95_latency = sorted_times[int(0.95 * len(sorted_times))]
-            return average_qps, p95_latency
+            latency = np.sum(completion_times) / total_requests
+
+            # 返回所有计算结果
+            return {
+                'total_requests': total_requests,  # 总请求数
+                'latency': latency,  # 每条请求的平均完成时间
+                'average_qps': average_qps,  # 平均每秒请求数
+            }
 
         # Train the model once
-        def train_model():
-            m = BertClassifier(output_dir='models/bert-chinese-v1', num_classes=2,
+        def train_model(output_dir='models/bert-chinese-v1'):
+            m = BertClassifier(output_dir=output_dir, num_classes=2,
                                model_type='bert', model_name='bert-base-chinese', num_epochs=1)
             data = [
                 ('education', '名师指导托福语法技巧：名词的复数形式'),
@@ -68,33 +77,40 @@ class ModelSpeedTestCase(unittest.TestCase):
 
                 batch_times.append(end_time - start_time)
 
-            avg_qps, p95_latency = calculate_metrics(batch_times)
-            return avg_qps, p95_latency
+            metrics = calculate_metrics(batch_times)
+            return metrics
 
         # Convert the model to ONNX format
-        def convert_model_to_onnx(m):
-            save_onnx_dir = 'models/bert-chinese-v1/onnx'
+        def convert_model_to_onnx(m, model_dir='models/bert-chinese-v1'):
+            save_onnx_dir = os.path.join(model_dir, 'onnx')
+            if os.path.exists(save_onnx_dir):
+                shutil.rmtree(save_onnx_dir)
             m.model.convert_to_onnx(save_onnx_dir)
             shutil.copy(m.label_vocab_path, save_onnx_dir)
             return save_onnx_dir
 
         # Main function
-        batch_sizes = [8, 16, 32, 64, 128, 256, 512]  # Modify these values as appropriate
-
+        batch_sizes = [1, 8, 16, 32, 64, 128]  # Modify these values as appropriate
+        model_dir = 'models/bert-chinese-v1'
         # Train the model once
-        model = train_model()
-
-        # Evaluate Standard BERT model performance
-        for batch_size in batch_sizes:
-            model.args['eval_batch_size'] = batch_size
-            avg_qps, p95_latency = evaluate_performance(model, batch_size)
-            logger.info(
-                f'Standard BERT model - Batch size: {batch_size}, Average QPS: {avg_qps:.2f}, P95 Latency: {p95_latency:.4f} seconds')
-
+        model = train_model(model_dir)
         # Convert to ONNX
         onnx_model_path = convert_model_to_onnx(model)
         del model
         torch.cuda.empty_cache()
+
+        # Evaluate Standard BERT model performance
+        for batch_size in batch_sizes:
+            model = BertClassifier(output_dir=model_dir, num_classes=2, model_type='bert',
+                                   model_name=model_dir,
+                                   args={"eval_batch_size": batch_size, "onnx": False})
+            model.load_model()
+            metrics = evaluate_performance(model, batch_size)
+            logger.info(
+                f'Standard BERT model - Batch size: {batch_size}, total_requests: {metrics["total_requests"]}, '
+                f'Average QPS: {metrics["average_qps"]:.2f}, Average Latency: {metrics["latency"]:.4f}')
+            del model
+            torch.cuda.empty_cache()
 
         # Load and evaluate ONNX model performance
         for batch_size in batch_sizes:
@@ -102,9 +118,10 @@ class ModelSpeedTestCase(unittest.TestCase):
                                         model_name=onnx_model_path,
                                         args={"eval_batch_size": batch_size, "onnx": True})
             onnx_model.load_model()
-            avg_qps, p95_latency = evaluate_performance(onnx_model, batch_size)
+            metrics = evaluate_performance(onnx_model, batch_size)
             logger.info(
-                f'ONNX model - Batch size: {batch_size}, Average QPS: {avg_qps:.2f}, P95 Latency: {p95_latency:.4f} seconds')
+                f'ONNX model - Batch size: {batch_size}, total_requests: {metrics["total_requests"]}, '
+                f'Average QPS: {metrics["average_qps"]:.2f}, Average Latency: {metrics["latency"]:.4f}')
             del onnx_model
             torch.cuda.empty_cache()
 
