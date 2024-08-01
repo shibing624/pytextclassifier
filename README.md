@@ -494,12 +494,12 @@ print(f'ONNX model prediction time: {elapsed_time_onnx} seconds')
 |                    | 16          | 42.23       | 0.0237              |
 |                    | 32          | 46.79       | 0.0214              |
 |                    | 64          | 48.79       | 0.0205              |
-|                    | 128         | 50.15       | 0.0199              |
+|                    | 128         | **50.15**   | 0.0199              |
 | **ONNX Model**     | 1           | 121.89      | 0.0082              |
 |                    | 8           | 123.38      | 0.0081              |
 |                    | 16          | 132.26      | 0.0076              |
 |                    | 32          | 128.33      | 0.0078              |
-|                    | 64          | 134.59      | 0.0074              |
+|                    | 64          | **134.59**  | 0.0074              |
 |                    | 128         | 128.94      | 0.0078              |
 
 ##### CPU (10核 Intel(R) Xeon(R) Platinum 8255C CPU @ 2.50GHz)
@@ -507,12 +507,12 @@ print(f'ONNX model prediction time: {elapsed_time_onnx} seconds')
 | Model Type         | Batch Size  | Average QPS | Average Latency (s) |
 |--------------------|-------------|-------------|---------------------|
 | **Standard BERT**  | 1           | 4.87        | 0.2053              |
-|                    | 8           | 9.21        | 0.1086              |
+|                    | 8           | **9.21**    | 0.1086              |
 |                    | 16          | 7.59        | 0.1318              |
 |                    | 32          | 7.48        | 0.1337              |
 |                    | 64          | 7.01        | 0.1426              |
 |                    | 128         | 6.34        | 0.1576              |
-| **ONNX Model**     | 1           | 65.25       | 0.0153              |
+| **ONNX Model**     | 1           | **65.25**   | 0.0153              |
 |                    | 8           | 52.93       | 0.0189              |
 |                    | 16          | 56.99       | 0.0175              |
 |                    | 32          | 55.03       | 0.0182              |
@@ -530,16 +530,16 @@ print(f'ONNX model prediction time: {elapsed_time_onnx} seconds')
 ### Evaluation Result
 在THUCNews中文文本10分类数据集（6MB）上评估，模型在测试集(test)评测效果如下：
 
-模型|acc|说明
---|--|--
-LR|0.8803|逻辑回归Logistics Regression
-TextCNN|0.8809|Kim 2014 经典的CNN文本分类
-TextRNN_Att|0.9022|BiLSTM+Attention
-FastText|0.9177|bow+bigram+trigram， 效果出奇的好
-DPCNN|0.9125|深层金字塔CNN
-Transformer|0.8991|效果较差
-BERT-base|**0.9483**|bert + fc
-ERNIE|0.9461|比bert略差
+| 模型          | acc        | 说明                           |
+|-------------|------------|------------------------------|
+| LR          | 0.8803     | 逻辑回归Logistics Regression     |
+| TextCNN     | 0.8809     | Kim 2014 经典的CNN文本分类          |
+| TextRNN_Att | 0.9022     | BiLSTM+Attention             |
+| FastText    | 0.9177     | bow+bigram+trigram， 效果出奇的好   |
+| DPCNN       | 0.9125     | 深层金字塔CNN                     |
+| Transformer | 0.8991     | 效果较差                         |
+| BERT-base   | **0.9483** | bert + fc                    |
+| ERNIE       | 0.9461     | 比bert略差                      |
 
 在中文新闻短文本分类数据集TNEWS上评估，模型在开发集(dev)评测效果如下：
 
