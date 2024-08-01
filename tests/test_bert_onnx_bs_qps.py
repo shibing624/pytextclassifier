@@ -10,6 +10,7 @@ import unittest
 
 import numpy as np
 import torch
+from loguru import logger
 
 sys.path.append('..')
 from pytextclassifier import BertClassifier
@@ -87,7 +88,7 @@ class ModelSpeedTestCase(unittest.TestCase):
         for batch_size in batch_sizes:
             model.args['eval_batch_size'] = batch_size
             avg_qps, p95_latency = evaluate_performance(model, batch_size)
-            print(
+            logger.info(
                 f'Standard BERT model - Batch size: {batch_size}, Average QPS: {avg_qps:.2f}, P95 Latency: {p95_latency:.4f} seconds')
 
         # Convert to ONNX
@@ -102,7 +103,7 @@ class ModelSpeedTestCase(unittest.TestCase):
                                         args={"eval_batch_size": batch_size, "onnx": True})
             onnx_model.load_model()
             avg_qps, p95_latency = evaluate_performance(onnx_model, batch_size)
-            print(
+            logger.info(
                 f'ONNX model - Batch size: {batch_size}, Average QPS: {avg_qps:.2f}, P95 Latency: {p95_latency:.4f} seconds')
             del onnx_model
             torch.cuda.empty_cache()
