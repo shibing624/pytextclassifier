@@ -481,6 +481,45 @@ elapsed_time_onnx = end_time - start_time
 print(f'ONNX model prediction time: {elapsed_time_onnx} seconds')
 ```
 
+#### 推理耗时评测
+评测脚本：[examples/onnx_predict_demo.py](https://github.com/shibing624/pytextclassifier/blob/master/tests/test_bert_onnx_bs_qps.py)
+
+
+##### GPU (Tesla T4)
+
+| Model Type         | Batch Size  | Average QPS | Average Latency (s) |
+|--------------------|-------------|-------------|---------------------|
+| **Standard BERT**  | 1           | 9.67        | 0.1034              |
+|                    | 8           | 34.85       | 0.0287              |
+|                    | 16          | 42.23       | 0.0237              |
+|                    | 32          | 46.79       | 0.0214              |
+|                    | 64          | 48.79       | 0.0205              |
+|                    | 128         | 50.15       | 0.0199              |
+| **ONNX Model**     | 1           | 121.89      | 0.0082              |
+|                    | 8           | 123.38      | 0.0081              |
+|                    | 16          | 132.26      | 0.0076              |
+|                    | 32          | 128.33      | 0.0078              |
+|                    | 64          | 134.59      | 0.0074              |
+|                    | 128         | 128.94      | 0.0078              |
+
+##### CPU
+
+| Model Type         | Batch Size  | Average QPS | Average Latency (s) |
+|--------------------|-------------|-------------|---------------------|
+| **Standard BERT**  | 1           | 4.87        | 0.2053              |
+|                    | 8           | 9.21        | 0.1086              |
+|                    | 16          | 7.59        | 0.1318              |
+|                    | 32          | 7.48        | 0.1337              |
+|                    | 64          | 7.01        | 0.1426              |
+|                    | 128         | 6.34        | 0.1576              |
+| **ONNX Model**     | 1           | 65.25       | 0.0153              |
+|                    | 8           | 52.93       | 0.0189              |
+|                    | 16          | 56.99       | 0.0175              |
+|                    | 32          | 55.03       | 0.0182              |
+|                    | 64          | 56.23       | 0.0178              |
+|                    | 128         | 46.22       | 0.0216              |
+
+
 ## Evaluation
 
 ### Dataset
