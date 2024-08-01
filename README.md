@@ -502,7 +502,7 @@ print(f'ONNX model prediction time: {elapsed_time_onnx} seconds')
 |                    | 64          | 134.59      | 0.0074              |
 |                    | 128         | 128.94      | 0.0078              |
 
-##### CPU
+##### CPU (10核 Intel(R) Xeon(R) Platinum 8255C CPU @ 2.50GHz)
 
 | Model Type         | Batch Size  | Average QPS | Average Latency (s) |
 |--------------------|-------------|-------------|---------------------|
