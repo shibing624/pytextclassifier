@@ -1721,7 +1721,7 @@ class BertClassificationModel:
                 to_predict, return_tensors="pt", padding=True, truncation=True
             )
 
-            if self.args.model_type in ["bert", "xlnet", "albert"]:
+            if self.args.model_type in ["bert", "albert"]:
                 for i, (input_ids, attention_mask, token_type_ids) in enumerate(
                         zip(
                             model_inputs["input_ids"],
@@ -2008,7 +2008,7 @@ class BertClassificationModel:
                 tokenizer=self.tokenizer,
                 output=Path(onnx_model_name),
                 pipeline_name="sentiment-analysis",
-                opset=11,
+                opset=14,
             )
 
         self.args.onnx = True
@@ -2058,7 +2058,7 @@ class BertClassificationModel:
             if self.args.model_type != "distilbert":
                 inputs["token_type_ids"] = (
                     batch[2]
-                    if self.args.model_type in ["bert", "xlnet", "albert"]
+                    if self.args.model_type in ["bert", "albert"]
                     else None
                 )
 
